@@ -1,11 +1,3 @@
-#![warn(clippy::pedantic)]
-#![allow(
-    clippy::new_without_default,
-    clippy::cast_possible_wrap,
-    clippy::module_name_repetitions,
-    clippy::cast_sign_loss
-)]
-
 extern crate pest;
 
 #[macro_use]

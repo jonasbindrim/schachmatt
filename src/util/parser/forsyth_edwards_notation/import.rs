@@ -34,12 +34,8 @@ pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
     let active_color: PlayerColor = string_to_active_color(fen_parts.get(1).unwrap())?;
 
     // 3. Castling availability
-    let (
-        black_kingside,
-        black_queenside,
-        white_kingside,
-        white_queenside
-    ) = string_to_castling_rights(fen_parts.get(2).unwrap())?;
+    let (black_kingside, black_queenside, white_kingside, white_queenside) =
+        string_to_castling_rights(fen_parts.get(2).unwrap())?;
 
     // 4. En passant target square
     let en_passant = string_to_field(fen_parts.get(3).unwrap())?;

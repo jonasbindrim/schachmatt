@@ -54,7 +54,7 @@ impl Game {
             panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE)
         };
 
-         position.clone()
+        position.clone()
     }
 
     /// Executes the given turn.
