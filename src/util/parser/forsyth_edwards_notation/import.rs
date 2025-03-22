@@ -1,8 +1,8 @@
 use crate::{
+    Field, Piece, PlayerColor, Position,
     data_structures::piece::piece_type::PieceType,
     position::util::castling_rights::CastlingRights,
     util::error::{error_messages::FEN_IMPORT_ERROR, parser_error::ParserError},
-    Field, Piece, PlayerColor, Position,
 };
 
 pub(crate) const DEFAULT_BOARD_SETUP: &str =

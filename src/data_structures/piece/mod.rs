@@ -6,7 +6,7 @@ use crate::PlayerColor;
 
 use self::{
     move_iterators::{
-        MoveIterator, BISHOP_ITERATORS, KING_ITERATORS, KNIGHT_ITERATORS, NONE_ITERATORS,
+        BISHOP_ITERATORS, KING_ITERATORS, KNIGHT_ITERATORS, MoveIterator, NONE_ITERATORS,
         PAWN_BLACK_ITERATORS, PAWN_WHITE_ITERATORS, QUEEN_ITERATORS, ROOK_ITERATORS,
     },
     piece_type::PieceType,

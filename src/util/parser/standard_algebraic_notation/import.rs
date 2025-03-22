@@ -1,8 +1,8 @@
 use crate::{
-    data_structures::piece::piece_type::PieceType, Field, Piece, PlayerColor, Position, Turn,
+    Field, Piece, PlayerColor, Position, Turn, data_structures::piece::piece_type::PieceType,
 };
 
-use pest::{iterators::Pair, Parser};
+use pest::{Parser, iterators::Pair};
 
 #[derive(Parser)]
 #[grammar = "util/parser/standard_algebraic_notation/san.pest"]

@@ -1,10 +1,10 @@
 use crate::{
+    Field, Piece, PlayerColor, Position, Turn,
     data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
     util::castle_data::{
         CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED,
         CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED,
     },
-    Field, Piece, PlayerColor, Position, Turn,
 };
 
 use super::util::move_legality::MoveLegality;

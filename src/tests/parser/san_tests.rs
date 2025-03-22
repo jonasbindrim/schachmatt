@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::{data_structures::piece::piece_type::PieceType, Field, Turn, FEN, SAN};
+    use crate::{FEN, Field, SAN, Turn, data_structures::piece::piece_type::PieceType};
 
     #[test]
     pub fn import_san_pawn_push() {

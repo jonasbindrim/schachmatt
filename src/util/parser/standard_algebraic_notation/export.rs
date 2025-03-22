@@ -1,4 +1,4 @@
-use crate::{data_structures::piece::piece_type::PieceType, Piece, PlayerColor, Position, Turn};
+use crate::{Piece, PlayerColor, Position, Turn, data_structures::piece::piece_type::PieceType};
 
 /// Converts a `Turn` into its corresponding SAN representation.
 /// - `turn` - The turn object that will be converted

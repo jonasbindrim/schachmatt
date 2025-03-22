@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::{data_structures::piece::piece_type::PieceType, Field, Turn, FEN};
+    use crate::{FEN, Field, Turn, data_structures::piece::piece_type::PieceType};
 
     /// Tests the possible moves of the king
     #[test]

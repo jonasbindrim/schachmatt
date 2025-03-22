@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{util::error::error_messages, Game, GameResult, PlayerColor, Position, Turn, FEN};
+use crate::{FEN, Game, GameResult, PlayerColor, Position, Turn, util::error::error_messages};
 
 impl Game {
     /// Creates a new `Game` with the default chess board setup.

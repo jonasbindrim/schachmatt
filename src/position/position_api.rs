@@ -1,6 +1,6 @@
 use crate::{
+    FEN, Field, GameResult, Piece, PlayerColor, Position, Turn,
     data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
-    Field, GameResult, Piece, PlayerColor, Position, Turn, FEN,
 };
 
 use super::{position_internal::BOARD_FIELDS, util::move_legality::MoveLegality};

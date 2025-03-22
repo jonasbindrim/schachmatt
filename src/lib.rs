@@ -22,8 +22,8 @@ pub use crate::position::position_struct::Position;
 mod data_structures;
 pub use crate::data_structures::field::Field;
 pub use crate::data_structures::game_result::GameResult;
-pub use crate::data_structures::piece::piece_type::PieceType;
 pub use crate::data_structures::piece::Piece;
+pub use crate::data_structures::piece::piece_type::PieceType;
 pub use crate::data_structures::player_color::PlayerColor;
 pub use crate::data_structures::turn::Turn;
 

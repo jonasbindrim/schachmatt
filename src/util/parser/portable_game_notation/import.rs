@@ -1,8 +1,8 @@
-use pest::{iterators::Pair, Parser};
+use pest::{Parser, iterators::Pair};
 
 use crate::{
-    util::error::{error_messages::PGN_IMPORT_ERROR, parser_error::ParserError},
     Game, Position, SAN,
+    util::error::{error_messages::PGN_IMPORT_ERROR, parser_error::ParserError},
 };
 
 #[derive(Parser)]

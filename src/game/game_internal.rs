@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{util::error::error_messages, Game, Position, Turn};
+use crate::{Game, Position, Turn, util::error::error_messages};
 
 impl Game {
     /// Creates a new game without any position or data.
