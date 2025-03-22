@@ -3,7 +3,7 @@ use crate::{Field, Turn, data_structures::piece::piece_type::PieceType};
 use pest::{Parser, iterators::Pair};
 
 #[derive(Parser)]
-#[grammar = "util/parser/long_algebraic_notation/lan.pest"]
+#[grammar = "util/pest_definitions/long_algebraic_notation.pest"]
 struct LanStruct;
 
 /// Converts a string in LAN into a `Turn` if possible.

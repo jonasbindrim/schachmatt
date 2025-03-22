@@ -6,7 +6,7 @@ use crate::{
 };
 
 #[derive(Parser)]
-#[grammar = "util/parser/portable_game_notation/pgn.pest"]
+#[grammar = "util/pest_definitions/portable_game_notation.pest"]
 struct PgnStruct;
 
 /// Converts a string in PGN representation into a `Game`.

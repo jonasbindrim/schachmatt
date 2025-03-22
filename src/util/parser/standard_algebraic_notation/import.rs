@@ -5,7 +5,7 @@ use crate::{
 use pest::{Parser, iterators::Pair};
 
 #[derive(Parser)]
-#[grammar = "util/parser/standard_algebraic_notation/san.pest"]
+#[grammar = "util/pest_definitions/standard_algebraic_notation.pest"]
 struct SanStruct;
 
 /// Converts a string in SAN representation to a `Turn` object.
