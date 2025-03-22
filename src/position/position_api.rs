@@ -204,3 +204,9 @@ impl Position {
         GameResult::Draw
     }
 }
+
+impl Default for Position {
+    fn default() -> Self {
+        Self::new()
+    }
+}

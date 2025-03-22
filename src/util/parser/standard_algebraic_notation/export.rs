@@ -55,6 +55,7 @@ pub fn from_turn(turn: Turn, current_position: &Position) -> String {
             to_move(&mut san_turn, turn, current_position, is_capture);
         }
     }
+    
     san_turn
 }
 
