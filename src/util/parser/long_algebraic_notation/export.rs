@@ -10,12 +10,12 @@ pub fn from_turn(turn: &Turn) -> String {
     let turn_content: String = if let Some(promotion) = turn.promotion {
         format!(
             "{}{}{}",
-            turn.from.to_string(),
-            turn.to.to_string(),
+            turn.from,
+            turn.to,
             promotion.export_piecetype_lowercase().unwrap()
         )
     } else {
-        format!("{}{}", turn.from.to_string(), turn.to.to_string())
+        format!("{}{}", turn.from, turn.to)
     };
 
     turn_content

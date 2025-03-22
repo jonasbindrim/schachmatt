@@ -29,7 +29,7 @@ impl Game {
     /// - `returns` - The metadata associated with the given key
     #[must_use]
     pub fn get_metadata(&self, key: &str) -> Option<String> {
-        return self.game_metadata.get(key).cloned();
+        self.game_metadata.get(key).cloned()
     }
 
     /// Sets the metadata for this game.
@@ -50,10 +50,11 @@ impl Game {
     /// This panic indicates an error in the library.
     #[must_use]
     pub fn get_current_state(&self) -> Position {
-        match self.position_history.last() {
-            Some(state) => state.clone(),
-            None => panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE),
-        }
+        let Some(position) = self.position_history.last() else {
+            panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE)
+        };
+
+         position.clone()
     }
 
     /// Executes the given turn.
@@ -69,21 +70,21 @@ impl Game {
     /// - `returns` - The result of this game
     #[must_use]
     pub fn get_game_result(&mut self) -> GameResult {
-        return self.get_current_state_reference().game_over_check();
+        self.get_current_state_reference().game_over_check()
     }
 
     /// Returns the color of the player who has to move.
     /// - `returns` - The currently active player color
     #[must_use]
     pub fn get_color_at_turn(&self) -> PlayerColor {
-        return self.get_current_state_reference().active_color;
+        self.get_current_state_reference().active_color
     }
 
     /// Returns the latest turn played in this game.
     /// - `returns` - The last turn played in this game
     #[must_use]
     pub fn get_last_turn(&self) -> Option<Turn> {
-        return self.turn_history.last().copied();
+        self.turn_history.last().copied()
     }
 }
 

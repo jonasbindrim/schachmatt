@@ -18,30 +18,33 @@ impl Game {
     /// - `returns` - A reference to the current game state.
     #[must_use]
     pub(crate) fn get_current_state_reference(&self) -> &Position {
-        match self.position_history.last() {
-            Some(state) => state,
-            None => panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE),
-        }
+        let Some(state) = self.position_history.last() else {
+            panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE);
+        };
+
+        state
     }
 
     /// Returns a reference to the game state at the given index.
     /// - `returns` - A reference to the game state at the given index.
     #[must_use]
     pub(crate) fn get_state_at_index_reference(&self, index: usize) -> &Position {
-        match self.position_history.get(index) {
-            Some(state) => state,
-            None => panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE),
-        }
+        let Some(state) = self.position_history.get(index) else {
+            panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE);
+        };
+
+        state
     }
 
-    /// Returns a reference to the turn at the given index.
-    /// - `returns` - A reference to the turn at the given index.
+    /// Returns the turn at the given index.
+    /// - `returns` - The turn at the given index.
     #[must_use]
     pub(crate) fn get_turn_at_index(&self, index: usize) -> Turn {
-        match self.turn_history.get(index) {
-            Some(turn) => *turn,
-            None => panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE),
-        }
+        let Some(turn) = self.turn_history.get(index) else {
+            panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE);
+        };
+
+        *turn
     }
 
     /// Adds the given position to the game

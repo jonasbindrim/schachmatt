@@ -34,11 +34,12 @@ pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
     let active_color: PlayerColor = string_to_active_color(fen_parts.get(1).unwrap())?;
 
     // 3. Castling availability
-    let (black_kingside, black_queenside, white_kingside, white_queenside) =
-        match string_to_castling_rights(fen_parts.get(2).unwrap()) {
-            Ok(castling_rights) => castling_rights,
-            Err(err) => return Err(err),
-        };
+    let (
+        black_kingside,
+        black_queenside,
+        white_kingside,
+        white_queenside
+    ) = string_to_castling_rights(fen_parts.get(2).unwrap())?;
 
     // 4. En passant target square
     let en_passant = string_to_field(fen_parts.get(3).unwrap())?;
@@ -145,11 +146,11 @@ fn string_to_field(field_data: &str) -> Result<Option<Field>, ParserError> {
 
 /// This functions converts a string into the rights to castle
 /// - `castling_data` - The castling part of a fen string
-/// - `returns` - The castling rights in the following order
-/// 0: Black kingside castling rights
-/// 1: Black queenside castling rights
-/// 2: White kingside castling rights
-/// 3: White queenside castling rights
+/// - `returns` - The castling rights in the following order  
+///     0: Black kingside castling rights  
+///     1: Black queenside castling rights  
+///     2: White kingside castling rights  
+///     3: White queenside castling rights
 fn string_to_castling_rights(castling_data: &str) -> Result<(bool, bool, bool, bool), ParserError> {
     let letters = castling_data.as_bytes();
     if letters.len() > 4 {

@@ -78,7 +78,7 @@ fn handle_full_turn_data(pair: Pair<Rule>, game: &mut Game) -> Option<ParserErro
 fn handle_turn_data(pair: Pair<Rule>, game: &mut Game) -> Option<ParserError> {
     // By definition the turn data rule can only be composed of a single sub rules
     let binding = pair.into_inner().collect::<Vec<Pair<Rule>>>();
-    let inner_rule = binding.get(0).unwrap();
+    let inner_rule = binding.first().unwrap();
 
     if inner_rule.as_rule() == Rule::san_move {
         let san_string = inner_rule.as_str();

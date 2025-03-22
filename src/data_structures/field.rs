@@ -1,3 +1,5 @@
+use core::fmt;
+
 /// Represents a board location in a chess game.
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[cfg_attr(test, derive(Debug))]
@@ -6,14 +8,9 @@ pub struct Field {
     pub(crate) row: u8,    // Row (1-8) is represented as values (0-7)
 }
 
-impl ToString for Field {
-    /// Converts a field into into a string with the following format: column + row. Example: a3.
-    /// - `returns` - A field represented as a string.
-    fn to_string(&self) -> String {
-        let mut notation = String::new();
-        notation.push((self.column + b'a') as char);
-        notation.push_str(&(self.row + 1).to_string());
-        notation
+impl fmt::Display for Field {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}{}", (self.column + b'a') as char, &(self.row + 1).to_string() )
     }
 }
 

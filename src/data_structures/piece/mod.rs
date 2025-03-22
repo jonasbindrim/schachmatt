@@ -49,13 +49,8 @@ impl Piece {
     /// - `returns` - A char representing the piece
     #[must_use]
     pub fn export_piece(&self) -> Option<char> {
-        let Some(letter) = self.piece_type.export_piecetype_lowercase() else {
-            return None;
-        };
-
-        let Some(color) = self.piece_color else {
-            return None;
-        };
+        let letter = self.piece_type.export_piecetype_lowercase()?;
+        let color = self.piece_color?;
 
         match color {
             PlayerColor::Black => Some(letter),
@@ -68,9 +63,7 @@ impl Piece {
     /// - `returns` - The `Piece` object represented by the given letter
     #[must_use]
     pub fn import_piece(letter: char) -> Option<Self> {
-        let Some(piece_type) = PieceType::import_piecetype(letter.to_ascii_lowercase()) else {
-            return None;
-        };
+        let piece_type = PieceType::import_piecetype(letter.to_ascii_lowercase())?;
 
         let piece_color = if letter.is_ascii_lowercase() {
             PlayerColor::Black
