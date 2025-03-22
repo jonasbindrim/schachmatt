@@ -1,0 +1,13 @@
+metadata = { "[" ~ metadata_key ~ " \"" ~ metadata_value ~ "\"]" }
+metadata_key = { ('a'..'z' | 'A'..'Z')+ }
+metadata_value = { (!"\"" ~ ANY)+ }
+
+full_turn_data = { ( turn_data ~ " " ~ full_turn_data ) | turn_data }
+turn_data = { ( alternative | comment | annotation_glyphs | turn_indicator | game_result | san_move ) }
+
+san_move = { ( 'a'..'z' | 'A'..'Z' | '0'..'9' | "=" | "#" | "+" | "-" )+ }
+turn_indicator = { ( '0'..'9' )+ ~ ( "." | "..") }
+alternative = { "(" ~ (!"}" ~ ANY)+ ~ ")" }
+comment = { "{" ~ (!"}" ~ ANY)+ ~ "}" }
+game_result = { "1-0" | "0-1" | "1/2-1/2" | "*"}
+annotation_glyphs = { "$" ~ ( '0'..'9' )+ }

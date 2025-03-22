@@ -1,0 +1,11 @@
+piece_symbol = { "P" | "R" | "N" | "B" | "Q" | "K" }
+promotion_piece = { "r" | "q" | "b" | "n" }
+column = { 'a' .. 'h' }
+row = { '1' .. '8' }
+
+field_descriptor = { column ~ row }
+from_to_turn = { field_descriptor ~ "x" ~ field_descriptor | field_descriptor ~ field_descriptor }
+piece_descriptor_turn = { piece_symbol ~ from_to_turn }
+promotion_turn = { from_to_turn ~ promotion_piece | piece_descriptor_turn ~ promotion_piece } 
+
+turn = { promotion_turn | piece_descriptor_turn | from_to_turn  }

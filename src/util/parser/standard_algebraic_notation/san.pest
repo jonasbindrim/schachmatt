@@ -1,0 +1,16 @@
+piece_symbol = { "P" | "R" | "N" | "B" | "Q" | "K" }
+promotion_piece = { "R" | "Q" | "B" | "N" }
+column = { 'a' .. 'h' }
+row = { '1' .. '8' }
+
+to_field = { column ~ row }
+from_field = { to_field | column | row }
+
+pawn_move = { from_field ~ "x" ~ to_field ~ "=" ~ promotion_piece | from_field ~ "x" ~ to_field | to_field ~ "=" ~ promotion_piece | to_field }
+
+castling = { "O-O-O" | "0-0-0" | "O-O" | "0-0" }
+
+piece_move = { from_field ~ to_field | "x" ~ to_field | from_field ~ "x" ~ to_field | to_field }
+piece_move_full = { piece_symbol ~ piece_move }
+
+turn = { castling | piece_move_full | pawn_move }
