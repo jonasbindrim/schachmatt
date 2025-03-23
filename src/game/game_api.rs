@@ -43,6 +43,11 @@ impl Game {
             .insert(key.to_string(), value.to_string());
     }
 
+    /// Returns all existing metadata keys
+    pub fn get_metadata_keys(&self) -> Vec<String> {
+        self.game_metadata.keys().map(|entry| entry.clone()).collect()
+    } 
+
     /// Returns a copy of the current game state.
     /// - `returns` - A copy of the current game state.
     /// # Panics
