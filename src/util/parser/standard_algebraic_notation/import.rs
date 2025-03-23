@@ -63,7 +63,7 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<T
                 let piece = PieceType::import_piecetype(letter.to_ascii_lowercase());
 
                 if let Some(piece) = piece {
-                    piece_type = Some(Piece::new(piece, Some(position.get_active_color())));
+                    piece_type = Some(Piece::new(piece, position.get_active_color()));
                 } else {
                     piece_type = None;
                 }
@@ -81,7 +81,7 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<T
     for turn in possible_moves {
         if target_field.unwrap() == turn.to
             && position.board_position[turn.from.row as usize][turn.from.column as usize]
-                == piece_type.unwrap()
+                == piece_type
         {
             let mut ok: bool = true;
             if let Some(column_value) = from_column {
@@ -202,11 +202,14 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Option<Tur
     }
 
     for turn in possible_moves {
+        let from_occupation =
+            position.board_position[turn.from.row as usize][turn.from.column as usize];
+        let Some(moving_piece) = from_occupation else {
+            todo!() // TODO: Handle illegal move
+        };
         if target_field.unwrap() == turn.to
             && promotion_piece == turn.promotion
-            && PieceType::Pawn
-                == position.board_position[turn.from.row as usize][turn.from.column as usize]
-                    .get_type()
+            && matches!(moving_piece.get_type(), PieceType::Pawn)
         {
             match from_column {
                 Some(column) => {

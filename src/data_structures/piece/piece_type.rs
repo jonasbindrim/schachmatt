@@ -1,7 +1,6 @@
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(test, derive(Debug))]
 pub enum PieceType {
-    None,
     Pawn,
     Rook,
     Bishop,
@@ -15,15 +14,14 @@ impl PieceType {
     /// Pieces are represented by a single letter. All letters are lowercase.
     /// - `returns` - A char representing the piece
     #[must_use]
-    pub fn export_piecetype_lowercase(self) -> Option<char> {
+    pub fn export_piecetype_lowercase(self) -> char {
         match self {
-            PieceType::None => None,
-            PieceType::Pawn => Some('p'),
-            PieceType::Rook => Some('r'),
-            PieceType::Bishop => Some('b'),
-            PieceType::Knight => Some('n'),
-            PieceType::Queen => Some('q'),
-            PieceType::King => Some('k'),
+            PieceType::Pawn => 'p',
+            PieceType::Rook => 'r',
+            PieceType::Bishop => 'b',
+            PieceType::Knight => 'n',
+            PieceType::Queen => 'q',
+            PieceType::King => 'k',
         }
     }
 
@@ -31,15 +29,14 @@ impl PieceType {
     /// Pieces are represented by a single letter. All letters are uppercase.
     /// - `returns` - A char representing the piece
     #[must_use]
-    pub fn export_piecetype_uppercase(self) -> Option<char> {
+    pub fn export_piecetype_uppercase(self) -> char {
         match self {
-            PieceType::None => None,
-            PieceType::Pawn => Some('P'),
-            PieceType::Rook => Some('R'),
-            PieceType::Bishop => Some('B'),
-            PieceType::Knight => Some('N'),
-            PieceType::Queen => Some('Q'),
-            PieceType::King => Some('K'),
+            PieceType::Pawn => 'P',
+            PieceType::Rook => 'R',
+            PieceType::Bishop => 'B',
+            PieceType::Knight => 'N',
+            PieceType::Queen => 'Q',
+            PieceType::King => 'K',
         }
     }
 

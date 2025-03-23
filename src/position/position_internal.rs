@@ -33,19 +33,27 @@ impl Position {
     }
 
     /// Checks if the move which is specified by the two fields is a legal move
-    /// - `action` - The turn which is checked
+    /// - `turn` - The turn which is checked
     /// - `player_color` - The player that performs the turn
-    /// - `returns` - Returns whether the turn which is tested is legal
+    /// - `returns` - Returns whether the turn is legal
     pub(crate) fn is_legal_move(&self, turn: Turn, check_for_check: bool) -> MoveLegality {
-        let moving_piece = self.get_piece(turn.from);
-        let target_field = self.get_piece(turn.to);
-        let active_color = moving_piece.get_color().unwrap();
-        let is_capture = target_field.get_type() != PieceType::None;
+        let moving_piece = match self.get_field_occupation(turn.from) {
+            Some(piece) => piece,
+            None => return MoveLegality::FullyIllegal,
+        };
+        let active_color = moving_piece.get_color();
 
-        // Check if the target field is manned with an own piece
-        if is_capture && target_field.get_color().unwrap() == active_color {
-            return MoveLegality::FullyIllegal;
-        }
+        // Check if move is capture and whether it captures an enemy piece
+        let is_capture = match self.get_field_occupation(turn.to) {
+            Some(piece) => {
+                if piece.get_color() == active_color {
+                    return MoveLegality::FullyIllegal;
+                }
+
+                true
+            }
+            None => false,
+        };
 
         let legality_state = match moving_piece.get_type() {
             PieceType::Pawn => self.is_pawn_move_legal(turn, active_color, is_capture),
@@ -69,7 +77,7 @@ impl Position {
             }
         }
 
-        if target_field.get_type() != PieceType::None {
+        if is_capture {
             return MoveLegality::LastLegal;
         }
         MoveLegality::Legal
@@ -150,10 +158,8 @@ impl Position {
             }
         }
 
-        // Check if a pawn can beat forward-sidewards
-        if turn.from.column != turn.to.column
-            && self.get_piece(turn.to).get_type() == PieceType::None
-        {
+        // Check if a pawn can capture diagonally
+        if turn.from.column != turn.to.column && self.get_field_occupation(turn.to).is_none() {
             let Some(field) = self.en_passant else {
                 return MoveLegality::FullyIllegal;
             };
@@ -185,7 +191,7 @@ impl Position {
     /// - `returns` - Whether one of the fields is blocked
     pub(crate) fn castling_fields_blocked(&self, fields: &[Field]) -> bool {
         for field in fields {
-            if self.get_piece(*field).get_type() != PieceType::None {
+            if self.get_field_occupation(*field).is_some() {
                 return true;
             }
         }
@@ -197,9 +203,9 @@ impl Position {
     /// - `returns` - Whether the given player is currently checked
     pub(crate) fn is_in_check(&self, player_color: PlayerColor) -> bool {
         for (row, column) in BOARD_FIELDS {
-            let piece = self.board_position[row][column];
-            if let Some(piece_color) = piece.get_color() {
-                if piece_color != player_color {
+            let occupation = self.board_position[row][column];
+            if let Some(piece) = occupation {
+                if piece.get_color() != player_color {
                     let mut piece_iterator = PieceMoveIterator::new(
                         piece.movement_modifiers(),
                         Field::from_usize(column, row),
@@ -210,14 +216,16 @@ impl Position {
                             // Handling of the next loops
                             match self.is_legal_move(turn, false) {
                                 MoveLegality::Legal => {
-                                    if PieceType::None == self.get_piece(turn.to).get_type() {
+                                    if self.get_field_occupation(turn.to).is_none() {
                                         continue;
                                     }
                                     break;
                                 }
                                 MoveLegality::LastLegal => {
-                                    if PieceType::King == self.get_piece(turn.to).get_type() {
-                                        return true;
+                                    if let Some(target_piece) = self.get_field_occupation(turn.to) {
+                                        if PieceType::King == target_piece.get_type() {
+                                            return true;
+                                        }
                                     }
                                     break;
                                 }
@@ -245,10 +253,10 @@ impl Position {
         fields: [Field; 3],
     ) -> bool {
         for (row, column) in BOARD_FIELDS {
-            let piece = self.board_position[row][column];
+            let occupation = self.board_position[row][column];
 
-            if let Some(piece_color) = piece.get_color() {
-                if piece_color != player_color {
+            if let Some(piece) = occupation {
+                if piece.get_color() != player_color {
                     let mut piece_iterator = PieceMoveIterator::new(
                         piece.movement_modifiers(),
                         Field::from_usize(column, row),
@@ -308,7 +316,7 @@ impl Position {
         let material_handling = |piece: Piece| -> Option<bool> {
             match piece.get_type() {
                 PieceType::Pawn | PieceType::Rook | PieceType::Queen => return Some(true),
-                PieceType::Bishop => match piece.get_color().unwrap() {
+                PieceType::Bishop => match piece.get_color() {
                     PlayerColor::Black => {
                         if black_bishop || black_knight || white_knight {
                             return Some(true);
@@ -326,7 +334,7 @@ impl Position {
                     if black_bishop || black_knight || white_bishop || white_knight {
                         return Some(true);
                     }
-                    match piece.get_color().unwrap() {
+                    match piece.get_color() {
                         PlayerColor::Black => black_knight = true,
                         PlayerColor::White => white_knight = true,
                     }
@@ -339,11 +347,11 @@ impl Position {
         self.iterate_board_by_piece(material_handling)
     }
 
-    /// Returns the piece at the given position of `self.board_position`
+    /// Returns the field occupation at the given position of `self.board_position`
     /// - `field` - The field of the piece to return
-    /// - `returns` - The piece at the given field
+    /// - `returns` - The occupation of the given field
     #[inline]
-    pub(crate) fn get_piece(&self, field: Field) -> Piece {
+    pub(crate) fn get_field_occupation(&self, field: Field) -> Option<Piece> {
         self.board_position[field.row as usize][field.column as usize]
     }
 
@@ -355,7 +363,7 @@ impl Position {
         ClosureType: FnMut(Piece) -> Option<bool>,
     {
         for row in self.board_position {
-            for piece in row {
+            for piece in row.into_iter().flatten() {
                 if let Some(value) = func(piece) {
                     return value;
                 }

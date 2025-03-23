@@ -12,7 +12,7 @@ pub fn from_turn(turn: &Turn) -> String {
             "{}{}{}",
             turn.from,
             turn.to,
-            promotion.export_piecetype_lowercase().unwrap()
+            promotion.export_piecetype_lowercase()
         )
     } else {
         format!("{}{}", turn.from, turn.to)

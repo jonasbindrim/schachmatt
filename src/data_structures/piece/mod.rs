@@ -6,8 +6,8 @@ use crate::PlayerColor;
 
 use self::{
     move_iterators::{
-        BISHOP_ITERATORS, KING_ITERATORS, KNIGHT_ITERATORS, MoveIterator, NONE_ITERATORS,
-        PAWN_BLACK_ITERATORS, PAWN_WHITE_ITERATORS, QUEEN_ITERATORS, ROOK_ITERATORS,
+        BISHOP_ITERATORS, KING_ITERATORS, KNIGHT_ITERATORS, MoveIterator, PAWN_BLACK_ITERATORS,
+        PAWN_WHITE_ITERATORS, QUEEN_ITERATORS, ROOK_ITERATORS,
     },
     piece_type::PieceType,
 };
@@ -16,14 +16,13 @@ use self::{
 #[cfg_attr(test, derive(Debug))]
 pub struct Piece {
     piece_type: PieceType,
-    piece_color: Option<PlayerColor>,
+    piece_color: PlayerColor,
 }
 
 impl Piece {
     /// Creates a new `Piece`-struct.
-    /// If `piece_type` != None, a `piece_color` is needed
     #[must_use]
-    pub fn new(piece_type: PieceType, piece_color: Option<PlayerColor>) -> Self {
+    pub fn new(piece_type: PieceType, piece_color: PlayerColor) -> Self {
         Piece {
             piece_type,
             piece_color,
@@ -33,7 +32,7 @@ impl Piece {
     // /// Returns the player color of the piece.
     // /// - `returns` - The player color of the piece
     #[must_use]
-    pub fn get_color(&self) -> Option<PlayerColor> {
+    pub fn get_color(&self) -> PlayerColor {
         self.piece_color
     }
 
@@ -48,17 +47,17 @@ impl Piece {
     /// Pieces are represented by a single letter. Uppercase letters are whites pieces, lowercase letters are blacks pieces.
     /// - `returns` - A char representing the piece
     #[must_use]
-    pub fn export_piece(&self) -> Option<char> {
-        let letter = self.piece_type.export_piecetype_lowercase()?;
-        let color = self.piece_color?;
+    pub fn export_piece(&self) -> char {
+        let letter = self.piece_type.export_piecetype_lowercase();
+        let color = self.piece_color;
 
         match color {
-            PlayerColor::Black => Some(letter),
-            PlayerColor::White => Some(letter.to_ascii_uppercase()),
+            PlayerColor::Black => letter,
+            PlayerColor::White => letter.to_ascii_uppercase(),
         }
     }
 
-    /// Converts a char to its corresponding piece in the algeraic chess notation
+    /// Converts a char to its corresponding piece in the algebraic chess notation
     /// - `letter` - The letter representing a piece
     /// - `returns` - The `Piece` object represented by the given letter
     #[must_use]
@@ -73,7 +72,7 @@ impl Piece {
 
         Some(Piece {
             piece_type,
-            piece_color: Some(piece_color),
+            piece_color,
         })
     }
 
@@ -81,8 +80,7 @@ impl Piece {
     /// - `returns` - The move iterators for the piece
     pub(crate) fn movement_modifiers(&self) -> &[MoveIterator] {
         match self.get_type() {
-            PieceType::None => &NONE_ITERATORS,
-            PieceType::Pawn => match self.get_color().unwrap() {
+            PieceType::Pawn => match self.get_color() {
                 PlayerColor::Black => &PAWN_BLACK_ITERATORS,
                 PlayerColor::White => &PAWN_WHITE_ITERATORS,
             },
