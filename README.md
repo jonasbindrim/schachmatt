@@ -4,7 +4,7 @@ Schachmatt is a chess library for rust
 
 ## Intention
 
-This library can be used to run chess games, generate legal moves, create and work with standardized chess data formats.
+This library can be used to run chess games, generate legal moves or create and work with standardized chess data formats.
 
 ## Examples
 
@@ -44,7 +44,7 @@ Examples are available under `examples/`
 
 ## Data format support
 
-Schachmatt can import and export chess game, position and moves in the following formats:
+Schachmatt can import and export chess games, position and moves in the following formats:
 
 - Forsyth-Edwards Notation (FEN)
 - Long algebraic notation (LAN)
