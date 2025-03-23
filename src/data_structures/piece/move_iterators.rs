@@ -11,8 +11,6 @@ pub(crate) struct MoveIterator {
     pub row: BasicIterator,
 }
 
-pub(crate) const NONE_ITERATORS: [MoveIterator; 0] = [];
-
 pub(crate) const PAWN_WHITE_ITERATORS: [MoveIterator; 3] = [
     MoveIterator {
         column: BasicIterator {

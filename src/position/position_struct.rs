@@ -1,4 +1,4 @@
-use crate::{Field, Piece, PlayerColor};
+use crate::{Field, PlayerColor, data_structures::field_occupation::FieldOccupation};
 
 use super::util::castling_rights::CastlingRights;
 
@@ -7,7 +7,7 @@ use super::util::castling_rights::CastlingRights;
 #[cfg_attr(test, derive(Debug))]
 pub struct Position {
     // For the board position: The first array dimension is the row, the second one is the column
-    pub(crate) board_position: [[Piece; 8]; 8],
+    pub(crate) board_position: [[FieldOccupation; 8]; 8],
     pub(crate) active_color: PlayerColor,
     pub(crate) castling_white: CastlingRights,
     pub(crate) castling_black: CastlingRights,
@@ -20,7 +20,7 @@ impl Position {
     /// Returns a copy of the current board position.
     /// - `returns` - A copy of the current board position
     #[must_use]
-    pub fn get_board_position(&self) -> [[Piece; 8]; 8] {
+    pub fn get_board_position(&self) -> [[FieldOccupation; 8]; 8] {
         self.board_position
     }
 

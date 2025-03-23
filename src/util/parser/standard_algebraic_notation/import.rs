@@ -1,5 +1,6 @@
 use crate::{
-    Field, Piece, PlayerColor, Position, Turn, data_structures::piece::piece_type::PieceType,
+    Field, Piece, PlayerColor, Position, Turn,
+    data_structures::{field_occupation::FieldOccupation, piece::piece_type::PieceType},
 };
 
 use pest::{Parser, iterators::Pair};
@@ -51,7 +52,7 @@ pub fn from_string(raw: &str, current_position: &mut Position) -> Option<Turn> {
 fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<Turn> {
     let possible_moves = position.get_possible_moves();
 
-    let mut piece_type: Option<Piece> = None;
+    let mut piece_type: FieldOccupation = FieldOccupation::None;
     let mut target_field: Option<Field> = None;
     let mut from_column: Option<u8> = None;
     let mut from_row: Option<u8> = None;
@@ -63,9 +64,10 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<T
                 let piece = PieceType::import_piecetype(letter.to_ascii_lowercase());
 
                 if let Some(piece) = piece {
-                    piece_type = Some(Piece::new(piece, Some(position.get_active_color())));
+                    piece_type =
+                        FieldOccupation::Piece(Piece::new(piece, position.get_active_color()));
                 } else {
-                    piece_type = None;
+                    piece_type = FieldOccupation::None;
                 }
             }
             Rule::piece_move => {
@@ -81,7 +83,7 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<T
     for turn in possible_moves {
         if target_field.unwrap() == turn.to
             && position.board_position[turn.from.row as usize][turn.from.column as usize]
-                == piece_type.unwrap()
+                == piece_type
         {
             let mut ok: bool = true;
             if let Some(column_value) = from_column {
@@ -202,11 +204,14 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Option<Tur
     }
 
     for turn in possible_moves {
+        let from_occupation =
+            position.board_position[turn.from.row as usize][turn.from.column as usize];
+        let FieldOccupation::Piece(moving_piece) = from_occupation else {
+            todo!() // TODO: Handle illegal move
+        };
         if target_field.unwrap() == turn.to
             && promotion_piece == turn.promotion
-            && PieceType::Pawn
-                == position.board_position[turn.from.row as usize][turn.from.column as usize]
-                    .get_type()
+            && matches!(moving_piece.get_type(), PieceType::Pawn)
         {
             match from_column {
                 Some(column) => {
