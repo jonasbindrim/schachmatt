@@ -10,13 +10,15 @@ use crate::{Piece, PlayerColor, Position, Turn, data_structures::piece::piece_ty
 pub fn from_turn(turn: Turn, current_position: &Position) -> String {
     let mut san_turn = String::new();
 
-    let target_field =
-        current_position.board_position[turn.to.row as usize][turn.to.column as usize];
-    let moving_piece =
+    let mut is_capture =
+        current_position.board_position[turn.to.row as usize][turn.to.column as usize].is_some();
+    let from_field =
         current_position.board_position[turn.from.row as usize][turn.from.column as usize];
+    let Some(moving_piece) = from_field else {
+        todo!() // TODO: Handle illegal move
+    };
 
     match moving_piece.get_type() {
-        PieceType::None => unreachable!(),
         PieceType::Pawn => {
             let check_field: i8 = {
                 match current_position.active_color {
@@ -25,7 +27,6 @@ pub fn from_turn(turn: Turn, current_position: &Position) -> String {
                 }
             };
 
-            let mut is_capture: bool = PieceType::None != target_field.get_type();
             if let Some(field) = current_position.en_passant {
                 if turn.to.column == field.column && check_field == field.row as i8 {
                     is_capture = true;
@@ -46,16 +47,14 @@ pub fn from_turn(turn: Turn, current_position: &Position) -> String {
                     return String::from("O-O-O");
                 }
             }
-            san_turn.push(PieceType::export_piecetype_uppercase(moving_piece.get_type()).unwrap());
+            san_turn.push(PieceType::export_piecetype_uppercase(
+                moving_piece.get_type(),
+            ));
             add_field_descriptor(&mut san_turn, turn, current_position);
-
-            let captured_piece =
-                current_position.board_position[turn.to.row as usize][turn.to.column as usize];
-            let is_capture = PieceType::None != captured_piece.get_type();
             to_move(&mut san_turn, turn, current_position, is_capture);
         }
     }
-    
+
     san_turn
 }
 
@@ -67,11 +66,11 @@ fn add_field_descriptor(base: &mut String, turn: Turn, current_position: &Positi
     let column = turn.from.column;
     let row = turn.from.row;
 
-    let piece = current_position.board_position[row as usize][column as usize];
-    if !is_unique_descriptor(turn, current_position, piece, None, None) {
-        if is_unique_descriptor(turn, current_position, piece, Some(column), None) {
+    let occupation = current_position.board_position[row as usize][column as usize];
+    if !is_unique_descriptor(turn, current_position, occupation, None, None) {
+        if is_unique_descriptor(turn, current_position, occupation, Some(column), None) {
             base.push((column + b'a') as char);
-        } else if is_unique_descriptor(turn, current_position, piece, None, Some(row)) {
+        } else if is_unique_descriptor(turn, current_position, occupation, None, Some(row)) {
             base.push((row + b'1') as char);
         } else {
             base.push((column + b'a') as char);
@@ -97,7 +96,7 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
     // Check if promotion
     if let Some(piece) = turn.promotion {
         base.push('=');
-        base.push(PieceType::export_piecetype_uppercase(piece).unwrap());
+        base.push(PieceType::export_piecetype_uppercase(piece));
     }
 
     // Check if is in check
@@ -122,7 +121,7 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
 fn is_unique_descriptor(
     checked_turn: Turn,
     current_position: &Position,
-    piece: Piece,
+    occupation: Option<Piece>,
     column: Option<u8>,
     row: Option<u8>,
 ) -> bool {
@@ -131,7 +130,7 @@ fn is_unique_descriptor(
     let mut counter = 0;
     for turn in possible_moves {
         if turn.to == checked_turn.to
-            && piece
+            && occupation
                 == current_position.board_position[turn.from.row as usize]
                     [turn.from.column as usize]
         {

@@ -1,11 +1,10 @@
-use schachmatt::{Game, GameResult};
-use rand::seq::IndexedRandom;
 use rand::rng;
+use rand::seq::IndexedRandom;
+use schachmatt::{Game, GameResult};
 
 /// Starts a game of chess and plays random moves until the game is over.
 /// Afterwards the game result is printed.
 fn main() {
-
     let mut game = Game::default();
     let mut rng = rng();
 

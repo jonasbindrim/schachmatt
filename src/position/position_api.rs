@@ -25,10 +25,11 @@ impl Position {
         let mut turns: Vec<Turn> = Vec::<Turn>::new();
 
         for (row, column) in BOARD_FIELDS {
-            let piece = self.board_position[row][column];
-            if PieceType::None == piece.get_type()
-                || piece.get_color().unwrap() != self.active_color
-            {
+            let piece = match self.board_position[row][column] {
+                None => continue,
+                Some(piece) => piece,
+            };
+            if piece.get_color() != self.active_color {
                 continue;
             }
 
@@ -80,32 +81,34 @@ impl Position {
     /// # Panics
     /// This panic indicates an error in the library.
     pub fn turn(&mut self, action: &Turn) {
-        let moving_piece = self.get_piece(action.from);
-        let target_field = self.get_piece(action.to);
+        let from_field = self.get_field_occupation(action.from);
+        let Some(moving_piece) = from_field else {
+            todo!() // TODO: Do something if illegal move is played
+        };
 
-        // Increase move counter if no piece has been taken and no pawn has been moves
-        if moving_piece.get_type() == PieceType::Pawn || target_field.get_type() != PieceType::None
-        {
+        let to_field = self.get_field_occupation(action.to);
+
+        // Increase move counter if no piece has been taken and no pawn has been moved
+        if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
             self.halfmove_clock = 0;
         } else {
             self.halfmove_clock += 1;
         }
 
         // Move the piece
-        self.board_position[action.to.row as usize][action.to.column as usize] = moving_piece;
-        self.board_position[action.from.row as usize][action.from.column as usize] =
-            Piece::new(PieceType::None, None);
+        self.board_position[action.to.row as usize][action.to.column as usize] = Some(moving_piece);
+        self.board_position[action.from.row as usize][action.from.column as usize] = None;
 
         if PieceType::King == moving_piece.get_type() {
-            match moving_piece.get_color().unwrap() {
+            match moving_piece.get_color() {
                 PlayerColor::Black => {
                     if action.from.row == 7 && action.from.column == 4 {
                         if action.to.row == 7 && action.to.column == 2 {
                             self.board_position[7][3] = self.board_position[7][0];
-                            self.board_position[7][0] = Piece::new(PieceType::None, None);
+                            self.board_position[7][0] = None;
                         } else if action.to.row == 7 && action.to.column == 6 {
                             self.board_position[7][5] = self.board_position[7][7];
-                            self.board_position[7][7] = Piece::new(PieceType::None, None);
+                            self.board_position[7][7] = None;
                         }
                     }
                     self.castling_black.kingside = false;
@@ -115,10 +118,10 @@ impl Position {
                     if action.from.row == 0 && action.from.column == 4 {
                         if action.to.row == 0 && action.to.column == 2 {
                             self.board_position[0][3] = self.board_position[0][0];
-                            self.board_position[0][0] = Piece::new(PieceType::None, None);
+                            self.board_position[0][0] = None;
                         } else if action.to.row == 0 && action.to.column == 6 {
                             self.board_position[0][5] = self.board_position[0][7];
-                            self.board_position[0][7] = Piece::new(PieceType::None, None);
+                            self.board_position[0][7] = None;
                         }
                     }
                     self.castling_white.kingside = false;
@@ -129,7 +132,7 @@ impl Position {
 
         // Remove castling rights if the rook moves
         if PieceType::Rook == moving_piece.get_type() {
-            match moving_piece.get_color().unwrap() {
+            match moving_piece.get_color() {
                 PlayerColor::Black => {
                     if action.from.row == 7 && action.from.column == 0 {
                         self.castling_black.queenside = false;
@@ -148,18 +151,16 @@ impl Position {
         }
 
         // Promote if possible
-        if PieceType::Pawn == self.get_piece(action.to).get_type()
-            && (action.to.row == 0 || action.to.row == 7)
+        if PieceType::Pawn == moving_piece.get_type() && (action.to.row == 0 || action.to.row == 7)
         {
             self.board_position[action.to.row as usize][action.to.column as usize] =
-                Piece::new(action.promotion.unwrap(), Some(self.active_color));
+                Some(Piece::new(action.promotion.unwrap(), self.active_color));
         }
 
         // Remove piece taken with en passant
         if let Some(field) = self.en_passant {
             if action.to.column == field.column && action.from.row == field.row {
-                self.board_position[field.row as usize][field.column as usize] =
-                    Piece::new(PieceType::None, None);
+                self.board_position[field.row as usize][field.column as usize] = None;
                 self.halfmove_clock = 0;
             }
         }
