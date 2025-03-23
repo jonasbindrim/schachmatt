@@ -67,9 +67,9 @@ impl Game {
     }
 
     /// Returns the result of this game.
-    /// - `returns` - The result of this game
+    /// - `returns` - The result of this game. Is none if the game has not concluded.
     #[must_use]
-    pub fn get_game_result(&mut self) -> GameResult {
+    pub fn get_game_result(&mut self) -> Option<GameResult> {
         self.get_current_state_reference().game_over_check()
     }
 
