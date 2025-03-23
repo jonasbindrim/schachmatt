@@ -72,7 +72,7 @@ impl Piece {
 
         Some(Piece {
             piece_type,
-            piece_color
+            piece_color,
         })
     }
 

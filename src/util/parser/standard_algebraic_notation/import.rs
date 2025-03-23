@@ -1,6 +1,5 @@
 use crate::{
-    Field, Piece, PlayerColor, Position, Turn,
-    data_structures::{field_occupation::FieldOccupation, piece::piece_type::PieceType},
+    Field, Piece, PlayerColor, Position, Turn, data_structures::piece::piece_type::PieceType,
 };
 
 use pest::{Parser, iterators::Pair};
@@ -52,7 +51,7 @@ pub fn from_string(raw: &str, current_position: &mut Position) -> Option<Turn> {
 fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<Turn> {
     let possible_moves = position.get_possible_moves();
 
-    let mut piece_type: FieldOccupation = FieldOccupation::None;
+    let mut piece_type: Option<Piece> = None;
     let mut target_field: Option<Field> = None;
     let mut from_column: Option<u8> = None;
     let mut from_row: Option<u8> = None;
@@ -64,10 +63,9 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<T
                 let piece = PieceType::import_piecetype(letter.to_ascii_lowercase());
 
                 if let Some(piece) = piece {
-                    piece_type =
-                        FieldOccupation::Piece(Piece::new(piece, position.get_active_color()));
+                    piece_type = Some(Piece::new(piece, position.get_active_color()));
                 } else {
-                    piece_type = FieldOccupation::None;
+                    piece_type = None;
                 }
             }
             Rule::piece_move => {
@@ -206,7 +204,7 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Option<Tur
     for turn in possible_moves {
         let from_occupation =
             position.board_position[turn.from.row as usize][turn.from.column as usize];
-        let FieldOccupation::Piece(moving_piece) = from_occupation else {
+        let Some(moving_piece) = from_occupation else {
             todo!() // TODO: Handle illegal move
         };
         if target_field.unwrap() == turn.to

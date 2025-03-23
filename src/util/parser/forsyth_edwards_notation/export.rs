@@ -1,7 +1,4 @@
-use crate::{
-    PlayerColor, Position, data_structures::field_occupation::FieldOccupation,
-    position::util::castling_rights::CastlingRights,
-};
+use crate::{Piece, PlayerColor, Position, position::util::castling_rights::CastlingRights};
 
 /// Converts a `Position` into a string in FEN notation.
 /// - `position` - The position that gets converted
@@ -47,13 +44,13 @@ pub fn export_to_fen(position: &Position) -> String {
 /// Converts the board position of a game into a fen compatible position string
 /// - `board_position` - A two-dimensional array describing the current board
 /// - `returns` - The board position part of a fen
-fn export_piece_placement_data(board_position: &[[FieldOccupation; 8]; 8]) -> String {
+fn export_piece_placement_data(board_position: &[[Option<Piece>; 8]; 8]) -> String {
     let mut piece_data: String = String::new();
 
     for row in (0..8).rev() {
         let mut empty_counter = 0;
         for column in 0..8 {
-            let FieldOccupation::Piece(piece) = board_position[row][column] else {
+            let Some(piece) = board_position[row][column] else {
                 empty_counter += 1;
                 continue;
             };

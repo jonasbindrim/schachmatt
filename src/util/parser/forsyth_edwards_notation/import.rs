@@ -1,6 +1,5 @@
 use crate::{
     Field, Piece, PlayerColor, Position,
-    data_structures::field_occupation::FieldOccupation,
     position::util::castling_rights::CastlingRights,
     util::error::{error_messages::FEN_IMPORT_ERROR, parser_error::ParserError},
 };
@@ -25,7 +24,7 @@ pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
     }
 
     // 1. Board position
-    let mut board_position = [[FieldOccupation::None; 8]; 8];
+    let mut board_position = [[None; 8]; 8];
     if let Some(error) = string_to_piece_data(fen_parts.first().unwrap(), &mut board_position) {
         return Err(error);
     }
@@ -69,7 +68,7 @@ pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
 /// - `returns` - An error if the conversion fails
 fn string_to_piece_data(
     piece_data: &str,
-    board: &mut [[FieldOccupation; 8]; 8],
+    board: &mut [[Option<Piece>; 8]; 8],
 ) -> Option<ParserError> {
     // Split the different rows at '/'
     let rows: Vec<&str> = piece_data.split('/').collect();
@@ -95,7 +94,7 @@ fn string_to_piece_data(
                     return Some(ParserError::new(FEN_IMPORT_ERROR));
                 }
 
-                board[7 - row_counter][piece_counter] = FieldOccupation::Piece(piece);
+                board[7 - row_counter][piece_counter] = Some(piece);
                 piece_counter += 1;
             } else {
                 return Some(ParserError::new(FEN_IMPORT_ERROR));

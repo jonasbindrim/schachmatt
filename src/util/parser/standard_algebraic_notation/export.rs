@@ -1,7 +1,4 @@
-use crate::{
-    PlayerColor, Position, Turn,
-    data_structures::{field_occupation::FieldOccupation, piece::piece_type::PieceType},
-};
+use crate::{Piece, PlayerColor, Position, Turn, data_structures::piece::piece_type::PieceType};
 
 /// Converts a `Turn` into its corresponding SAN representation.
 /// - `turn` - The turn object that will be converted
@@ -13,11 +10,11 @@ use crate::{
 pub fn from_turn(turn: Turn, current_position: &Position) -> String {
     let mut san_turn = String::new();
 
-    let mut is_capture = FieldOccupation::None
-        != current_position.board_position[turn.to.row as usize][turn.to.column as usize];
+    let mut is_capture =
+        current_position.board_position[turn.to.row as usize][turn.to.column as usize].is_some();
     let from_field =
         current_position.board_position[turn.from.row as usize][turn.from.column as usize];
-    let FieldOccupation::Piece(moving_piece) = from_field else {
+    let Some(moving_piece) = from_field else {
         todo!() // TODO: Handle illegal move
     };
 
@@ -124,7 +121,7 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
 fn is_unique_descriptor(
     checked_turn: Turn,
     current_position: &Position,
-    occupation: FieldOccupation,
+    occupation: Option<Piece>,
     column: Option<u8>,
     row: Option<u8>,
 ) -> bool {

@@ -1,9 +1,6 @@
 use crate::{
     FEN, Field, GameResult, Piece, PlayerColor, Position, Turn,
-    data_structures::{
-        field_occupation::FieldOccupation,
-        piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
-    },
+    data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
 };
 
 use super::{position_internal::BOARD_FIELDS, util::move_legality::MoveLegality};
@@ -29,8 +26,8 @@ impl Position {
 
         for (row, column) in BOARD_FIELDS {
             let piece = match self.board_position[row][column] {
-                FieldOccupation::None => continue,
-                FieldOccupation::Piece(piece) => piece,
+                None => continue,
+                Some(piece) => piece,
             };
             if piece.get_color() != self.active_color {
                 continue;
@@ -85,24 +82,22 @@ impl Position {
     /// This panic indicates an error in the library.
     pub fn turn(&mut self, action: &Turn) {
         let from_field = self.get_field_occupation(action.from);
-        let FieldOccupation::Piece(moving_piece) = from_field else {
+        let Some(moving_piece) = from_field else {
             todo!() // TODO: Do something if illegal move is played
         };
 
         let to_field = self.get_field_occupation(action.to);
 
         // Increase move counter if no piece has been taken and no pawn has been moved
-        if moving_piece.get_type() == PieceType::Pawn || to_field != FieldOccupation::None {
+        if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
             self.halfmove_clock = 0;
         } else {
             self.halfmove_clock += 1;
         }
 
         // Move the piece
-        self.board_position[action.to.row as usize][action.to.column as usize] =
-            FieldOccupation::Piece(moving_piece);
-        self.board_position[action.from.row as usize][action.from.column as usize] =
-            FieldOccupation::None;
+        self.board_position[action.to.row as usize][action.to.column as usize] = Some(moving_piece);
+        self.board_position[action.from.row as usize][action.from.column as usize] = None;
 
         if PieceType::King == moving_piece.get_type() {
             match moving_piece.get_color() {
@@ -110,10 +105,10 @@ impl Position {
                     if action.from.row == 7 && action.from.column == 4 {
                         if action.to.row == 7 && action.to.column == 2 {
                             self.board_position[7][3] = self.board_position[7][0];
-                            self.board_position[7][0] = FieldOccupation::None;
+                            self.board_position[7][0] = None;
                         } else if action.to.row == 7 && action.to.column == 6 {
                             self.board_position[7][5] = self.board_position[7][7];
-                            self.board_position[7][7] = FieldOccupation::None;
+                            self.board_position[7][7] = None;
                         }
                     }
                     self.castling_black.kingside = false;
@@ -123,10 +118,10 @@ impl Position {
                     if action.from.row == 0 && action.from.column == 4 {
                         if action.to.row == 0 && action.to.column == 2 {
                             self.board_position[0][3] = self.board_position[0][0];
-                            self.board_position[0][0] = FieldOccupation::None;
+                            self.board_position[0][0] = None;
                         } else if action.to.row == 0 && action.to.column == 6 {
                             self.board_position[0][5] = self.board_position[0][7];
-                            self.board_position[0][7] = FieldOccupation::None;
+                            self.board_position[0][7] = None;
                         }
                     }
                     self.castling_white.kingside = false;
@@ -159,14 +154,13 @@ impl Position {
         if PieceType::Pawn == moving_piece.get_type() && (action.to.row == 0 || action.to.row == 7)
         {
             self.board_position[action.to.row as usize][action.to.column as usize] =
-                FieldOccupation::Piece(Piece::new(action.promotion.unwrap(), self.active_color));
+                Some(Piece::new(action.promotion.unwrap(), self.active_color));
         }
 
         // Remove piece taken with en passant
         if let Some(field) = self.en_passant {
             if action.to.column == field.column && action.from.row == field.row {
-                self.board_position[field.row as usize][field.column as usize] =
-                    FieldOccupation::None;
+                self.board_position[field.row as usize][field.column as usize] = None;
                 self.halfmove_clock = 0;
             }
         }
