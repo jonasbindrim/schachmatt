@@ -1,5 +1,7 @@
 use crate::{
-    position::{position_struct::BoardSetup, util::castling_rights::CastlingRights}, util::error::{error_messages::FEN_IMPORT_ERROR, parser_error::ParserError}, Field, Piece, PlayerColor, Position
+    Field, Piece, PlayerColor, Position,
+    position::{position_struct::BoardSetup, util::castling_rights::CastlingRights},
+    util::error::{error_messages::FEN_IMPORT_ERROR, parser_error::ParserError},
 };
 
 pub(crate) const DEFAULT_BOARD_SETUP: &str =
@@ -64,10 +66,7 @@ pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
 /// - `piece_data` - The piece data of a fen string
 /// - `board` - The board which gets filled with the `piece_data`
 /// - `returns` - An error if the conversion fails
-fn string_to_piece_data(
-    piece_data: &str,
-    board: &mut BoardSetup,
-) -> Option<ParserError> {
+fn string_to_piece_data(piece_data: &str, board: &mut BoardSetup) -> Option<ParserError> {
     // Split the different rows at '/'
     let rows: Vec<&str> = piece_data.split('/').collect();
 
