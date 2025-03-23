@@ -1,6 +1,10 @@
 # Schachmatt
 
-Schachmatt is a chess library for rust
+Schachmatt is a chess library for rust.
+
+[![Crates.io](https://img.shields.io/crates/v/schachmatt?style=flat-square)](https://crates.io/crates/schachmatt)
+[![Crates.io](https://img.shields.io/crates/d/schachmatt?style=flat-square)](https://crates.io/crates/schachmatt)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE-MIT)
 
 ## Intention
 
@@ -41,7 +45,10 @@ fn main() {
 }
 ```
 
-Examples are available under `examples/`
+See more examples:
+
+- [examples](examples/)
+- [doc.rs](https://docs.rs/schachmatt/latest/schachmatt/)
 
 ## Data format support
 
