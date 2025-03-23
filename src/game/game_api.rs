@@ -85,6 +85,22 @@ impl Game {
         self.get_current_state_reference().active_color
     }
 
+    /// Returns all position played in this game.
+    /// Index 0 contains the starting position
+    /// - `returns` - All positions played in this game.
+    #[must_use]
+    pub fn get_all_position(&self) -> Vec<Position> {
+        self.position_history.clone()
+    }
+
+    /// Returns the position after the given halfmove.
+    /// - `halfmove` - 0 = Starting position. X = Position after halfmove x.
+    /// - `returns` - The position after the given halfmove
+    #[must_use]
+    pub fn get_position_by_turn(&self, halfmove: u16) -> Option<Position> {
+        Some(self.position_history.get(halfmove as usize)?.clone())
+    }
+
     /// Returns the latest turn played in this game.
     /// - `returns` - The last turn played in this game
     #[must_use]
