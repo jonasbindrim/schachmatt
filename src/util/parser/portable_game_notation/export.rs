@@ -23,12 +23,14 @@ fn format_turndata(game: &mut Game) -> String {
         // Add game result. Only done once in the last position
         if position_index == game.position_history.len() - 1 {
             let game_result = match position.game_over_check() {
-                GameResult::Draw => "1/2-1/2",
-                GameResult::None => "*",
-                GameResult::Over(player_color) => match player_color {
-                    PlayerColor::Black => "0-1",
-                    PlayerColor::White => "1-0",
+                Some(result) => match result {
+                    GameResult::Draw => "1/2-1/2",
+                    GameResult::Over(player_color) => match player_color {
+                        PlayerColor::Black => "0-1",
+                        PlayerColor::White => "1-0",
+                    },
                 },
+                None => "*",
             };
             game.set_metadata("Result", game_result);
             result.push_str(game_result);

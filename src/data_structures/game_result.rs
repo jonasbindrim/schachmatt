@@ -5,8 +5,6 @@ use super::player_color::PlayerColor;
 pub enum GameResult {
     /// The game ended in a draw.
     Draw,
-    /// The game has not ended yet.
-    None,
     /// The game is over with `PlayerColor` being the winner.
     Over(PlayerColor),
 }

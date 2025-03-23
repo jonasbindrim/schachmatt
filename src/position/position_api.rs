@@ -186,22 +186,22 @@ impl Position {
     /// Returns the result of the game in the current position.
     /// - `returns` - The game result in the current position
     #[must_use]
-    pub fn game_over_check(&self) -> GameResult {
+    pub fn game_over_check(&self) -> Option<GameResult> {
         // Check for insufficient material
         if !self.is_sufficient_material() {
-            return GameResult::Draw;
+            return Some(GameResult::Draw);
         }
 
         // Check all other rules
         if !self.get_possible_moves().is_empty() {
             if self.halfmove_clock == 50 {
-                return GameResult::Draw;
+                return Some(GameResult::Draw);
             }
-            return GameResult::None;
+            return None;
         } else if self.is_in_check(self.active_color) {
-            return GameResult::Over(self.active_color.reverse());
+            return Some(GameResult::Over(self.active_color.reverse()));
         }
-        GameResult::Draw
+        Some(GameResult::Draw)
     }
 }
 
