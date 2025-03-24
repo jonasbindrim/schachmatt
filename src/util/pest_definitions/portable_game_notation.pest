@@ -1,6 +1,6 @@
 metadata = { "[" ~ metadata_key ~ " \"" ~ metadata_value ~ "\"]" }
 metadata_key = { ('a'..'z' | 'A'..'Z')+ }
-metadata_value = { (!"\"" ~ ANY)+ }
+metadata_value = { (!"\"" ~ ANY)* }
 
 full_turn_data = { ( turn_data ~ " " ~ full_turn_data ) | turn_data }
 turn_data = { ( alternative | comment | annotation_glyphs | turn_indicator | game_result | san_move ) }
