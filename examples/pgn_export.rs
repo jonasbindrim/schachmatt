@@ -2,8 +2,7 @@ use rand::rng;
 use rand::seq::IndexedRandom;
 use schachmatt::{Game, PGN};
 
-/// Starts a game of chess and plays random moves until the game is over.
-/// Afterwards the game result is printed.
+/// Runs a randomised game of chess and export the game in pgn afterwards
 fn main() {
     let mut game = random_game();
     let pgn = PGN::export(&mut game);
