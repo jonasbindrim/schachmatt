@@ -45,8 +45,8 @@ impl Game {
 
     /// Returns all existing metadata keys
     pub fn get_metadata_keys(&self) -> Vec<String> {
-        self.game_metadata.keys().map(|entry| entry.clone()).collect()
-    } 
+        self.game_metadata.keys().cloned().collect()
+    }
 
     /// Returns a copy of the current game state.
     /// - `returns` - A copy of the current game state.

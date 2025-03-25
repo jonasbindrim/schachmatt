@@ -12,7 +12,7 @@ pub fn game_to_pgn(game: &Game) -> String {
 
     add_seven_tag_roster(&mut output_game);
 
-    let metadata = format_metadata(&mut output_game);
+    let metadata = format_metadata(&output_game);
     let turndata = format_turndata(&mut output_game);
     format!("{}\n{}", metadata, turndata)
 }

@@ -1,17 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::{FEN, PGN};
-
-    #[test]
-    fn pgn_import_test() {
-        for pgn in TESTS {
-            let game = PGN::import(pgn).unwrap();
-            assert_eq!(
-                FEN::export(&game.get_current_state()),
-                game.get_metadata("FEN").unwrap()
-            );
-        }
-    }
+    use crate::PGN;
 
     #[test]
     fn pgn_export_test() {

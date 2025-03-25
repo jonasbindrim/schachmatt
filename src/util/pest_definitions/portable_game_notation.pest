@@ -2,11 +2,18 @@ metadata = { "[" ~ metadata_key ~ " \"" ~ metadata_value ~ "\"]" }
 metadata_key = { ('a'..'z' | 'A'..'Z')+ }
 metadata_value = { (!"\"" ~ ANY)* }
 
-full_turn_data = { ( turn_data ~ " " ~ full_turn_data ) | turn_data }
-turn_data = { ( alternative | comment | annotation_glyphs | turn_indicator | game_result | san_move ) }
+turn_data = { game_result | (single_move_entry ~ two_move_entry*) | two_move_entry* }
 
+two_move_entry = { (double_turn_indicator ~ turn_move ~ game_result) | (double_turn_indicator ~ turn_move ~ turn_move) }
+double_turn_indicator = { turn_filler* ~ ( '0'..'9' )+ ~ "." ~ turn_filler* }
+
+single_move_entry = { single_turn_indicator ~ turn_move }
+single_turn_indicator = { turn_filler* ~ ( '0'..'9' )+ ~ ".." ~ turn_filler* }
+
+turn_move = { turn_filler* ~ san_move ~ turn_filler* }
 san_move = { ( 'a'..'z' | 'A'..'Z' | '0'..'9' | "=" | "#" | "+" | "-" )+ }
-turn_indicator = { ( '0'..'9' )+ ~ ( "." | "..") }
+
+turn_filler = { (alternative | comment | annotation_glyphs | " ")  }
 alternative = { "(" ~ (!"}" ~ ANY)+ ~ ")" }
 comment = { "{" ~ (!"}" ~ ANY)+ ~ "}" }
 game_result = { "1-0" | "0-1" | "1/2-1/2" | "*"}
