@@ -1,6 +1,6 @@
 [package]
 name = "schachmatt"
-version = "0.1.0"
+version = "0.2.0"
 description = "A chess library"
 license = "MIT"
 edition = "2024"
@@ -10,8 +10,8 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pest = "2.7"
-pest_derive = "2.7"
+pest = "2.8"
+pest_derive = "2.8"
 
 [dev-dependencies]
 rand = "0.9"
