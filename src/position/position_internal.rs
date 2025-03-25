@@ -32,6 +32,114 @@ impl Position {
         promotion_turns
     }
 
+    /// Executes the given turn. This method does not check whether a turn is legal.
+    /// - `action` - The turn which should be played
+    /// # Panics
+    /// This panic indicates an error in the library.
+    pub(crate) fn internal_turn(&mut self, action: &Turn) {
+        let from_field = self.get_field_occupation(action.from);
+        let Some(moving_piece) = from_field else {
+            todo!() // TODO: Do something if illegal move is played
+        };
+
+        let to_field = self.get_field_occupation(action.to);
+
+        // Increase move counter if no piece has been taken and no pawn has been moved
+        if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
+            self.halfmove_clock = 0;
+        } else {
+            self.halfmove_clock += 1;
+        }
+
+        // Move the piece
+        self.board_position[action.to.row as usize][action.to.column as usize] = Some(moving_piece);
+        self.board_position[action.from.row as usize][action.from.column as usize] = None;
+
+        if PieceType::King == moving_piece.get_type() {
+            match moving_piece.get_color() {
+                PlayerColor::Black => {
+                    if action.from.row == 7 && action.from.column == 4 {
+                        if action.to.row == 7 && action.to.column == 2 {
+                            self.board_position[7][3] = self.board_position[7][0];
+                            self.board_position[7][0] = None;
+                        } else if action.to.row == 7 && action.to.column == 6 {
+                            self.board_position[7][5] = self.board_position[7][7];
+                            self.board_position[7][7] = None;
+                        }
+                    }
+                    self.castling_black.kingside = false;
+                    self.castling_black.queenside = false;
+                }
+                PlayerColor::White => {
+                    if action.from.row == 0 && action.from.column == 4 {
+                        if action.to.row == 0 && action.to.column == 2 {
+                            self.board_position[0][3] = self.board_position[0][0];
+                            self.board_position[0][0] = None;
+                        } else if action.to.row == 0 && action.to.column == 6 {
+                            self.board_position[0][5] = self.board_position[0][7];
+                            self.board_position[0][7] = None;
+                        }
+                    }
+                    self.castling_white.kingside = false;
+                    self.castling_white.queenside = false;
+                }
+            }
+        }
+
+        // Remove castling rights if the rook moves
+        if PieceType::Rook == moving_piece.get_type() {
+            match moving_piece.get_color() {
+                PlayerColor::Black => {
+                    if action.from.row == 7 && action.from.column == 0 {
+                        self.castling_black.queenside = false;
+                    } else if action.from.row == 7 && action.from.column == 7 {
+                        self.castling_black.kingside = false;
+                    }
+                }
+                PlayerColor::White => {
+                    if action.from.row == 0 && action.from.column == 0 {
+                        self.castling_white.queenside = false;
+                    } else if action.from.row == 0 && action.from.column == 7 {
+                        self.castling_white.kingside = false;
+                    }
+                }
+            }
+        }
+
+        // Promote if possible
+        if PieceType::Pawn == moving_piece.get_type() && (action.to.row == 0 || action.to.row == 7)
+        {
+            self.board_position[action.to.row as usize][action.to.column as usize] =
+                Some(Piece::new(action.promotion.unwrap(), self.active_color));
+        }
+
+        // Remove piece taken with en passant
+        if let Some(field) = self.en_passant {
+            if action.to.column == field.column && action.from.row == field.row {
+                self.board_position[field.row as usize][field.column as usize] = None;
+                self.halfmove_clock = 0;
+            }
+        }
+
+        // Empty en-passant field
+        self.en_passant = None;
+
+        // Check if a pawn has moved two field for possible en passant
+        if PieceType::Pawn == moving_piece.get_type()
+            && action.from.row.abs_diff(action.to.row) == 2
+        {
+            self.en_passant = Some(action.to);
+        }
+
+        // Raise fullmove counter
+        if self.active_color == PlayerColor::Black {
+            self.fullmove_counter += 1;
+        }
+
+        // Change color at turn
+        self.active_color = self.active_color.reverse();
+    }
+
     /// Checks if the move which is specified by the two fields is a legal move
     /// - `turn` - The turn which is checked
     /// - `player_color` - The player that performs the turn
@@ -71,7 +179,7 @@ impl Position {
         // Play move and check if a king is checked
         if check_for_check {
             let mut resulting_position: Position = (*self).clone();
-            resulting_position.turn(&turn);
+            resulting_position.internal_turn(&turn);
             if resulting_position.is_in_check(active_color) {
                 return MoveLegality::TemporarelyIllegal;
             }

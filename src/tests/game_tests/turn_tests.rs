@@ -10,7 +10,8 @@ mod tests {
             from: Field { column: 1, row: 6 },
             to: Field { column: 1, row: 4 },
             promotion: None,
-        });
+        })
+        .unwrap();
         assert!(FEN::export(&game) == "8/8/8/1pP5/8/8/8/8 w - b5 0 2");
     }
 
@@ -21,7 +22,8 @@ mod tests {
             from: Field { column: 2, row: 4 },
             to: Field { column: 1, row: 5 },
             promotion: None,
-        });
+        })
+        .unwrap();
         assert!(FEN::export(&game) == "8/8/1P6/8/8/8/8/8 b - - 0 1");
     }
 
@@ -32,7 +34,8 @@ mod tests {
             from: Field { column: 0, row: 6 },
             to: Field { column: 0, row: 7 },
             promotion: Some(PieceType::Queen),
-        });
+        })
+        .unwrap();
         assert!(FEN::export(&game) == "Q7/8/8/8/8/8/8/8 b - - 0 1");
     }
 
@@ -43,7 +46,8 @@ mod tests {
             from: Field { column: 0, row: 6 },
             to: Field { column: 0, row: 7 },
             promotion: Some(PieceType::Bishop),
-        });
+        })
+        .unwrap();
         assert!(FEN::export(&game) == "B7/8/8/8/8/8/8/8 b - - 0 1");
     }
 
@@ -54,7 +58,8 @@ mod tests {
             from: Field { column: 4, row: 0 },
             to: Field { column: 6, row: 0 },
             promotion: None,
-        });
+        })
+        .unwrap();
         assert!(FEN::export(&game) == "8/8/8/8/8/8/8/5RK1 b - - 1 1");
     }
 
@@ -65,7 +70,8 @@ mod tests {
             from: Field { column: 4, row: 0 },
             to: Field { column: 2, row: 0 },
             promotion: None,
-        });
+        })
+        .unwrap();
         assert!(FEN::export(&game) == "8/8/8/8/8/8/8/2KR4 b - - 1 1");
     }
 
@@ -76,7 +82,8 @@ mod tests {
             from: Field { column: 4, row: 7 },
             to: Field { column: 6, row: 7 },
             promotion: None,
-        });
+        })
+        .unwrap();
         assert!(FEN::export(&game) == "5rk1/8/8/8/8/8/8/8 w - - 1 2");
     }
 
@@ -87,7 +94,8 @@ mod tests {
             from: Field { column: 4, row: 7 },
             to: Field { column: 2, row: 7 },
             promotion: None,
-        });
+        })
+        .unwrap();
         assert!(FEN::export(&game) == "2kr4/8/8/8/8/8/8/8 w - - 1 2");
     }
 }
