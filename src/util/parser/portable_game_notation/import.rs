@@ -1,4 +1,7 @@
-use pest::{Parser, iterators::Pair};
+use pest::{
+    Parser,
+    iterators::{Pair, Pairs},
+};
 
 use crate::{
     Game, Position, SAN,
@@ -29,6 +32,7 @@ pub fn game_from_pgn(pgn_string: &str) -> Result<Game, ParserError> {
         return Err(error);
     }
 
+    // Handle turn data
     game.push_position(Position::new());
     let mut turn_data = String::new();
     for line in &pgn_lines[part_seperator + 1..] {
@@ -36,60 +40,41 @@ pub fn game_from_pgn(pgn_string: &str) -> Result<Game, ParserError> {
         turn_data.push(' ');
     }
 
-    match PgnStruct::parse(Rule::full_turn_data, &turn_data) {
+    match PgnStruct::parse(Rule::turn_data, &turn_data) {
         Ok(pairs) => {
-            let pair = pairs.collect::<Vec<Pair<Rule>>>()[0].clone();
-            match handle_full_turn_data(pair, &mut game) {
-                Some(err) => Err(err),
-                None => Ok(game),
-            }
-        }
-        Err(_) => Err(ParserError::new(PGN_IMPORT_ERROR)),
-    }
-}
-
-/// Converts the complete turn data string of a pgn into the corresponding moves and positions
-/// - `pair` - A pest pair containing the full turn data part
-/// - `game` - The game which will store the converted pgn data
-/// - `returns` - An optional error
-fn handle_full_turn_data(pair: Pair<Rule>, game: &mut Game) -> Option<ParserError> {
-    match pair.as_rule() {
-        Rule::full_turn_data => {
-            let pairs = pair.into_inner();
-            for single_pair in pairs {
-                if let Some(error) = handle_full_turn_data(single_pair, game) {
-                    return Some(error);
+            let turn_data_pair = pairs.collect::<Vec<Pair<Rule>>>()[0].clone();
+            for pair in turn_data_pair.into_inner() {
+                if matches!(
+                    pair.as_rule(),
+                    Rule::single_move_entry | Rule::two_move_entry
+                ) {
+                    handle_move_entry(pair.into_inner(), &mut game)?
                 }
             }
         }
-        Rule::turn_data => {
-            if let Some(error) = handle_turn_data(pair, game) {
-                return Some(error);
-            }
-        }
-        _ => return Some(ParserError::new(PGN_IMPORT_ERROR)),
+        Err(_) => return Err(ParserError::new(PGN_IMPORT_ERROR)),
     }
-    None
+
+    Ok(game)
 }
 
-/// Converts a single turn data block
-/// - `pair` - Pest data containing a single turn
-/// - `game` - The game to which the turn is appended
-fn handle_turn_data(pair: Pair<Rule>, game: &mut Game) -> Option<ParserError> {
-    // By definition the turn data rule can only be composed of a single sub rules
-    let binding = pair.into_inner().collect::<Vec<Pair<Rule>>>();
-    let inner_rule = binding.first().unwrap();
+/// Handles the parsing of a single move entry
+fn handle_move_entry(pairs: Pairs<Rule>, game: &mut Game) -> Result<(), ParserError> {
+    for pair in pairs {
+        if matches!(pair.as_rule(), Rule::turn_move) {
+            let turn = pair
+                .into_inner()
+                .find(|pair| matches!(pair.as_rule(), Rule::san_move))
+                .unwrap();
 
-    if inner_rule.as_rule() == Rule::san_move {
-        let san_string = inner_rule.as_str();
-        let turn_option = SAN::import(san_string, &mut game.get_current_state());
-
-        match turn_option {
-            Some(turn) => game.execute_turn(turn),
-            None => return Some(ParserError::new(PGN_IMPORT_ERROR)),
+            match SAN::import(turn.as_str(), &mut game.get_current_state()) {
+                Some(turn) => game.execute_turn(turn),
+                None => return Err(ParserError::new(PGN_IMPORT_ERROR)),
+            }
         }
     }
-    None
+
+    Ok(())
 }
 
 /// Finds and returns the index of the first empty line.
