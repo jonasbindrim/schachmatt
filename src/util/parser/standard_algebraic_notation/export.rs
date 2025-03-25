@@ -101,7 +101,7 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
 
     // Check if is in check
     let mut copy_position = current_position.clone();
-    copy_position.turn(&turn);
+    copy_position.turn(&turn).unwrap();
     if copy_position.is_in_check(copy_position.get_active_color()) {
         if copy_position.get_possible_moves().is_empty() {
             base.push('#');

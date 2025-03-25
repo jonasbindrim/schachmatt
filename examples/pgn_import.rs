@@ -1,7 +1,6 @@
 use schachmatt::PGN;
 
-static PGN_CONTENT: &str =
-"[Event \"New Orleans\"]
+static PGN_CONTENT: &str = "[Event \"New Orleans\"]
 [Site \"New Orleans\"]
 [Date \"1848.??.??\"]
 [Round \"?\"]

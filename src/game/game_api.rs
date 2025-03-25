@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use crate::{FEN, Game, GameResult, PlayerColor, Position, Turn, util::error::error_messages};
+use crate::{
+    FEN, Game, GameResult, PlayerColor, Position, Turn,
+    util::error::error_messages::{self},
+};
 
 impl Game {
     /// Creates a new `Game` with the default chess board setup.
@@ -63,12 +66,17 @@ impl Game {
     }
 
     /// Executes the given turn.
+    /// Returns a result which indicates whether the given turn was legal.
+    /// An illegal turn is not executed and an error is returned.
     /// - `turn` - The turn to play
-    pub fn execute_turn(&mut self, turn: Turn) {
+    pub fn execute_turn(&mut self, turn: Turn) -> Result<(), String> {
         let mut current_position = self.get_current_state();
-        current_position.turn(&turn);
+        current_position.turn(&turn)?;
+
         self.position_history.push(current_position);
         self.turn_history.push(turn);
+
+        Ok(())
     }
 
     /// Returns the result of this game.

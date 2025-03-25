@@ -36,7 +36,7 @@ mod tests {
             to: Field { column: 1, row: 0 },
             promotion: None,
         };
-        game.turn(&turn);
+        game.turn(&turn).unwrap();
         assert!(matches!(game.game_over_check().unwrap(), GameResult::Draw));
         assert_eq!(FEN::export(&game), "7k/8/8/8/8/8/8/1K6 b - - 50 1");
     }

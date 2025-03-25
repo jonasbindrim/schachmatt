@@ -5,7 +5,10 @@ use pest::{
 
 use crate::{
     Game, Position, SAN,
-    util::error::{error_messages::PGN_IMPORT_ERROR, parser_error::ParserError},
+    util::error::{
+        error_messages::{ILLEGAL_TURN_ERROR, PGN_IMPORT_ERROR},
+        parser_error::ParserError,
+    },
 };
 
 #[derive(Parser)]
@@ -68,7 +71,11 @@ fn handle_move_entry(pairs: Pairs<Rule>, game: &mut Game) -> Result<(), ParserEr
                 .unwrap();
 
             match SAN::import(turn.as_str(), &mut game.get_current_state()) {
-                Some(turn) => game.execute_turn(turn),
+                Some(turn) => {
+                    if game.execute_turn(turn).is_err() {
+                        return Err(ParserError::new(ILLEGAL_TURN_ERROR));
+                    }
+                }
                 None => return Err(ParserError::new(PGN_IMPORT_ERROR)),
             }
         }
