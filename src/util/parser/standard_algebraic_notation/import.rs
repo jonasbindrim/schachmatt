@@ -113,7 +113,7 @@ fn import_piece_move(san_data: Pair<Rule>) -> (Field, Option<u8>, Option<u8>) {
         match part.as_rule() {
             Rule::to_field => {
                 return (
-                    Field::from_string(part.as_str()).unwrap(),
+                    Field::new_from_string(part.as_str()).unwrap(),
                     from_column,
                     from_row,
                 );
@@ -144,14 +144,8 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Result<
     let player_color = position.get_active_color();
 
     // Initiate with row for white
-    let mut target_field: Field = Field {
-        column: Board::COLUMN_A,
-        row: Board::ROW_1,
-    };
-    let mut starting_field: Field = Field {
-        column: Board::COLUMN_E,
-        row: Board::ROW_1,
-    };
+    let mut target_field = Field::new(Board::COLUMN_A, Board::ROW_1).unwrap();
+    let mut starting_field = Field::new(Board::COLUMN_E, Board::ROW_1).unwrap();
 
     // Change row if color is black
     if player_color == PlayerColor::Black {
@@ -188,7 +182,7 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Tur
     // Create target field and promotion target
     for pawn_push in san_data.into_inner() {
         match pawn_push.as_rule() {
-            Rule::to_field => target_field = Field::from_string(pawn_push.as_str()),
+            Rule::to_field => target_field = Field::new_from_string(pawn_push.as_str()),
             Rule::promotion_piece => {
                 let letter = (pawn_push.as_str().as_bytes()[0] as char).to_ascii_lowercase();
                 let piece_type = PieceType::import_piecetype(letter).unwrap();

@@ -65,10 +65,14 @@ impl Position {
                                     [Board::COLUMN_A as usize];
                             self.board_position[Board::ROW_8 as usize][Board::COLUMN_A as usize] =
                                 None;
-                        } else if action.to.row == Board::ROW_8 && action.to.column == Board::COLUMN_G {
+                        } else if action.to.row == Board::ROW_8
+                            && action.to.column == Board::COLUMN_G
+                        {
                             self.board_position[Board::ROW_8 as usize][Board::COLUMN_F as usize] =
-                                self.board_position[Board::ROW_8 as usize][Board::COLUMN_H as usize];
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_H as usize] = None;
+                                self.board_position[Board::ROW_8 as usize]
+                                    [Board::COLUMN_H as usize];
+                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_H as usize] =
+                                None;
                         }
                     }
                     self.castling_black.kingside = false;
@@ -82,10 +86,14 @@ impl Position {
                                     [Board::COLUMN_A as usize];
                             self.board_position[Board::ROW_1 as usize][Board::COLUMN_A as usize] =
                                 None;
-                        } else if action.to.row == Board::ROW_1 && action.to.column == Board::COLUMN_G {
+                        } else if action.to.row == Board::ROW_1
+                            && action.to.column == Board::COLUMN_G
+                        {
                             self.board_position[Board::ROW_1 as usize][Board::COLUMN_F as usize] =
-                                self.board_position[Board::ROW_1 as usize][Board::COLUMN_H as usize];
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_H as usize] = None;
+                                self.board_position[Board::ROW_1 as usize]
+                                    [Board::COLUMN_H as usize];
+                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_H as usize] =
+                                None;
                         }
                     }
                     self.castling_white.kingside = false;
@@ -100,14 +108,18 @@ impl Position {
                 PlayerColor::Black => {
                     if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_A {
                         self.castling_black.queenside = false;
-                    } else if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_H {
+                    } else if action.from.row == Board::ROW_8
+                        && action.from.column == Board::COLUMN_H
+                    {
                         self.castling_black.kingside = false;
                     }
                 }
                 PlayerColor::White => {
                     if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_A {
                         self.castling_white.queenside = false;
-                    } else if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_H {
+                    } else if action.from.row == Board::ROW_1
+                        && action.from.column == Board::COLUMN_H
+                    {
                         self.castling_white.kingside = false;
                     }
                 }
@@ -325,7 +337,7 @@ impl Position {
                 if piece.get_color() != player_color {
                     let mut piece_iterator = PieceMoveIterator::new(
                         piece.movement_modifiers(),
-                        Field::from_usize(column, row),
+                        Field::new_from_usize(column, row).unwrap(),
                     );
 
                     loop {
@@ -376,7 +388,7 @@ impl Position {
                 if piece.get_color() != player_color {
                     let mut piece_iterator = PieceMoveIterator::new(
                         piece.movement_modifiers(),
-                        Field::from_usize(column, row),
+                        Field::new_from_usize(column, row).unwrap(),
                     );
 
                     loop {
@@ -391,19 +403,15 @@ impl Position {
                             // Handling of the next loops
                             match self.is_legal_move(turn, false) {
                                 MoveLegality::Legal => {
-                                    if fields.contains(&Field {
-                                        column: u8::try_from(column).unwrap(),
-                                        row: u8::try_from(row).unwrap(),
-                                    }) {
+                                    let compare_field = Field::new_from_usize(column, row).unwrap();
+                                    if fields.contains(&compare_field) {
                                         return true;
                                     }
                                     continue;
                                 }
                                 MoveLegality::LastLegal => {
-                                    if fields.contains(&Field {
-                                        column: u8::try_from(column).unwrap(),
-                                        row: u8::try_from(row).unwrap(),
-                                    }) {
+                                    let compare_field = Field::new_from_usize(column, row).unwrap();
+                                    if fields.contains(&compare_field) {
                                         return true;
                                     }
                                     break;

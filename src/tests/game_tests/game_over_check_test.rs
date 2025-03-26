@@ -32,14 +32,8 @@ mod tests {
     fn test_40_move_counter() {
         let mut game = FEN::import("7k/8/8/8/8/8/8/K7 w - - 49 1").unwrap();
         let turn = Turn {
-            from: Field {
-                column: Board::COLUMN_A,
-                row: Board::ROW_1,
-            },
-            to: Field {
-                column: Board::COLUMN_B,
-                row: Board::ROW_1,
-            },
+            from: Field::new(Board::COLUMN_A, Board::ROW_1).unwrap(),
+            to: Field::new(Board::COLUMN_B, Board::ROW_1).unwrap(),
             promotion: None,
         };
         game.turn(&turn).unwrap();

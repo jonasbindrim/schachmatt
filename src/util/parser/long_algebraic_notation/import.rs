@@ -108,10 +108,13 @@ fn handle_from_to_turn_rule(from_to_turn: Pair<Rule>) -> (Field, Field) {
         match field_descriptor.as_rule() {
             Rule::field_descriptor => match from_field {
                 Some(from) => {
-                    return (from, Field::from_string(field_descriptor.as_str()).unwrap());
+                    return (
+                        from,
+                        Field::new_from_string(field_descriptor.as_str()).unwrap(),
+                    );
                 }
                 None => {
-                    from_field = Some(Field::from_string(field_descriptor.as_str()).unwrap());
+                    from_field = Some(Field::new_from_string(field_descriptor.as_str()).unwrap());
                 }
             },
             _ => unreachable!(),

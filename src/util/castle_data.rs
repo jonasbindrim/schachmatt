@@ -1,113 +1,47 @@
 use crate::{Board, Field};
 
 pub(crate) static CASTLE_BQ_CHECKED: [Field; 3] = [
-    Field {
-        column: Board::COLUMN_E,
-        row: Board::ROW_8,
-    },
-    Field {
-        column: Board::COLUMN_D,
-        row: Board::ROW_8,
-    },
-    Field {
-        column: Board::COLUMN_C,
-        row: Board::ROW_8,
-    },
+    Field::new(Board::COLUMN_E, Board::ROW_8).unwrap(),
+    Field::new(Board::COLUMN_D, Board::ROW_8).unwrap(),
+    Field::new(Board::COLUMN_C, Board::ROW_8).unwrap(),
 ];
 
 pub(crate) static CASTLE_BQ_BLOCKED: [Field; 3] = [
-    Field {
-        column: Board::COLUMN_D,
-        row: Board::ROW_8,
-    },
-    Field {
-        column: Board::COLUMN_C,
-        row: Board::ROW_8,
-    },
-    Field {
-        column: Board::COLUMN_B,
-        row: Board::ROW_8,
-    },
+    Field::new(Board::COLUMN_D, Board::ROW_8).unwrap(),
+    Field::new(Board::COLUMN_C, Board::ROW_8).unwrap(),
+    Field::new(Board::COLUMN_B, Board::ROW_8).unwrap(),
 ];
 
 pub(crate) static CASTLE_BK_CHECKED: [Field; 3] = [
-    Field {
-        column: Board::COLUMN_E,
-        row: Board::ROW_8,
-    },
-    Field {
-        column: Board::COLUMN_F,
-        row: Board::ROW_8,
-    },
-    Field {
-        column: Board::COLUMN_G,
-        row: Board::ROW_8,
-    },
+    Field::new(Board::COLUMN_E, Board::ROW_8).unwrap(),
+    Field::new(Board::COLUMN_F, Board::ROW_8).unwrap(),
+    Field::new(Board::COLUMN_G, Board::ROW_8).unwrap(),
 ];
 
 pub(crate) static CASTLE_BK_BLOCKED: [Field; 2] = [
-    Field {
-        column: Board::COLUMN_F,
-        row: Board::ROW_8,
-    },
-    Field {
-        column: Board::COLUMN_G,
-        row: Board::ROW_8,
-    },
+    Field::new(Board::COLUMN_F, Board::ROW_8).unwrap(),
+    Field::new(Board::COLUMN_G, Board::ROW_8).unwrap(),
 ];
 
 pub(crate) static CASTLE_WQ_CHECKED: [Field; 3] = [
-    Field {
-        column: Board::COLUMN_E,
-        row: Board::ROW_1,
-    },
-    Field {
-        column: Board::COLUMN_D,
-        row: Board::ROW_1,
-    },
-    Field {
-        column: Board::COLUMN_C,
-        row: Board::ROW_1,
-    },
+    Field::new(Board::COLUMN_E, Board::ROW_1).unwrap(),
+    Field::new(Board::COLUMN_D, Board::ROW_1).unwrap(),
+    Field::new(Board::COLUMN_C, Board::ROW_1).unwrap(),
 ];
 
 pub(crate) static CASTLE_WQ_BLOCKED: [Field; 3] = [
-    Field {
-        column: Board::COLUMN_D,
-        row: Board::ROW_1,
-    },
-    Field {
-        column: Board::COLUMN_C,
-        row: Board::ROW_1,
-    },
-    Field {
-        column: Board::COLUMN_B,
-        row: Board::ROW_1,
-    },
+    Field::new(Board::COLUMN_D, Board::ROW_1).unwrap(),
+    Field::new(Board::COLUMN_C, Board::ROW_1).unwrap(),
+    Field::new(Board::COLUMN_B, Board::ROW_1).unwrap(),
 ];
 
 pub(crate) static CASTLE_WK_CHECKED: [Field; 3] = [
-    Field {
-        column: Board::COLUMN_E,
-        row: Board::ROW_1,
-    },
-    Field {
-        column: Board::COLUMN_F,
-        row: Board::ROW_1,
-    },
-    Field {
-        column: Board::COLUMN_G,
-        row: Board::ROW_1,
-    },
+    Field::new(Board::COLUMN_E, Board::ROW_1).unwrap(),
+    Field::new(Board::COLUMN_F, Board::ROW_1).unwrap(),
+    Field::new(Board::COLUMN_G, Board::ROW_1).unwrap(),
 ];
 
 pub(crate) static CASTLE_WK_BLOCKED: [Field; 2] = [
-    Field {
-        column: Board::COLUMN_F,
-        row: Board::ROW_1,
-    },
-    Field {
-        column: Board::COLUMN_G,
-        row: Board::ROW_1,
-    },
+    Field::new(Board::COLUMN_F, Board::ROW_1).unwrap(),
+    Field::new(Board::COLUMN_G, Board::ROW_1).unwrap(),
 ];

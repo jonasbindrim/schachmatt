@@ -133,7 +133,7 @@ fn string_to_field(field_data: &str) -> Result<Option<Field>, ParserError> {
     }
 
     // Convert field
-    match Field::from_string(field_data) {
+    match Field::new_from_string(field_data) {
         Some(field) => Ok(Some(field)),
         None => Err(ParserError::new(FEN_IMPORT_ERROR)),
     }

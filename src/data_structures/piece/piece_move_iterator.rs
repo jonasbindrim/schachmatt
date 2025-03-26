@@ -56,10 +56,7 @@ impl<'a> PieceMoveIterator<'a> {
 
         let turn = Turn {
             from: self.base_field,
-            to: Field {
-                column: temp_column as u8,
-                row: temp_row as u8,
-            },
+            to: Field::new(temp_column as u8, temp_row as u8)?,
             promotion: None,
         };
 

@@ -9,14 +9,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_D,
-                        row: Board::ROW_2
-                    },
-                    to: Field {
-                        column: Board::COLUMN_D,
-                        row: Board::ROW_4
-                    },
+                    from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                    to: Field::new(Board::COLUMN_D, Board::ROW_4).unwrap(),
                     promotion: None
                 }
             );
@@ -32,14 +26,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_E,
-                        row: Board::ROW_4
-                    },
-                    to: Field {
-                        column: Board::COLUMN_E,
-                        row: Board::ROW_5
-                    },
+                    from: Field::new(Board::COLUMN_E, Board::ROW_4).unwrap(),
+                    to: Field::new(Board::COLUMN_E, Board::ROW_5).unwrap(),
                     promotion: None
                 }
             );
@@ -55,14 +43,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_A,
-                        row: Board::ROW_7
-                    },
-                    to: Field {
-                        column: Board::COLUMN_A,
-                        row: Board::ROW_8
-                    },
+                    from: Field::new(Board::COLUMN_A, Board::ROW_7).unwrap(),
+                    to: Field::new(Board::COLUMN_A, Board::ROW_8).unwrap(),
                     promotion: Some(PieceType::Queen)
                 }
             );
@@ -78,14 +60,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_A,
-                        row: Board::ROW_2
-                    },
-                    to: Field {
-                        column: Board::COLUMN_B,
-                        row: Board::ROW_3
-                    },
+                    from: Field::new(Board::COLUMN_A, Board::ROW_2).unwrap(),
+                    to: Field::new(Board::COLUMN_B, Board::ROW_3).unwrap(),
                     promotion: None
                 }
             );
@@ -101,14 +77,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_A,
-                        row: Board::ROW_5
-                    },
-                    to: Field {
-                        column: Board::COLUMN_B,
-                        row: Board::ROW_6
-                    },
+                    from: Field::new(Board::COLUMN_A, Board::ROW_5).unwrap(),
+                    to: Field::new(Board::COLUMN_B, Board::ROW_6).unwrap(),
                     promotion: None
                 }
             );
@@ -124,14 +94,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_A,
-                        row: Board::ROW_7
-                    },
-                    to: Field {
-                        column: Board::COLUMN_B,
-                        row: Board::ROW_8
-                    },
+                    from: Field::new(Board::COLUMN_A, Board::ROW_7).unwrap(),
+                    to: Field::new(Board::COLUMN_B, Board::ROW_8).unwrap(),
                     promotion: Some(PieceType::Rook)
                 }
             );
@@ -147,14 +111,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_E,
-                        row: Board::ROW_1
-                    },
-                    to: Field {
-                        column: Board::COLUMN_G,
-                        row: Board::ROW_1
-                    },
+                    from: Field::new(Board::COLUMN_E, Board::ROW_1).unwrap(),
+                    to: Field::new(Board::COLUMN_G, Board::ROW_1).unwrap(),
                     promotion: None
                 }
             );
@@ -170,14 +128,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_E,
-                        row: Board::ROW_8
-                    },
-                    to: Field {
-                        column: Board::COLUMN_C,
-                        row: Board::ROW_8
-                    },
+                    from: Field::new(Board::COLUMN_E, Board::ROW_8).unwrap(),
+                    to: Field::new(Board::COLUMN_C, Board::ROW_8).unwrap(),
                     promotion: None
                 }
             );
@@ -193,14 +145,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_A,
-                        row: Board::ROW_1
-                    },
-                    to: Field {
-                        column: Board::COLUMN_A,
-                        row: Board::ROW_8
-                    },
+                    from: Field::new(Board::COLUMN_A, Board::ROW_1).unwrap(),
+                    to: Field::new(Board::COLUMN_A, Board::ROW_8).unwrap(),
                     promotion: None
                 }
             );
@@ -216,14 +162,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_F,
-                        row: Board::ROW_2
-                    },
-                    to: Field {
-                        column: Board::COLUMN_D,
-                        row: Board::ROW_4
-                    },
+                    from: Field::new(Board::COLUMN_F, Board::ROW_2).unwrap(),
+                    to: Field::new(Board::COLUMN_D, Board::ROW_4).unwrap(),
                     promotion: None
                 }
             );
@@ -239,14 +179,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_F,
-                        row: Board::ROW_3
-                    },
-                    to: Field {
-                        column: Board::COLUMN_E,
-                        row: Board::ROW_5
-                    },
+                    from: Field::new(Board::COLUMN_F, Board::ROW_3).unwrap(),
+                    to: Field::new(Board::COLUMN_E, Board::ROW_5).unwrap(),
                     promotion: None
                 }
             );
@@ -262,14 +196,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_D,
-                        row: Board::ROW_6
-                    },
-                    to: Field {
-                        column: Board::COLUMN_E,
-                        row: Board::ROW_4
-                    },
+                    from: Field::new(Board::COLUMN_D, Board::ROW_6).unwrap(),
+                    to: Field::new(Board::COLUMN_E, Board::ROW_4).unwrap(),
                     promotion: None
                 }
             );
@@ -285,14 +213,8 @@ mod tests {
             assert_eq!(
                 turn,
                 Turn {
-                    from: Field {
-                        column: Board::COLUMN_D,
-                        row: Board::ROW_6
-                    },
-                    to: Field {
-                        column: Board::COLUMN_E,
-                        row: Board::ROW_4
-                    },
+                    from: Field::new(Board::COLUMN_D, Board::ROW_6).unwrap(),
+                    to: Field::new(Board::COLUMN_E, Board::ROW_4).unwrap(),
                     promotion: None
                 }
             );
@@ -304,14 +226,8 @@ mod tests {
     #[test]
     pub fn export_lan_pawn_push() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_D,
-                row: Board::ROW_2,
-            },
-            to: Field {
-                column: Board::COLUMN_D,
-                row: Board::ROW_4,
-            },
+            from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+            to: Field::new(Board::COLUMN_D, Board::ROW_4).unwrap(),
             promotion: None,
         };
 
@@ -322,14 +238,8 @@ mod tests {
     #[test]
     pub fn export_lan_pawn_push_promotion() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_A,
-                row: Board::ROW_7,
-            },
-            to: Field {
-                column: Board::COLUMN_A,
-                row: Board::ROW_8,
-            },
+            from: Field::new(Board::COLUMN_A, Board::ROW_7).unwrap(),
+            to: Field::new(Board::COLUMN_A, Board::ROW_8).unwrap(),
             promotion: Some(PieceType::Queen),
         };
 
@@ -340,14 +250,8 @@ mod tests {
     #[test]
     pub fn export_lan_pawn_capture() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_A,
-                row: Board::ROW_2,
-            },
-            to: Field {
-                column: Board::COLUMN_B,
-                row: Board::ROW_3,
-            },
+            from: Field::new(Board::COLUMN_A, Board::ROW_2).unwrap(),
+            to: Field::new(Board::COLUMN_B, Board::ROW_3).unwrap(),
             promotion: None,
         };
 
@@ -358,14 +262,8 @@ mod tests {
     #[test]
     pub fn export_lan_pawn_capture_en_paslant() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_A,
-                row: Board::ROW_5,
-            },
-            to: Field {
-                column: Board::COLUMN_B,
-                row: Board::ROW_6,
-            },
+            from: Field::new(Board::COLUMN_A, Board::ROW_5).unwrap(),
+            to: Field::new(Board::COLUMN_B, Board::ROW_6).unwrap(),
             promotion: None,
         };
 
@@ -376,14 +274,8 @@ mod tests {
     #[test]
     pub fn export_lan_pawn_capture_with_promotion() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_A,
-                row: Board::ROW_7,
-            },
-            to: Field {
-                column: Board::COLUMN_B,
-                row: Board::ROW_8,
-            },
+            from: Field::new(Board::COLUMN_A, Board::ROW_7).unwrap(),
+            to: Field::new(Board::COLUMN_B, Board::ROW_8).unwrap(),
             promotion: Some(PieceType::Rook),
         };
 
@@ -394,14 +286,8 @@ mod tests {
     #[test]
     pub fn export_lan_castle_white_king() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_E,
-                row: Board::ROW_1,
-            },
-            to: Field {
-                column: Board::COLUMN_G,
-                row: Board::ROW_1,
-            },
+            from: Field::new(Board::COLUMN_E, Board::ROW_1).unwrap(),
+            to: Field::new(Board::COLUMN_G, Board::ROW_1).unwrap(),
             promotion: None,
         };
 
@@ -412,14 +298,8 @@ mod tests {
     #[test]
     pub fn export_lan_castle_black_queen() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_E,
-                row: Board::ROW_8,
-            },
-            to: Field {
-                column: Board::COLUMN_C,
-                row: Board::ROW_8,
-            },
+            from: Field::new(Board::COLUMN_E, Board::ROW_8).unwrap(),
+            to: Field::new(Board::COLUMN_C, Board::ROW_8).unwrap(),
             promotion: None,
         };
 
@@ -430,14 +310,8 @@ mod tests {
     #[test]
     pub fn export_lan_piece_move() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_A,
-                row: Board::ROW_1,
-            },
-            to: Field {
-                column: Board::COLUMN_A,
-                row: Board::ROW_8,
-            },
+            from: Field::new(Board::COLUMN_A, Board::ROW_1).unwrap(),
+            to: Field::new(Board::COLUMN_A, Board::ROW_8).unwrap(),
             promotion: None,
         };
 
@@ -448,14 +322,8 @@ mod tests {
     #[test]
     pub fn export_lan_piece_move_capture() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_F,
-                row: Board::ROW_2,
-            },
-            to: Field {
-                column: Board::COLUMN_D,
-                row: Board::ROW_4,
-            },
+            from: Field::new(Board::COLUMN_F, Board::ROW_2).unwrap(),
+            to: Field::new(Board::COLUMN_D, Board::ROW_4).unwrap(),
             promotion: None,
         };
 
@@ -466,14 +334,8 @@ mod tests {
     #[test]
     pub fn export_lan_piece_move_capture_ambigious_white() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_F,
-                row: Board::ROW_3,
-            },
-            to: Field {
-                column: Board::COLUMN_E,
-                row: Board::ROW_5,
-            },
+            from: Field::new(Board::COLUMN_F, Board::ROW_3).unwrap(),
+            to: Field::new(Board::COLUMN_E, Board::ROW_5).unwrap(),
             promotion: None,
         };
 
@@ -484,14 +346,8 @@ mod tests {
     #[test]
     pub fn export_lan_piece_move_capture_ambigious_black() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_D,
-                row: Board::ROW_6,
-            },
-            to: Field {
-                column: Board::COLUMN_E,
-                row: Board::ROW_4,
-            },
+            from: Field::new(Board::COLUMN_D, Board::ROW_6).unwrap(),
+            to: Field::new(Board::COLUMN_E, Board::ROW_4).unwrap(),
             promotion: None,
         };
 
@@ -502,14 +358,8 @@ mod tests {
     #[test]
     pub fn export_lan_piece_move_capture_double_ambigious_black() {
         let test_turn = Turn {
-            from: Field {
-                column: Board::COLUMN_D,
-                row: Board::ROW_6,
-            },
-            to: Field {
-                column: Board::COLUMN_E,
-                row: Board::ROW_4,
-            },
+            from: Field::new(Board::COLUMN_D, Board::ROW_6).unwrap(),
+            to: Field::new(Board::COLUMN_E, Board::ROW_4).unwrap(),
             promotion: None,
         };
 

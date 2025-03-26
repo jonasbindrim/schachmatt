@@ -14,8 +14,8 @@ mod position_tests {
     fn execute_illegal_move_test() {
         let mut default_position = Position::default();
         let illegal_move = Turn::new(
-            Field::from_string("a1").unwrap(),
-            Field::from_string("b1").unwrap(),
+            Field::new_from_string("a1").unwrap(),
+            Field::new_from_string("b1").unwrap(),
             None,
         );
 

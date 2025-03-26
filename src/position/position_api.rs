@@ -37,8 +37,10 @@ impl Position {
             // Check if current piece is a pawn
             let is_pawn = PieceType::Pawn == piece.get_type();
 
-            let mut piece_iterator =
-                PieceMoveIterator::new(piece.movement_modifiers(), Field::from_usize(column, row));
+            let mut piece_iterator = PieceMoveIterator::new(
+                piece.movement_modifiers(),
+                Field::new_from_usize(column, row).unwrap(),
+            );
 
             loop {
                 while let Some(mut turn) = piece_iterator.current() {
