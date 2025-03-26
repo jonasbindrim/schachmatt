@@ -1,5 +1,5 @@
 use crate::{
-    Field, Piece, PlayerColor, Position, Turn,
+    Board, Field, Piece, PlayerColor, Position, Turn,
     data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
     util::castle_data::{
         CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED,
@@ -58,26 +58,34 @@ impl Position {
         if PieceType::King == moving_piece.get_type() {
             match moving_piece.get_color() {
                 PlayerColor::Black => {
-                    if action.from.row == 7 && action.from.column == 4 {
-                        if action.to.row == 7 && action.to.column == 2 {
-                            self.board_position[7][3] = self.board_position[7][0];
-                            self.board_position[7][0] = None;
-                        } else if action.to.row == 7 && action.to.column == 6 {
-                            self.board_position[7][5] = self.board_position[7][7];
-                            self.board_position[7][7] = None;
+                    if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_E {
+                        if action.to.row == Board::ROW_8 && action.to.column == Board::COLUMN_C {
+                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_D as usize] =
+                                self.board_position[Board::ROW_8 as usize]
+                                    [Board::COLUMN_A as usize];
+                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_A as usize] =
+                                None;
+                        } else if action.to.row == Board::ROW_8 && action.to.column == Board::COLUMN_G {
+                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_F as usize] =
+                                self.board_position[Board::ROW_8 as usize][Board::COLUMN_H as usize];
+                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_H as usize] = None;
                         }
                     }
                     self.castling_black.kingside = false;
                     self.castling_black.queenside = false;
                 }
                 PlayerColor::White => {
-                    if action.from.row == 0 && action.from.column == 4 {
-                        if action.to.row == 0 && action.to.column == 2 {
-                            self.board_position[0][3] = self.board_position[0][0];
-                            self.board_position[0][0] = None;
-                        } else if action.to.row == 0 && action.to.column == 6 {
-                            self.board_position[0][5] = self.board_position[0][7];
-                            self.board_position[0][7] = None;
+                    if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_E {
+                        if action.to.row == Board::ROW_1 && action.to.column == Board::COLUMN_C {
+                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_D as usize] =
+                                self.board_position[Board::ROW_1 as usize]
+                                    [Board::COLUMN_A as usize];
+                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_A as usize] =
+                                None;
+                        } else if action.to.row == Board::ROW_1 && action.to.column == Board::COLUMN_G {
+                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_F as usize] =
+                                self.board_position[Board::ROW_1 as usize][Board::COLUMN_H as usize];
+                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_H as usize] = None;
                         }
                     }
                     self.castling_white.kingside = false;
@@ -90,16 +98,16 @@ impl Position {
         if PieceType::Rook == moving_piece.get_type() {
             match moving_piece.get_color() {
                 PlayerColor::Black => {
-                    if action.from.row == 7 && action.from.column == 0 {
+                    if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_A {
                         self.castling_black.queenside = false;
-                    } else if action.from.row == 7 && action.from.column == 7 {
+                    } else if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_H {
                         self.castling_black.kingside = false;
                     }
                 }
                 PlayerColor::White => {
-                    if action.from.row == 0 && action.from.column == 0 {
+                    if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_A {
                         self.castling_white.queenside = false;
-                    } else if action.from.row == 0 && action.from.column == 7 {
+                    } else if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_H {
                         self.castling_white.kingside = false;
                     }
                 }
@@ -107,7 +115,8 @@ impl Position {
         }
 
         // Promote if possible
-        if PieceType::Pawn == moving_piece.get_type() && (action.to.row == 0 || action.to.row == 7)
+        if PieceType::Pawn == moving_piece.get_type()
+            && (action.to.row == Board::ROW_1 || action.to.row == Board::ROW_8)
         {
             self.board_position[action.to.row as usize][action.to.column as usize] =
                 Some(Piece::new(action.promotion.unwrap(), self.active_color));
@@ -198,14 +207,14 @@ impl Position {
     fn is_king_move_legal(&self, turn: Turn, active_color: PlayerColor) -> MoveLegality {
         let step = turn.to.column as i8 - turn.from.column as i8;
         if step == 2 {
-            if turn.from.row == 7
+            if turn.from.row == Board::ROW_8
                 && active_color == PlayerColor::Black
                 && self.castling_black.kingside
             {
                 if self.is_castle_illegal(&CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, active_color) {
                     return MoveLegality::FullyIllegal;
                 }
-            } else if turn.from.row == 0
+            } else if turn.from.row == Board::ROW_1
                 && active_color == PlayerColor::White
                 && self.castling_white.kingside
             {
@@ -216,14 +225,14 @@ impl Position {
                 return MoveLegality::FullyIllegal;
             }
         } else if step == -2 {
-            if turn.from.row == 7
+            if turn.from.row == Board::ROW_8
                 && active_color == PlayerColor::Black
                 && self.castling_black.queenside
             {
                 if self.is_castle_illegal(&CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED, active_color) {
                     return MoveLegality::FullyIllegal;
                 }
-            } else if turn.from.row == 0
+            } else if turn.from.row == Board::ROW_1
                 && active_color == PlayerColor::White
                 && self.castling_white.queenside
             {
@@ -256,10 +265,10 @@ impl Position {
 
             if match active_color {
                 PlayerColor::Black => {
-                    turn.to.row.abs_diff(turn.from.row) == 2 && turn.from.row != 6
+                    turn.to.row.abs_diff(turn.from.row) == 2 && turn.from.row != Board::ROW_7
                 }
                 PlayerColor::White => {
-                    turn.from.row.abs_diff(turn.to.row) == 2 && turn.from.row != 1
+                    turn.from.row.abs_diff(turn.to.row) == 2 && turn.from.row != Board::ROW_2
                 }
             } {
                 return MoveLegality::FullyIllegal;
@@ -482,68 +491,68 @@ impl Position {
 }
 
 pub(crate) static BOARD_FIELDS: [(usize, usize); 64] = [
-    (0, 0),
-    (0, 1),
-    (0, 2),
-    (0, 3),
-    (0, 4),
-    (0, 5),
-    (0, 6),
-    (0, 7),
-    (1, 0),
-    (1, 1),
-    (1, 2),
-    (1, 3),
-    (1, 4),
-    (1, 5),
-    (1, 6),
-    (1, 7),
-    (2, 0),
-    (2, 1),
-    (2, 2),
-    (2, 3),
-    (2, 4),
-    (2, 5),
-    (2, 6),
-    (2, 7),
-    (3, 0),
-    (3, 1),
-    (3, 2),
-    (3, 3),
-    (3, 4),
-    (3, 5),
-    (3, 6),
-    (3, 7),
-    (4, 0),
-    (4, 1),
-    (4, 2),
-    (4, 3),
-    (4, 4),
-    (4, 5),
-    (4, 6),
-    (4, 7),
-    (5, 0),
-    (5, 1),
-    (5, 2),
-    (5, 3),
-    (5, 4),
-    (5, 5),
-    (5, 6),
-    (5, 7),
-    (6, 0),
-    (6, 1),
-    (6, 2),
-    (6, 3),
-    (6, 4),
-    (6, 5),
-    (6, 6),
-    (6, 7),
-    (7, 0),
-    (7, 1),
-    (7, 2),
-    (7, 3),
-    (7, 4),
-    (7, 5),
-    (7, 6),
-    (7, 7),
+    (Board::ROW_1 as usize, Board::COLUMN_A as usize),
+    (Board::ROW_1 as usize, Board::COLUMN_B as usize),
+    (Board::ROW_1 as usize, Board::COLUMN_C as usize),
+    (Board::ROW_1 as usize, Board::COLUMN_D as usize),
+    (Board::ROW_1 as usize, Board::COLUMN_E as usize),
+    (Board::ROW_1 as usize, Board::COLUMN_F as usize),
+    (Board::ROW_1 as usize, Board::COLUMN_G as usize),
+    (Board::ROW_1 as usize, Board::COLUMN_H as usize),
+    (Board::ROW_2 as usize, Board::COLUMN_A as usize),
+    (Board::ROW_2 as usize, Board::COLUMN_B as usize),
+    (Board::ROW_2 as usize, Board::COLUMN_C as usize),
+    (Board::ROW_2 as usize, Board::COLUMN_D as usize),
+    (Board::ROW_2 as usize, Board::COLUMN_E as usize),
+    (Board::ROW_2 as usize, Board::COLUMN_F as usize),
+    (Board::ROW_2 as usize, Board::COLUMN_G as usize),
+    (Board::ROW_2 as usize, Board::COLUMN_H as usize),
+    (Board::ROW_3 as usize, Board::COLUMN_A as usize),
+    (Board::ROW_3 as usize, Board::COLUMN_B as usize),
+    (Board::ROW_3 as usize, Board::COLUMN_C as usize),
+    (Board::ROW_3 as usize, Board::COLUMN_D as usize),
+    (Board::ROW_3 as usize, Board::COLUMN_E as usize),
+    (Board::ROW_3 as usize, Board::COLUMN_F as usize),
+    (Board::ROW_3 as usize, Board::COLUMN_G as usize),
+    (Board::ROW_3 as usize, Board::COLUMN_H as usize),
+    (Board::ROW_4 as usize, Board::COLUMN_A as usize),
+    (Board::ROW_4 as usize, Board::COLUMN_B as usize),
+    (Board::ROW_4 as usize, Board::COLUMN_C as usize),
+    (Board::ROW_4 as usize, Board::COLUMN_D as usize),
+    (Board::ROW_4 as usize, Board::COLUMN_E as usize),
+    (Board::ROW_4 as usize, Board::COLUMN_F as usize),
+    (Board::ROW_4 as usize, Board::COLUMN_G as usize),
+    (Board::ROW_4 as usize, Board::COLUMN_H as usize),
+    (Board::ROW_5 as usize, Board::COLUMN_A as usize),
+    (Board::ROW_5 as usize, Board::COLUMN_B as usize),
+    (Board::ROW_5 as usize, Board::COLUMN_C as usize),
+    (Board::ROW_5 as usize, Board::COLUMN_D as usize),
+    (Board::ROW_5 as usize, Board::COLUMN_E as usize),
+    (Board::ROW_5 as usize, Board::COLUMN_F as usize),
+    (Board::ROW_5 as usize, Board::COLUMN_G as usize),
+    (Board::ROW_5 as usize, Board::COLUMN_H as usize),
+    (Board::ROW_6 as usize, Board::COLUMN_A as usize),
+    (Board::ROW_6 as usize, Board::COLUMN_B as usize),
+    (Board::ROW_6 as usize, Board::COLUMN_C as usize),
+    (Board::ROW_6 as usize, Board::COLUMN_D as usize),
+    (Board::ROW_6 as usize, Board::COLUMN_E as usize),
+    (Board::ROW_6 as usize, Board::COLUMN_F as usize),
+    (Board::ROW_6 as usize, Board::COLUMN_G as usize),
+    (Board::ROW_6 as usize, Board::COLUMN_H as usize),
+    (Board::ROW_7 as usize, Board::COLUMN_A as usize),
+    (Board::ROW_7 as usize, Board::COLUMN_B as usize),
+    (Board::ROW_7 as usize, Board::COLUMN_C as usize),
+    (Board::ROW_7 as usize, Board::COLUMN_D as usize),
+    (Board::ROW_7 as usize, Board::COLUMN_E as usize),
+    (Board::ROW_7 as usize, Board::COLUMN_F as usize),
+    (Board::ROW_7 as usize, Board::COLUMN_G as usize),
+    (Board::ROW_7 as usize, Board::COLUMN_H as usize),
+    (Board::ROW_8 as usize, Board::COLUMN_A as usize),
+    (Board::ROW_8 as usize, Board::COLUMN_B as usize),
+    (Board::ROW_8 as usize, Board::COLUMN_C as usize),
+    (Board::ROW_8 as usize, Board::COLUMN_D as usize),
+    (Board::ROW_8 as usize, Board::COLUMN_E as usize),
+    (Board::ROW_8 as usize, Board::COLUMN_F as usize),
+    (Board::ROW_8 as usize, Board::COLUMN_G as usize),
+    (Board::ROW_8 as usize, Board::COLUMN_H as usize),
 ];

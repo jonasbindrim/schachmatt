@@ -1,5 +1,5 @@
 use crate::{
-    Field, ParserError, Piece, PlayerColor, Position, Turn,
+    Board, Field, ParserError, Piece, PlayerColor, Position, Turn,
     data_structures::piece::piece_type::PieceType, util::error::error_messages::SAN_IMPORT_ERROR,
 };
 
@@ -144,22 +144,28 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Result<
     let player_color = position.get_active_color();
 
     // Initiate with row for white
-    let mut target_field: Field = Field { column: 0, row: 0 };
-    let mut starting_field: Field = Field { column: 4, row: 0 };
+    let mut target_field: Field = Field {
+        column: Board::COLUMN_A,
+        row: Board::ROW_1,
+    };
+    let mut starting_field: Field = Field {
+        column: Board::COLUMN_E,
+        row: Board::ROW_1,
+    };
 
     // Change row if color is black
     if player_color == PlayerColor::Black {
-        starting_field.row = 7;
-        target_field.row = 7;
+        starting_field.row = Board::ROW_8;
+        target_field.row = Board::ROW_8;
     }
 
     // Check if castle is king or queenside
     match san_data.as_str() {
         "O-O" | "0-0" => {
-            target_field.column = 6;
+            target_field.column = Board::COLUMN_G;
         }
         "O-O-O" | "0-0-0" => {
-            target_field.column = 2;
+            target_field.column = Board::COLUMN_C;
         }
         _ => return Err(ParserError::new(SAN_IMPORT_ERROR)),
     };
