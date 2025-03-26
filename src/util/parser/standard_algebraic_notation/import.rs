@@ -1,5 +1,6 @@
 use crate::{
-    Field, Piece, PlayerColor, Position, Turn, data_structures::piece::piece_type::PieceType,
+    Field, ParserError, Piece, PlayerColor, Position, Turn,
+    data_structures::piece::piece_type::PieceType, util::error::error_messages::SAN_IMPORT_ERROR,
 };
 
 use pest::{Parser, iterators::Pair};
@@ -14,7 +15,7 @@ struct SanStruct;
 /// - `returns` - The `Turn` as an object
 /// # Panics
 /// This panic indicates an error in the library.
-pub fn from_string(raw: &str, current_position: &mut Position) -> Option<Turn> {
+pub fn from_string(raw: &str, current_position: &mut Position) -> Result<Turn, ParserError> {
     // Cut potential "+" from raw string data as it doesnt convey any needed information
 
     let mut san_data = raw;
@@ -24,7 +25,7 @@ pub fn from_string(raw: &str, current_position: &mut Position) -> Option<Turn> {
 
     // Parse SAN data
     let Ok(mut parsed_data) = SanStruct::parse(Rule::turn, san_data) else {
-        return None;
+        return Err(ParserError::new(SAN_IMPORT_ERROR));
     };
 
     if let Some(turn_type) = parsed_data.next().unwrap().into_inner().next() {
@@ -38,7 +39,7 @@ pub fn from_string(raw: &str, current_position: &mut Position) -> Option<Turn> {
             Rule::piece_move_full => {
                 return import_piece_move_full(turn_type, current_position);
             }
-            _ => return None,
+            _ => return Err(ParserError::new(SAN_IMPORT_ERROR)),
         }
     }
     unreachable!()
@@ -48,7 +49,7 @@ pub fn from_string(raw: &str, current_position: &mut Position) -> Option<Turn> {
 /// - `san_data` - The pest parsed san data
 /// - `position` - The current game position
 /// - `returns` - The resulting turn
-fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<Turn> {
+fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Result<Turn, ParserError> {
     let possible_moves = position.get_possible_moves();
 
     let mut piece_type: Option<Piece> = None;
@@ -74,7 +75,7 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<T
                 from_column = column;
                 from_row = row;
             }
-            _ => return None,
+            _ => return Err(ParserError::new(SAN_IMPORT_ERROR)),
         }
     }
 
@@ -95,11 +96,11 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Option<T
                 }
             }
             if ok {
-                return Some(turn);
+                return Ok(turn);
             }
         }
     }
-    None
+    Err(ParserError::new(SAN_IMPORT_ERROR))
 }
 
 /// Converts a simple piece move
@@ -139,7 +140,7 @@ fn import_piece_move(san_data: Pair<Rule>) -> (Field, Option<u8>, Option<u8>) {
 /// - `san_data` - The pest parsed turn data
 /// - `position` - The position in which the turn was played
 /// - `returns` - The resulting `Turn`
-fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Option<Turn> {
+fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Result<Turn, ParserError> {
     let possible_moves = position.get_possible_moves();
     let player_color = position.get_active_color();
 
@@ -161,19 +162,17 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Option<
         "O-O-O" | "0-0-0" => {
             target_field.column = 2;
         }
-        _ => return None,
+        _ => return Err(ParserError::new(SAN_IMPORT_ERROR)),
     };
 
-    Some(
-        possible_moves
-            .into_iter()
-            .find(|&turn| turn.to == target_field && turn.from == starting_field)
-            .unwrap(),
-    )
+    Ok(possible_moves
+        .into_iter()
+        .find(|&turn| turn.to == target_field && turn.from == starting_field)
+        .unwrap())
 }
 
 /// Convert the san pawn moves into turns
-fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Option<Turn> {
+fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Turn, ParserError> {
     let possible_moves = position.get_possible_moves();
 
     let mut target_field: Option<Field> = None;
@@ -217,19 +216,19 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Option<Tur
                     match from_row {
                         Some(row) => {
                             if column == turn.from.column && row == turn.from.row {
-                                return Some(turn);
+                                return Ok(turn);
                             }
                         }
                         None => {
                             if column == turn.from.column {
-                                return Some(turn);
+                                return Ok(turn);
                             }
                         }
                     }
                 }
-                None => return Some(turn),
+                None => return Ok(turn),
             }
         }
     }
-    None
+    Err(ParserError::new(SAN_IMPORT_ERROR))
 }
