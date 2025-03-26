@@ -1,14 +1,20 @@
 #[cfg(test)]
 mod tests {
 
-    use crate::{FEN, Field, Turn, data_structures::piece::piece_type::PieceType};
+    use crate::{Board, FEN, Field, Turn, data_structures::piece::piece_type::PieceType};
 
     #[test]
     fn en_passant_test1() {
         let mut game = FEN::import("8/1p6/8/2P5/8/8/8/8 b - - 0 1").unwrap();
         game.turn(&Turn {
-            from: Field { column: 1, row: 6 },
-            to: Field { column: 1, row: 4 },
+            from: Field {
+                column: Board::COLUMN_B,
+                row: Board::ROW_7,
+            },
+            to: Field {
+                column: Board::COLUMN_B,
+                row: Board::ROW_5,
+            },
             promotion: None,
         })
         .unwrap();
@@ -19,8 +25,14 @@ mod tests {
     fn en_passant_test2() {
         let mut game = FEN::import("8/8/8/1pP5/8/8/8/8 w - b5 0 1").unwrap();
         game.turn(&Turn {
-            from: Field { column: 2, row: 4 },
-            to: Field { column: 1, row: 5 },
+            from: Field {
+                column: Board::COLUMN_C,
+                row: Board::ROW_5,
+            },
+            to: Field {
+                column: Board::COLUMN_B,
+                row: Board::ROW_6,
+            },
             promotion: None,
         })
         .unwrap();
@@ -31,8 +43,14 @@ mod tests {
     fn promotion_test_1() {
         let mut game = FEN::import("8/P7/8/8/8/8/8/8 w - - 0 1").unwrap();
         game.turn(&Turn {
-            from: Field { column: 0, row: 6 },
-            to: Field { column: 0, row: 7 },
+            from: Field {
+                column: Board::COLUMN_A,
+                row: Board::ROW_7,
+            },
+            to: Field {
+                column: Board::COLUMN_A,
+                row: Board::ROW_8,
+            },
             promotion: Some(PieceType::Queen),
         })
         .unwrap();
@@ -43,8 +61,14 @@ mod tests {
     fn promotion_test_2() {
         let mut game = FEN::import("8/P7/8/8/8/8/8/8 w - - 0 1").unwrap();
         game.turn(&Turn {
-            from: Field { column: 0, row: 6 },
-            to: Field { column: 0, row: 7 },
+            from: Field {
+                column: Board::COLUMN_A,
+                row: Board::ROW_7,
+            },
+            to: Field {
+                column: Board::COLUMN_A,
+                row: Board::ROW_8,
+            },
             promotion: Some(PieceType::Bishop),
         })
         .unwrap();
@@ -55,8 +79,14 @@ mod tests {
     fn castling_test_1() {
         let mut game = FEN::import("8/8/8/8/8/8/8/4K2R w K - 0 1").unwrap();
         game.turn(&Turn {
-            from: Field { column: 4, row: 0 },
-            to: Field { column: 6, row: 0 },
+            from: Field {
+                column: Board::COLUMN_E,
+                row: Board::ROW_1,
+            },
+            to: Field {
+                column: Board::COLUMN_G,
+                row: Board::ROW_1,
+            },
             promotion: None,
         })
         .unwrap();
@@ -67,8 +97,14 @@ mod tests {
     fn castling_test_2() {
         let mut game = FEN::import("8/8/8/8/8/8/8/R3K3 w Q - 0 1").unwrap();
         game.turn(&Turn {
-            from: Field { column: 4, row: 0 },
-            to: Field { column: 2, row: 0 },
+            from: Field {
+                column: Board::COLUMN_E,
+                row: Board::ROW_1,
+            },
+            to: Field {
+                column: Board::COLUMN_C,
+                row: Board::ROW_1,
+            },
             promotion: None,
         })
         .unwrap();
@@ -79,8 +115,14 @@ mod tests {
     fn castling_test_3() {
         let mut game = FEN::import("4k2r/8/8/8/8/8/8/8 b k - 0 1").unwrap();
         game.turn(&Turn {
-            from: Field { column: 4, row: 7 },
-            to: Field { column: 6, row: 7 },
+            from: Field {
+                column: Board::COLUMN_E,
+                row: Board::ROW_8,
+            },
+            to: Field {
+                column: Board::COLUMN_G,
+                row: Board::ROW_8,
+            },
             promotion: None,
         })
         .unwrap();
@@ -91,8 +133,14 @@ mod tests {
     fn castling_test_4() {
         let mut game = FEN::import("r3k3/8/8/8/8/8/8/8 b q - 0 1").unwrap();
         game.turn(&Turn {
-            from: Field { column: 4, row: 7 },
-            to: Field { column: 2, row: 7 },
+            from: Field {
+                column: Board::COLUMN_E,
+                row: Board::ROW_8,
+            },
+            to: Field {
+                column: Board::COLUMN_C,
+                row: Board::ROW_8,
+            },
             promotion: None,
         })
         .unwrap();

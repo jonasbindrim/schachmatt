@@ -1,5 +1,5 @@
 use crate::{
-    PlayerColor, Position,
+    Board, PlayerColor, Position,
     position::{position_struct::BoardSetup, util::castling_rights::CastlingRights},
 };
 
@@ -50,9 +50,9 @@ pub fn export_to_fen(position: &Position) -> String {
 fn export_piece_placement_data(board_position: &BoardSetup) -> String {
     let mut piece_data: String = String::new();
 
-    for row in (0..8).rev() {
+    for row in ((Board::ROW_1 as usize)..=(Board::ROW_8 as usize)).rev() {
         let mut empty_counter = 0;
-        for column in 0..8 {
+        for column in (Board::COLUMN_A as usize)..8 {
             let Some(piece) = board_position[row][column] else {
                 empty_counter += 1;
                 continue;
@@ -67,7 +67,7 @@ fn export_piece_placement_data(board_position: &BoardSetup) -> String {
         if empty_counter != 0 {
             piece_data.push_str(&empty_counter.to_string());
         }
-        if row != 0 {
+        if row != Board::ROW_1 as usize {
             piece_data.push('/');
         }
     }

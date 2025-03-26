@@ -1,5 +1,5 @@
 use crate::{
-    Field, Piece, PlayerColor, Position,
+    Board, Field, Piece, PlayerColor, Position,
     position::{position_struct::BoardSetup, util::castling_rights::CastlingRights},
     util::error::{error_messages::FEN_IMPORT_ERROR, parser_error::ParserError},
 };
@@ -70,12 +70,12 @@ fn string_to_piece_data(piece_data: &str, board: &mut BoardSetup) -> Option<Pars
     // Split the different rows at '/'
     let rows: Vec<&str> = piece_data.split('/').collect();
 
-    // Return error if data doesnt contain exactly 8 rows
+    // Return error if data does not contain exactly 8 rows
     if rows.len() != 8 {
         return Some(ParserError::new(FEN_IMPORT_ERROR));
     }
 
-    for row_counter in (0..8).rev() {
+    for row_counter in ((Board::ROW_1 as usize)..=(Board::ROW_8 as usize)).rev() {
         let mut piece_counter: usize = 0;
         for char_index in rows[row_counter].as_bytes() {
             if *char_index >= b'1' && *char_index <= b'8' {
@@ -91,7 +91,7 @@ fn string_to_piece_data(piece_data: &str, board: &mut BoardSetup) -> Option<Pars
                     return Some(ParserError::new(FEN_IMPORT_ERROR));
                 }
 
-                board[7 - row_counter][piece_counter] = Some(piece);
+                board[Board::COLUMN_H as usize - row_counter][piece_counter] = Some(piece);
                 piece_counter += 1;
             } else {
                 return Some(ParserError::new(FEN_IMPORT_ERROR));

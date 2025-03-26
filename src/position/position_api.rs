@@ -1,5 +1,5 @@
 use crate::{
-    FEN, Field, GameResult, Position, Turn,
+    Board, FEN, Field, GameResult, Position, Turn,
     data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
     util::error::error_messages::ILLEGAL_TURN_ERROR,
 };
@@ -43,7 +43,7 @@ impl Position {
             loop {
                 while let Some(mut turn) = piece_iterator.current() {
                     // if turn is a promotion turn insert a dummy figure to make the move legal
-                    if is_pawn && (turn.to.row == 7 || turn.to.row == 0) {
+                    if is_pawn && (turn.to.row == Board::ROW_8 || turn.to.row == Board::ROW_1) {
                         turn.promotion = Some(PieceType::Queen);
                     }
 
@@ -51,14 +51,18 @@ impl Position {
                         MoveLegality::TemporarelyIllegal => continue,
                         MoveLegality::FullyIllegal => break,
                         MoveLegality::Legal => {
-                            if is_pawn && (turn.to.row == 7 || turn.to.row == 0) {
+                            if is_pawn
+                                && (turn.to.row == Board::ROW_8 || turn.to.row == Board::ROW_1)
+                            {
                                 turns.append(&mut Position::push_turn(turn));
                             } else {
                                 turns.push(turn);
                             }
                         }
                         MoveLegality::LastLegal => {
-                            if is_pawn && (turn.to.row == 7 || turn.to.row == 0) {
+                            if is_pawn
+                                && (turn.to.row == Board::ROW_8 || turn.to.row == Board::ROW_1)
+                            {
                                 turns.append(&mut Position::push_turn(turn));
                             } else {
                                 turns.push(turn);
