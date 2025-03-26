@@ -17,7 +17,7 @@ fn random_game() -> Game {
         let possible_moves = game.get_current_state().get_possible_moves();
         let turn_to_play = possible_moves.choose(&mut rng).unwrap();
 
-        game.execute_turn(*turn_to_play);
+        game.execute_turn(*turn_to_play).unwrap();
     }
 
     game
