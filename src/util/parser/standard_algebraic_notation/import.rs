@@ -81,8 +81,7 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Result<T
 
     for turn in possible_moves {
         if target_field.unwrap() == turn.to
-            && position.board_position[turn.from.row as usize][turn.from.column as usize]
-                == piece_type
+            && position.get_field_occupation(turn.from) == piece_type
         {
             let mut ok: bool = true;
             if let Some(column_value) = from_column {
@@ -201,8 +200,7 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Tur
     }
 
     for turn in possible_moves {
-        let from_occupation =
-            position.board_position[turn.from.row as usize][turn.from.column as usize];
+        let from_occupation = position.get_field_occupation(turn.from);
         let Some(moving_piece) = from_occupation else {
             todo!() // TODO: Handle illegal move
         };

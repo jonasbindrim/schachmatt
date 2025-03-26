@@ -10,49 +10,47 @@ use crate::{Piece, PlayerColor, Position, Turn, data_structures::piece::piece_ty
 pub fn from_turn(turn: Turn, current_position: &Position) -> String {
     let mut san_turn = String::new();
 
-    let mut is_capture =
-        current_position.board_position[turn.to.row as usize][turn.to.column as usize].is_some();
-    let from_field =
-        current_position.board_position[turn.from.row as usize][turn.from.column as usize];
+    let mut is_capture = current_position.get_field_occupation(turn.to).is_some();
+    let from_field = current_position.get_field_occupation(turn.from);
+
     let Some(moving_piece) = from_field else {
         todo!() // TODO: Handle illegal move
     };
 
-    match moving_piece.get_type() {
-        PieceType::Pawn => {
-            let check_field: i8 = {
-                match current_position.active_color {
-                    PlayerColor::Black => (turn.to.row as i8) + 1,
-                    PlayerColor::White => (turn.to.row as i8) - 1,
-                }
-            };
+    if moving_piece.get_type() == PieceType::Pawn {
+        let check_field: i8 = {
+            match current_position.active_color {
+                PlayerColor::Black => (turn.to.row as i8) + 1,
+                PlayerColor::White => (turn.to.row as i8) - 1,
+            }
+        };
 
-            if let Some(field) = current_position.en_passant {
-                if turn.to.column == field.column && check_field == field.row as i8 {
-                    is_capture = true;
-                }
+        if let Some(field) = current_position.en_passant {
+            if turn.to.column == field.column && check_field == field.row as i8 {
+                is_capture = true;
+            }
+        }
+
+        if is_capture {
+            san_turn.push((turn.from.column + b'a') as char);
+        }
+        to_move(&mut san_turn, turn, current_position, is_capture);
+    } else {
+        if PieceType::King == moving_piece.get_type() {
+            // Is kingside castle
+            if turn.from.column + 2 == turn.to.column {
+                return String::from("O-O");
             }
 
-            if is_capture {
-                san_turn.push((turn.from.column + b'a') as char);
+            if turn.from.column == 4 && turn.from.column - 2 == turn.to.column {
+                return String::from("O-O-O");
             }
-            to_move(&mut san_turn, turn, current_position, is_capture);
         }
-        _ => {
-            if PieceType::King == moving_piece.get_type() {
-                // Is kingside castle
-                if turn.from.column + 2 == turn.to.column {
-                    return String::from("O-O");
-                } else if turn.from.column == 4 && turn.from.column - 2 == turn.to.column {
-                    return String::from("O-O-O");
-                }
-            }
-            san_turn.push(PieceType::export_piecetype_uppercase(
-                moving_piece.get_type(),
-            ));
-            add_field_descriptor(&mut san_turn, turn, current_position);
-            to_move(&mut san_turn, turn, current_position, is_capture);
-        }
+        san_turn.push(PieceType::export_piecetype_uppercase(
+            moving_piece.get_type(),
+        ));
+        add_field_descriptor(&mut san_turn, turn, current_position);
+        to_move(&mut san_turn, turn, current_position, is_capture);
     }
 
     san_turn
@@ -66,7 +64,7 @@ fn add_field_descriptor(base: &mut String, turn: Turn, current_position: &Positi
     let column = turn.from.column;
     let row = turn.from.row;
 
-    let occupation = current_position.board_position[row as usize][column as usize];
+    let occupation = current_position.get_field_occupation(turn.from);
     if !is_unique_descriptor(turn, current_position, occupation, None, None) {
         if is_unique_descriptor(turn, current_position, occupation, Some(column), None) {
             base.push((column + b'a') as char);
@@ -95,8 +93,10 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
 
     // Check if promotion
     if let Some(piece) = turn.promotion {
-        base.push('=');
-        base.push(PieceType::export_piecetype_uppercase(piece));
+        base.push_str(&format!(
+            "={}",
+            PieceType::export_piecetype_uppercase(piece)
+        ));
     }
 
     // Check if is in check
@@ -130,9 +130,7 @@ fn is_unique_descriptor(
     let mut counter = 0;
     for turn in possible_moves {
         if turn.to == checked_turn.to
-            && occupation
-                == current_position.board_position[turn.from.row as usize]
-                    [turn.from.column as usize]
+            && occupation == current_position.get_field_occupation(turn.from)
         {
             match column {
                 Some(column_value) => {
