@@ -326,14 +326,12 @@ impl Position {
     /// - `player_color` - The player to check for being checked
     /// - `returns` - Whether the given player is currently checked
     pub(crate) fn is_in_check(&self, player_color: PlayerColor) -> bool {
-        for (row, column) in BOARD_FIELDS {
-            let occupation = self.board_position[row][column];
+        for field in BOARD_FIELDS {
+            let occupation = self.get_field_occupation(&field);
             if let Some(piece) = occupation {
                 if piece.get_color() != player_color {
-                    let mut piece_iterator = PieceMoveIterator::new(
-                        piece.movement_modifiers(),
-                        Field::new_from_usize(column, row).unwrap(),
-                    );
+                    let mut piece_iterator =
+                        PieceMoveIterator::new(piece.movement_modifiers(), field);
 
                     loop {
                         while let Some(turn) = piece_iterator.current() {
@@ -377,15 +375,13 @@ impl Position {
         player_color: PlayerColor,
         fields: [Field; 3],
     ) -> bool {
-        for (row, column) in BOARD_FIELDS {
-            let occupation = self.board_position[row][column];
+        for field in BOARD_FIELDS {
+            let occupation = self.get_field_occupation(&field);
 
             if let Some(piece) = occupation {
                 if piece.get_color() != player_color {
-                    let mut piece_iterator = PieceMoveIterator::new(
-                        piece.movement_modifiers(),
-                        Field::new_from_usize(column, row).unwrap(),
-                    );
+                    let mut piece_iterator =
+                        PieceMoveIterator::new(piece.movement_modifiers(), field);
 
                     loop {
                         while let Some(turn) = piece_iterator.current() {
@@ -399,15 +395,13 @@ impl Position {
                             // Handling of the next loops
                             match self.is_legal_move(turn, false) {
                                 MoveLegality::Legal => {
-                                    let compare_field = Field::new_from_usize(column, row).unwrap();
-                                    if fields.contains(&compare_field) {
+                                    if fields.contains(&field) {
                                         return true;
                                     }
                                     continue;
                                 }
                                 MoveLegality::LastLegal => {
-                                    let compare_field = Field::new_from_usize(column, row).unwrap();
-                                    if fields.contains(&compare_field) {
+                                    if fields.contains(&field) {
                                         return true;
                                     }
                                     break;
@@ -502,69 +496,13 @@ impl Position {
     }
 }
 
-pub(crate) static BOARD_FIELDS: [(usize, usize); 64] = [
-    (Board::ROW_1 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_H as usize),
+pub(crate) static BOARD_FIELDS: [Field; 64] = [
+    FIELD_A1, FIELD_B1, FIELD_C1, FIELD_D1, FIELD_E1, FIELD_F1, FIELD_G1, FIELD_H1, FIELD_A2,
+    FIELD_B2, FIELD_C2, FIELD_D2, FIELD_E2, FIELD_F2, FIELD_G2, FIELD_H2, FIELD_A3, FIELD_B3,
+    FIELD_C3, FIELD_D3, FIELD_E3, FIELD_F3, FIELD_G3, FIELD_H3, FIELD_A4, FIELD_B4, FIELD_C4,
+    FIELD_D4, FIELD_E4, FIELD_F4, FIELD_G4, FIELD_H4, FIELD_A5, FIELD_B5, FIELD_C5, FIELD_D5,
+    FIELD_E5, FIELD_F5, FIELD_G5, FIELD_H5, FIELD_A6, FIELD_B6, FIELD_C6, FIELD_D6, FIELD_E6,
+    FIELD_F6, FIELD_G6, FIELD_H6, FIELD_A7, FIELD_B7, FIELD_C7, FIELD_D7, FIELD_E7, FIELD_F7,
+    FIELD_G7, FIELD_H7, FIELD_A8, FIELD_B8, FIELD_C8, FIELD_D8, FIELD_E8, FIELD_F8, FIELD_G8,
+    FIELD_H8,
 ];
