@@ -1,5 +1,6 @@
 use crate::{
-    Board, Field, Piece, PlayerColor, Position, Turn,
+    Board::{self, *},
+    Field, Piece, PlayerColor, Position, Turn,
     data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
     util::castle_data::{
         CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED,
@@ -52,48 +53,44 @@ impl Position {
         }
 
         // Move the piece
-        self.board_position[action.to.row as usize][action.to.column as usize] = Some(moving_piece);
-        self.board_position[action.from.row as usize][action.from.column as usize] = None;
+        self.set_field_occupation(&action.to, Some(moving_piece));
+        self.set_field_occupation(&action.from, None);
 
         if PieceType::King == moving_piece.get_type() {
             match moving_piece.get_color() {
                 PlayerColor::Black => {
-                    if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_E {
-                        if action.to.row == Board::ROW_8 && action.to.column == Board::COLUMN_C {
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_D as usize] =
-                                self.board_position[Board::ROW_8 as usize]
-                                    [Board::COLUMN_A as usize];
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_A as usize] =
-                                None;
-                        } else if action.to.row == Board::ROW_8
-                            && action.to.column == Board::COLUMN_G
-                        {
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_F as usize] =
-                                self.board_position[Board::ROW_8 as usize]
-                                    [Board::COLUMN_H as usize];
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_H as usize] =
-                                None;
+                    if action.from == FIELD_E8 {
+                        if action.to == FIELD_C8 {
+                            self.set_field_occupation(
+                                &FIELD_D8,
+                                self.get_field_occupation(FIELD_A8),
+                            );
+                            self.set_field_occupation(&FIELD_A8, None);
+                        } else if action.to == FIELD_G8 {
+                            self.set_field_occupation(
+                                &FIELD_F8,
+                                self.get_field_occupation(FIELD_H8),
+                            );
+                            self.set_field_occupation(&FIELD_H8, None);
                         }
                     }
                     self.castling_black.kingside = false;
                     self.castling_black.queenside = false;
                 }
                 PlayerColor::White => {
-                    if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_E {
-                        if action.to.row == Board::ROW_1 && action.to.column == Board::COLUMN_C {
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_D as usize] =
-                                self.board_position[Board::ROW_1 as usize]
-                                    [Board::COLUMN_A as usize];
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_A as usize] =
-                                None;
-                        } else if action.to.row == Board::ROW_1
-                            && action.to.column == Board::COLUMN_G
-                        {
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_F as usize] =
-                                self.board_position[Board::ROW_1 as usize]
-                                    [Board::COLUMN_H as usize];
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_H as usize] =
-                                None;
+                    if action.from == FIELD_E1 {
+                        if action.to == FIELD_C1 {
+                            self.set_field_occupation(
+                                &FIELD_D1,
+                                self.get_field_occupation(FIELD_A1),
+                            );
+                            self.set_field_occupation(&FIELD_A1, None);
+                        } else if action.to == FIELD_G1 {
+                            self.set_field_occupation(
+                                &FIELD_F1,
+                                self.get_field_occupation(FIELD_H1),
+                            );
+                            self.set_field_occupation(&FIELD_H1, None);
                         }
                     }
                     self.castling_white.kingside = false;
@@ -106,20 +103,16 @@ impl Position {
         if PieceType::Rook == moving_piece.get_type() {
             match moving_piece.get_color() {
                 PlayerColor::Black => {
-                    if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_A {
+                    if action.from == FIELD_A8 {
                         self.castling_black.queenside = false;
-                    } else if action.from.row == Board::ROW_8
-                        && action.from.column == Board::COLUMN_H
-                    {
+                    } else if action.from == FIELD_H8 {
                         self.castling_black.kingside = false;
                     }
                 }
                 PlayerColor::White => {
-                    if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_A {
+                    if action.from == FIELD_A1 {
                         self.castling_white.queenside = false;
-                    } else if action.from.row == Board::ROW_1
-                        && action.from.column == Board::COLUMN_H
-                    {
+                    } else if action.from == FIELD_H1 {
                         self.castling_white.kingside = false;
                     }
                 }
@@ -130,14 +123,16 @@ impl Position {
         if PieceType::Pawn == moving_piece.get_type()
             && (action.to.row == Board::ROW_1 || action.to.row == Board::ROW_8)
         {
-            self.board_position[action.to.row as usize][action.to.column as usize] =
-                Some(Piece::new(action.promotion.unwrap(), self.active_color));
+            self.set_field_occupation(
+                &action.to,
+                Some(Piece::new(action.promotion.unwrap(), self.active_color)),
+            );
         }
 
         // Remove piece taken with en passant
         if let Some(field) = self.en_passant {
             if action.to.column == field.column && action.from.row == field.row {
-                self.board_position[field.row as usize][field.column as usize] = None;
+                self.set_field_occupation(&field, None);
                 self.halfmove_clock = 0;
             }
         }
@@ -478,6 +473,14 @@ impl Position {
     #[inline]
     pub(crate) fn get_field_occupation(&self, field: Field) -> Option<Piece> {
         self.board_position[field.row as usize][field.column as usize]
+    }
+
+    /// Removes the current field occupation at the given field and replaces it with the given occupation
+    /// - `field` - The field at which the occupation is replaced
+    /// - `occupation` - The occupation which is placed at the given field
+    #[inline]
+    pub(crate) fn set_field_occupation(&mut self, field: &Field, occupation: Option<Piece>) {
+        self.board_position[field.row as usize][field.column as usize] = occupation;
     }
 
     /// This function iterates over every field of the position and calls the given function for each field
