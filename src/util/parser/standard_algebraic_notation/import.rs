@@ -1,6 +1,8 @@
 use crate::{
-    Board, Field, ParserError, Piece, PlayerColor, Position, Turn,
-    data_structures::piece::piece_type::PieceType, util::error::error_messages::SAN_IMPORT_ERROR,
+    Board::{self, FIELD_A1, FIELD_E1},
+    Field, ParserError, Piece, PlayerColor, Position, Turn,
+    data_structures::piece::piece_type::PieceType,
+    util::error::error_messages::SAN_IMPORT_ERROR,
 };
 
 use pest::{Parser, iterators::Pair};
@@ -81,7 +83,7 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Result<T
 
     for turn in possible_moves {
         if target_field.unwrap() == turn.to
-            && position.get_field_occupation(turn.from) == piece_type
+            && position.get_field_occupation(&turn.from) == piece_type
         {
             let mut ok: bool = true;
             if let Some(column_value) = from_column {
@@ -144,8 +146,8 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Result<
     let player_color = position.get_active_color();
 
     // Initiate with row for white
-    let mut target_field = Field::new(Board::COLUMN_A, Board::ROW_1).unwrap();
-    let mut starting_field = Field::new(Board::COLUMN_E, Board::ROW_1).unwrap();
+    let mut target_field = FIELD_A1;
+    let mut starting_field = FIELD_E1;
 
     // Change row if color is black
     if player_color == PlayerColor::Black {
@@ -200,7 +202,7 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Tur
     }
 
     for turn in possible_moves {
-        let from_occupation = position.get_field_occupation(turn.from);
+        let from_occupation = position.get_field_occupation(&turn.from);
         let Some(moving_piece) = from_occupation else {
             todo!() // TODO: Handle illegal move
         };

@@ -1,5 +1,6 @@
 use crate::{
-    Board, Field, Piece, PlayerColor, Position, Turn,
+    Board::{self, *},
+    Field, Piece, PlayerColor, Position, Turn,
     data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
     util::castle_data::{
         CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED,
@@ -37,12 +38,12 @@ impl Position {
     /// # Panics
     /// This panic indicates an error in the library.
     pub(crate) fn internal_turn(&mut self, action: &Turn) {
-        let from_field = self.get_field_occupation(action.from);
+        let from_field = self.get_field_occupation(&action.from);
         let Some(moving_piece) = from_field else {
             todo!() // TODO: Do something if illegal move is played
         };
 
-        let to_field = self.get_field_occupation(action.to);
+        let to_field = self.get_field_occupation(&action.to);
 
         // Increase move counter if no piece has been taken and no pawn has been moved
         if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
@@ -52,48 +53,44 @@ impl Position {
         }
 
         // Move the piece
-        self.board_position[action.to.row as usize][action.to.column as usize] = Some(moving_piece);
-        self.board_position[action.from.row as usize][action.from.column as usize] = None;
+        self.set_field_occupation(&action.to, Some(moving_piece));
+        self.set_field_occupation(&action.from, None);
 
         if PieceType::King == moving_piece.get_type() {
             match moving_piece.get_color() {
                 PlayerColor::Black => {
-                    if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_E {
-                        if action.to.row == Board::ROW_8 && action.to.column == Board::COLUMN_C {
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_D as usize] =
-                                self.board_position[Board::ROW_8 as usize]
-                                    [Board::COLUMN_A as usize];
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_A as usize] =
-                                None;
-                        } else if action.to.row == Board::ROW_8
-                            && action.to.column == Board::COLUMN_G
-                        {
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_F as usize] =
-                                self.board_position[Board::ROW_8 as usize]
-                                    [Board::COLUMN_H as usize];
-                            self.board_position[Board::ROW_8 as usize][Board::COLUMN_H as usize] =
-                                None;
+                    if action.from == FIELD_E8 {
+                        if action.to == FIELD_C8 {
+                            self.set_field_occupation(
+                                &FIELD_D8,
+                                self.get_field_occupation(&FIELD_A8),
+                            );
+                            self.set_field_occupation(&FIELD_A8, None);
+                        } else if action.to == FIELD_G8 {
+                            self.set_field_occupation(
+                                &FIELD_F8,
+                                self.get_field_occupation(&FIELD_H8),
+                            );
+                            self.set_field_occupation(&FIELD_H8, None);
                         }
                     }
                     self.castling_black.kingside = false;
                     self.castling_black.queenside = false;
                 }
                 PlayerColor::White => {
-                    if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_E {
-                        if action.to.row == Board::ROW_1 && action.to.column == Board::COLUMN_C {
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_D as usize] =
-                                self.board_position[Board::ROW_1 as usize]
-                                    [Board::COLUMN_A as usize];
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_A as usize] =
-                                None;
-                        } else if action.to.row == Board::ROW_1
-                            && action.to.column == Board::COLUMN_G
-                        {
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_F as usize] =
-                                self.board_position[Board::ROW_1 as usize]
-                                    [Board::COLUMN_H as usize];
-                            self.board_position[Board::ROW_1 as usize][Board::COLUMN_H as usize] =
-                                None;
+                    if action.from == FIELD_E1 {
+                        if action.to == FIELD_C1 {
+                            self.set_field_occupation(
+                                &FIELD_D1,
+                                self.get_field_occupation(&FIELD_A1),
+                            );
+                            self.set_field_occupation(&FIELD_A1, None);
+                        } else if action.to == FIELD_G1 {
+                            self.set_field_occupation(
+                                &FIELD_F1,
+                                self.get_field_occupation(&FIELD_H1),
+                            );
+                            self.set_field_occupation(&FIELD_H1, None);
                         }
                     }
                     self.castling_white.kingside = false;
@@ -106,20 +103,16 @@ impl Position {
         if PieceType::Rook == moving_piece.get_type() {
             match moving_piece.get_color() {
                 PlayerColor::Black => {
-                    if action.from.row == Board::ROW_8 && action.from.column == Board::COLUMN_A {
+                    if action.from == FIELD_A8 {
                         self.castling_black.queenside = false;
-                    } else if action.from.row == Board::ROW_8
-                        && action.from.column == Board::COLUMN_H
-                    {
+                    } else if action.from == FIELD_H8 {
                         self.castling_black.kingside = false;
                     }
                 }
                 PlayerColor::White => {
-                    if action.from.row == Board::ROW_1 && action.from.column == Board::COLUMN_A {
+                    if action.from == FIELD_A1 {
                         self.castling_white.queenside = false;
-                    } else if action.from.row == Board::ROW_1
-                        && action.from.column == Board::COLUMN_H
-                    {
+                    } else if action.from == FIELD_H1 {
                         self.castling_white.kingside = false;
                     }
                 }
@@ -130,14 +123,16 @@ impl Position {
         if PieceType::Pawn == moving_piece.get_type()
             && (action.to.row == Board::ROW_1 || action.to.row == Board::ROW_8)
         {
-            self.board_position[action.to.row as usize][action.to.column as usize] =
-                Some(Piece::new(action.promotion.unwrap(), self.active_color));
+            self.set_field_occupation(
+                &action.to,
+                Some(Piece::new(action.promotion.unwrap(), self.active_color)),
+            );
         }
 
         // Remove piece taken with en passant
         if let Some(field) = self.en_passant {
             if action.to.column == field.column && action.from.row == field.row {
-                self.board_position[field.row as usize][field.column as usize] = None;
+                self.set_field_occupation(&field, None);
                 self.halfmove_clock = 0;
             }
         }
@@ -166,14 +161,14 @@ impl Position {
     /// - `player_color` - The player that performs the turn
     /// - `returns` - Returns whether the turn is legal
     pub(crate) fn is_legal_move(&self, turn: Turn, check_for_check: bool) -> MoveLegality {
-        let moving_piece = match self.get_field_occupation(turn.from) {
+        let moving_piece = match self.get_field_occupation(&turn.from) {
             Some(piece) => piece,
             None => return MoveLegality::FullyIllegal,
         };
         let active_color = moving_piece.get_color();
 
         // Check if move is capture and whether it captures an enemy piece
-        let is_capture = match self.get_field_occupation(turn.to) {
+        let is_capture = match self.get_field_occupation(&turn.to) {
             Some(piece) => {
                 if piece.get_color() == active_color {
                     return MoveLegality::FullyIllegal;
@@ -288,7 +283,7 @@ impl Position {
         }
 
         // Check if a pawn can capture diagonally
-        if turn.from.column != turn.to.column && self.get_field_occupation(turn.to).is_none() {
+        if turn.from.column != turn.to.column && self.get_field_occupation(&turn.to).is_none() {
             let Some(field) = self.en_passant else {
                 return MoveLegality::FullyIllegal;
             };
@@ -320,7 +315,7 @@ impl Position {
     /// - `returns` - Whether one of the fields is blocked
     pub(crate) fn castling_fields_blocked(&self, fields: &[Field]) -> bool {
         for field in fields {
-            if self.get_field_occupation(*field).is_some() {
+            if self.get_field_occupation(field).is_some() {
                 return true;
             }
         }
@@ -331,27 +326,26 @@ impl Position {
     /// - `player_color` - The player to check for being checked
     /// - `returns` - Whether the given player is currently checked
     pub(crate) fn is_in_check(&self, player_color: PlayerColor) -> bool {
-        for (row, column) in BOARD_FIELDS {
-            let occupation = self.board_position[row][column];
+        for field in BOARD_FIELDS {
+            let occupation = self.get_field_occupation(&field);
             if let Some(piece) = occupation {
                 if piece.get_color() != player_color {
-                    let mut piece_iterator = PieceMoveIterator::new(
-                        piece.movement_modifiers(),
-                        Field::new_from_usize(column, row).unwrap(),
-                    );
+                    let mut piece_iterator =
+                        PieceMoveIterator::new(piece.movement_modifiers(), field);
 
                     loop {
                         while let Some(turn) = piece_iterator.current() {
                             // Handling of the next loops
                             match self.is_legal_move(turn, false) {
                                 MoveLegality::Legal => {
-                                    if self.get_field_occupation(turn.to).is_none() {
+                                    if self.get_field_occupation(&turn.to).is_none() {
                                         continue;
                                     }
                                     break;
                                 }
                                 MoveLegality::LastLegal => {
-                                    if let Some(target_piece) = self.get_field_occupation(turn.to) {
+                                    if let Some(target_piece) = self.get_field_occupation(&turn.to)
+                                    {
                                         if PieceType::King == target_piece.get_type() {
                                             return true;
                                         }
@@ -381,15 +375,13 @@ impl Position {
         player_color: PlayerColor,
         fields: [Field; 3],
     ) -> bool {
-        for (row, column) in BOARD_FIELDS {
-            let occupation = self.board_position[row][column];
+        for field in BOARD_FIELDS {
+            let occupation = self.get_field_occupation(&field);
 
             if let Some(piece) = occupation {
                 if piece.get_color() != player_color {
-                    let mut piece_iterator = PieceMoveIterator::new(
-                        piece.movement_modifiers(),
-                        Field::new_from_usize(column, row).unwrap(),
-                    );
+                    let mut piece_iterator =
+                        PieceMoveIterator::new(piece.movement_modifiers(), field);
 
                     loop {
                         while let Some(turn) = piece_iterator.current() {
@@ -403,15 +395,13 @@ impl Position {
                             // Handling of the next loops
                             match self.is_legal_move(turn, false) {
                                 MoveLegality::Legal => {
-                                    let compare_field = Field::new_from_usize(column, row).unwrap();
-                                    if fields.contains(&compare_field) {
+                                    if fields.contains(&field) {
                                         return true;
                                     }
                                     continue;
                                 }
                                 MoveLegality::LastLegal => {
-                                    let compare_field = Field::new_from_usize(column, row).unwrap();
-                                    if fields.contains(&compare_field) {
+                                    if fields.contains(&field) {
                                         return true;
                                     }
                                     break;
@@ -476,8 +466,16 @@ impl Position {
     /// - `field` - The field of the piece to return
     /// - `returns` - The occupation of the given field
     #[inline]
-    pub(crate) fn get_field_occupation(&self, field: Field) -> Option<Piece> {
+    pub(crate) fn get_field_occupation(&self, field: &Field) -> Option<Piece> {
         self.board_position[field.row as usize][field.column as usize]
+    }
+
+    /// Removes the current field occupation at the given field and replaces it with the given occupation
+    /// - `field` - The field at which the occupation is replaced
+    /// - `occupation` - The occupation which is placed at the given field
+    #[inline]
+    pub(crate) fn set_field_occupation(&mut self, field: &Field, occupation: Option<Piece>) {
+        self.board_position[field.row as usize][field.column as usize] = occupation;
     }
 
     /// This function iterates over every field of the position and calls the given function for each field
@@ -498,69 +496,13 @@ impl Position {
     }
 }
 
-pub(crate) static BOARD_FIELDS: [(usize, usize); 64] = [
-    (Board::ROW_1 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_1 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_2 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_3 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_4 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_5 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_6 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_7 as usize, Board::COLUMN_H as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_A as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_B as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_C as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_D as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_E as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_F as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_G as usize),
-    (Board::ROW_8 as usize, Board::COLUMN_H as usize),
+pub(crate) static BOARD_FIELDS: [Field; 64] = [
+    FIELD_A1, FIELD_B1, FIELD_C1, FIELD_D1, FIELD_E1, FIELD_F1, FIELD_G1, FIELD_H1, FIELD_A2,
+    FIELD_B2, FIELD_C2, FIELD_D2, FIELD_E2, FIELD_F2, FIELD_G2, FIELD_H2, FIELD_A3, FIELD_B3,
+    FIELD_C3, FIELD_D3, FIELD_E3, FIELD_F3, FIELD_G3, FIELD_H3, FIELD_A4, FIELD_B4, FIELD_C4,
+    FIELD_D4, FIELD_E4, FIELD_F4, FIELD_G4, FIELD_H4, FIELD_A5, FIELD_B5, FIELD_C5, FIELD_D5,
+    FIELD_E5, FIELD_F5, FIELD_G5, FIELD_H5, FIELD_A6, FIELD_B6, FIELD_C6, FIELD_D6, FIELD_E6,
+    FIELD_F6, FIELD_G6, FIELD_H6, FIELD_A7, FIELD_B7, FIELD_C7, FIELD_D7, FIELD_E7, FIELD_F7,
+    FIELD_G7, FIELD_H7, FIELD_A8, FIELD_B8, FIELD_C8, FIELD_D8, FIELD_E8, FIELD_F8, FIELD_G8,
+    FIELD_H8,
 ];

@@ -12,8 +12,8 @@ use crate::{
 pub fn from_turn(turn: Turn, current_position: &Position) -> String {
     let mut san_turn = String::new();
 
-    let mut is_capture = current_position.get_field_occupation(turn.to).is_some();
-    let from_field = current_position.get_field_occupation(turn.from);
+    let mut is_capture = current_position.get_field_occupation(&turn.to).is_some();
+    let from_field = current_position.get_field_occupation(&turn.from);
 
     let Some(moving_piece) = from_field else {
         todo!() // TODO: Handle illegal move
@@ -66,7 +66,7 @@ fn add_field_descriptor(base: &mut String, turn: Turn, current_position: &Positi
     let column = turn.from.column;
     let row = turn.from.row;
 
-    let occupation = current_position.get_field_occupation(turn.from);
+    let occupation = current_position.get_field_occupation(&turn.from);
     if !is_unique_descriptor(turn, current_position, occupation, None, None) {
         if is_unique_descriptor(turn, current_position, occupation, Some(column), None) {
             base.push((column + b'a') as char);
@@ -132,7 +132,7 @@ fn is_unique_descriptor(
     let mut counter = 0;
     for turn in possible_moves {
         if turn.to == checked_turn.to
-            && occupation == current_position.get_field_occupation(turn.from)
+            && occupation == current_position.get_field_occupation(&turn.from)
         {
             match column {
                 Some(column_value) => {

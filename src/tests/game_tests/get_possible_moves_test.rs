@@ -1,6 +1,10 @@
 #[cfg(test)]
 mod tests {
-    use crate::{Board, FEN, Field, Turn, data_structures::piece::piece_type::PieceType};
+    use crate::{
+        Board::{self, *},
+        FEN, Field, Turn,
+        data_structures::piece::piece_type::PieceType,
+    };
 
     /// Tests the possible moves of the king
     #[test]
@@ -9,43 +13,43 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         let turns = [
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_E, Board::ROW_1).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_E1,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_E, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_E2,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_E, Board::ROW_3).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_E3,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_D, Board::ROW_1).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_D1,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_D, Board::ROW_3).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_D3,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_C, Board::ROW_1).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_C1,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_C, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_C2,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_C3,
                 promotion: None,
             },
         ];
@@ -65,7 +69,7 @@ mod tests {
         let mut column = Board::COLUMN_A;
         while column < 8 {
             let test_turn = Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
                 to: Field::new(column, Board::ROW_2).unwrap(),
                 promotion: None,
             };
@@ -77,7 +81,7 @@ mod tests {
         let mut row = Board::ROW_1;
         while row < 8 {
             let test_turn = Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
                 to: Field::new(Board::COLUMN_D, row).unwrap(),
                 promotion: None,
             };
@@ -89,7 +93,7 @@ mod tests {
         let mut lower_right_counter = -1;
         while lower_right_counter < 5 {
             let test_turn = Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
                 to: Field::new_from_usize(
                     (3 + lower_right_counter) as usize,
                     (1 + lower_right_counter) as usize,
@@ -106,7 +110,7 @@ mod tests {
         let mut lower_left_counter = -3;
         while lower_left_counter < 2 {
             let test_turn = Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
                 to: Field::new_from_usize(
                     (3 + lower_left_counter) as usize,
                     (1 - lower_left_counter) as usize,
@@ -131,7 +135,7 @@ mod tests {
         let mut column = Board::COLUMN_A;
         while column < 8 {
             let test_turn = Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
                 to: Field::new(column, Board::ROW_2).unwrap(),
                 promotion: None,
             };
@@ -143,7 +147,7 @@ mod tests {
         let mut row = Board::ROW_1;
         while row < 8 {
             let test_turn = Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
                 to: Field::new(Board::COLUMN_D, row).unwrap(),
                 promotion: None,
             };
@@ -161,43 +165,43 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         let turns = [
             Turn {
-                from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_2).unwrap(),
+                from: FIELD_C3,
+                to: FIELD_A2,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-                to: Field::new(Board::COLUMN_B, Board::ROW_1).unwrap(),
+                from: FIELD_C3,
+                to: FIELD_B1,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_4).unwrap(),
+                from: FIELD_C3,
+                to: FIELD_A4,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-                to: Field::new(Board::COLUMN_D, Board::ROW_1).unwrap(),
+                from: FIELD_C3,
+                to: FIELD_D1,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-                to: Field::new(Board::COLUMN_B, Board::ROW_5).unwrap(),
+                from: FIELD_C3,
+                to: FIELD_B5,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-                to: Field::new(Board::COLUMN_E, Board::ROW_2).unwrap(),
+                from: FIELD_C3,
+                to: FIELD_E2,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-                to: Field::new(Board::COLUMN_D, Board::ROW_5).unwrap(),
+                from: FIELD_C3,
+                to: FIELD_D5,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-                to: Field::new(Board::COLUMN_E, Board::ROW_4).unwrap(),
+                from: FIELD_C3,
+                to: FIELD_E4,
                 promotion: None,
             },
         ];
@@ -214,8 +218,8 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
         let test_turn = Turn {
-            from: Field::new(Board::COLUMN_D, Board::ROW_3).unwrap(),
-            to: Field::new(Board::COLUMN_D, Board::ROW_4).unwrap(),
+            from: FIELD_D3,
+            to: FIELD_D4,
             promotion: None,
         };
         assert!(possible_moves.contains(&test_turn));
@@ -228,13 +232,13 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         let test_turn = [
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_D, Board::ROW_3).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_D3,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_D, Board::ROW_4).unwrap(),
+                from: FIELD_D2,
+                to: FIELD_D4,
                 promotion: None,
             },
         ];
@@ -253,7 +257,7 @@ mod tests {
         let mut lowleft_to_topright_counter = -1;
         while lowleft_to_topright_counter < 5 {
             let test_turn = Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
                 to: Field::new_from_usize(
                     (3 + lowleft_to_topright_counter) as usize,
                     (1 + lowleft_to_topright_counter) as usize,
@@ -270,7 +274,7 @@ mod tests {
         let mut lowright_to_topleft_counter = -3;
         while lowright_to_topleft_counter < 2 {
             let test_turn = Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+                from: FIELD_D2,
                 to: Field::new_from_usize(
                     (3 + lowright_to_topleft_counter) as usize,
                     (1 - lowright_to_topleft_counter) as usize,
@@ -292,8 +296,8 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
         let test_turn = Turn {
-            from: Field::new(Board::COLUMN_D, Board::ROW_3).unwrap(),
-            to: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+            from: FIELD_D3,
+            to: FIELD_D2,
             promotion: None,
         };
         assert!(possible_moves.contains(&test_turn));
@@ -306,13 +310,13 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         let test_turn = [
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_7).unwrap(),
-                to: Field::new(Board::COLUMN_D, Board::ROW_6).unwrap(),
+                from: FIELD_D7,
+                to: FIELD_D6,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_D, Board::ROW_7).unwrap(),
-                to: Field::new(Board::COLUMN_D, Board::ROW_5).unwrap(),
+                from: FIELD_D7,
+                to: FIELD_D5,
                 promotion: None,
             },
         ];
@@ -328,8 +332,8 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
         let test_turn = Turn {
-            from: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
-            to: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
+            from: FIELD_D2,
+            to: FIELD_C3,
             promotion: None,
         };
         assert!(possible_moves.contains(&test_turn));
@@ -342,8 +346,8 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
         let test_turn = Turn {
-            from: Field::new(Board::COLUMN_C, Board::ROW_3).unwrap(),
-            to: Field::new(Board::COLUMN_D, Board::ROW_2).unwrap(),
+            from: FIELD_C3,
+            to: FIELD_D2,
             promotion: None,
         };
         assert!(possible_moves.contains(&test_turn));
@@ -356,8 +360,8 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
         let test_turn = Turn {
-            from: Field::new(Board::COLUMN_A, Board::ROW_2).unwrap(),
-            to: Field::new(Board::COLUMN_E, Board::ROW_2).unwrap(),
+            from: FIELD_A2,
+            to: FIELD_E2,
             promotion: None,
         };
         let test_move = possible_moves.first().unwrap();
@@ -371,8 +375,8 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
         let test_turn = Turn {
-            from: Field::new(Board::COLUMN_D, Board::ROW_5).unwrap(),
-            to: Field::new(Board::COLUMN_D, Board::ROW_6).unwrap(),
+            from: FIELD_D5,
+            to: FIELD_D6,
             promotion: None,
         };
         let test_move = possible_moves.first().unwrap();
@@ -386,13 +390,13 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         let test_turn = [
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_5).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_6).unwrap(),
+                from: FIELD_A5,
+                to: FIELD_A6,
                 promotion: None,
             },
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_5).unwrap(),
-                to: Field::new(Board::COLUMN_B, Board::ROW_6).unwrap(),
+                from: FIELD_A5,
+                to: FIELD_B6,
                 promotion: None,
             },
         ];
@@ -407,23 +411,23 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         let test_turn = [
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_7).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_8).unwrap(),
+                from: FIELD_A7,
+                to: FIELD_A8,
                 promotion: Some(PieceType::Queen),
             },
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_7).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_8).unwrap(),
+                from: FIELD_A7,
+                to: FIELD_A8,
                 promotion: Some(PieceType::Rook),
             },
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_7).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_8).unwrap(),
+                from: FIELD_A7,
+                to: FIELD_A8,
                 promotion: Some(PieceType::Bishop),
             },
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_7).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_8).unwrap(),
+                from: FIELD_A7,
+                to: FIELD_A8,
                 promotion: Some(PieceType::Knight),
             },
         ];
@@ -439,23 +443,23 @@ mod tests {
         let possible_moves = game.get_possible_moves();
         let test_turn = [
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_1).unwrap(),
+                from: FIELD_A2,
+                to: FIELD_A1,
                 promotion: Some(PieceType::Queen),
             },
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_1).unwrap(),
+                from: FIELD_A2,
+                to: FIELD_A1,
                 promotion: Some(PieceType::Rook),
             },
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_1).unwrap(),
+                from: FIELD_A2,
+                to: FIELD_A1,
                 promotion: Some(PieceType::Bishop),
             },
             Turn {
-                from: Field::new(Board::COLUMN_A, Board::ROW_2).unwrap(),
-                to: Field::new(Board::COLUMN_A, Board::ROW_1).unwrap(),
+                from: FIELD_A2,
+                to: FIELD_A1,
                 promotion: Some(PieceType::Knight),
             },
         ];

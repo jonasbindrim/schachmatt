@@ -1,5 +1,5 @@
 use crate::{
-    Board, FEN, Field, GameResult, Position, Turn,
+    Board, FEN, GameResult, Position, Turn,
     data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
     util::error::error_messages::ILLEGAL_TURN_ERROR,
 };
@@ -25,8 +25,8 @@ impl Position {
     pub fn get_possible_moves(&self) -> Vec<Turn> {
         let mut turns: Vec<Turn> = Vec::<Turn>::new();
 
-        for (row, column) in BOARD_FIELDS {
-            let piece = match self.board_position[row][column] {
+        for field in BOARD_FIELDS {
+            let piece = match self.get_field_occupation(&field) {
                 None => continue,
                 Some(piece) => piece,
             };
@@ -37,10 +37,7 @@ impl Position {
             // Check if current piece is a pawn
             let is_pawn = PieceType::Pawn == piece.get_type();
 
-            let mut piece_iterator = PieceMoveIterator::new(
-                piece.movement_modifiers(),
-                Field::new_from_usize(column, row).unwrap(),
-            );
+            let mut piece_iterator = PieceMoveIterator::new(piece.movement_modifiers(), field);
 
             loop {
                 while let Some(mut turn) = piece_iterator.current() {
