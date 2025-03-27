@@ -64,10 +64,10 @@ pub fn game_from_pgn(pgn_string: &str) -> Result<Game, ParserError> {
 /// Handles the parsing of a single move entry
 fn handle_move_entry(pairs: Pairs<Rule>, game: &mut Game) -> Result<(), ParserError> {
     for pair in pairs {
-        if matches!(pair.as_rule(), Rule::turn_move) {
+        if pair.as_rule() == Rule::turn_move {
             let turn = pair
                 .into_inner()
-                .find(|pair| matches!(pair.as_rule(), Rule::san_move))
+                .find(|pair| pair.as_rule() == Rule::san_move)
                 .unwrap();
 
             let turn = SAN::import(turn.as_str(), &mut game.get_current_state())?;

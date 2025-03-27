@@ -87,12 +87,8 @@ fn handle_promotion_turn_rule(promotion_turn: Pair<Rule>) -> Turn {
 /// - `returns` - The two fields (`from_field`, `to_field`)
 fn handle_piece_descriptor_turn_rule(piece_descriptor_turn: Pair<Rule>) -> (Field, Field) {
     for piece_descriptor in piece_descriptor_turn.into_inner() {
-        match piece_descriptor.as_rule() {
-            Rule::from_to_turn => {
-                return handle_from_to_turn_rule(piece_descriptor);
-            }
-            Rule::piece_symbol => {}
-            _ => unreachable!(),
+        if piece_descriptor.as_rule() == Rule::from_to_turn {
+            return handle_from_to_turn_rule(piece_descriptor);
         }
     }
     unreachable!()
@@ -105,19 +101,12 @@ fn handle_from_to_turn_rule(from_to_turn: Pair<Rule>) -> (Field, Field) {
     let mut from_field: Option<Field> = None;
 
     for field_descriptor in from_to_turn.into_inner() {
-        match field_descriptor.as_rule() {
-            Rule::field_descriptor => match from_field {
-                Some(from) => {
-                    return (
-                        from,
-                        Field::new_from_string(field_descriptor.as_str()).unwrap(),
-                    );
-                }
-                None => {
-                    from_field = Some(Field::new_from_string(field_descriptor.as_str()).unwrap());
-                }
-            },
-            _ => unreachable!(),
+        if field_descriptor.as_rule() == Rule::field_descriptor {
+            let field = Field::new_from_string(field_descriptor.as_str()).unwrap();
+            if let Some(from) = from_field {
+                return (from, field);
+            }
+            from_field = Some(field);
         }
     }
     unreachable!()

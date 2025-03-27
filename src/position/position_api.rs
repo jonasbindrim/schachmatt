@@ -26,10 +26,10 @@ impl Position {
         let mut turns: Vec<Turn> = Vec::<Turn>::new();
 
         for field in BOARD_FIELDS {
-            let piece = match self.get_field_occupation(&field) {
-                None => continue,
-                Some(piece) => piece,
+            let Some(piece) = self.get_field_occupation(&field) else {
+                continue;
             };
+
             if piece.get_color() != self.active_color {
                 continue;
             }

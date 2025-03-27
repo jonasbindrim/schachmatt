@@ -161,10 +161,10 @@ impl Position {
     /// - `player_color` - The player that performs the turn
     /// - `returns` - Returns whether the turn is legal
     pub(crate) fn is_legal_move(&self, turn: Turn, check_for_check: bool) -> MoveLegality {
-        let moving_piece = match self.get_field_occupation(&turn.from) {
-            Some(piece) => piece,
-            None => return MoveLegality::FullyIllegal,
+        let Some(moving_piece) = self.get_field_occupation(&turn.from) else {
+            return MoveLegality::FullyIllegal;
         };
+
         let active_color = moving_piece.get_color();
 
         // Check if move is capture and whether it captures an enemy piece

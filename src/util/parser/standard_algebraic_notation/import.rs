@@ -208,7 +208,7 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Tur
         };
         if target_field.unwrap() == turn.to
             && promotion_piece == turn.promotion
-            && matches!(moving_piece.get_type(), PieceType::Pawn)
+            && moving_piece.get_type() == PieceType::Pawn
         {
             match from_column {
                 Some(column) => {
