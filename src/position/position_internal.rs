@@ -38,12 +38,12 @@ impl Position {
     /// # Panics
     /// This panic indicates an error in the library.
     pub(crate) fn internal_turn(&mut self, action: &Turn) {
-        let from_field = self.get_field_occupation(action.from);
+        let from_field = self.get_field_occupation(&action.from);
         let Some(moving_piece) = from_field else {
             todo!() // TODO: Do something if illegal move is played
         };
 
-        let to_field = self.get_field_occupation(action.to);
+        let to_field = self.get_field_occupation(&action.to);
 
         // Increase move counter if no piece has been taken and no pawn has been moved
         if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
@@ -63,13 +63,13 @@ impl Position {
                         if action.to == FIELD_C8 {
                             self.set_field_occupation(
                                 &FIELD_D8,
-                                self.get_field_occupation(FIELD_A8),
+                                self.get_field_occupation(&FIELD_A8),
                             );
                             self.set_field_occupation(&FIELD_A8, None);
                         } else if action.to == FIELD_G8 {
                             self.set_field_occupation(
                                 &FIELD_F8,
-                                self.get_field_occupation(FIELD_H8),
+                                self.get_field_occupation(&FIELD_H8),
                             );
                             self.set_field_occupation(&FIELD_H8, None);
                         }
@@ -82,13 +82,13 @@ impl Position {
                         if action.to == FIELD_C1 {
                             self.set_field_occupation(
                                 &FIELD_D1,
-                                self.get_field_occupation(FIELD_A1),
+                                self.get_field_occupation(&FIELD_A1),
                             );
                             self.set_field_occupation(&FIELD_A1, None);
                         } else if action.to == FIELD_G1 {
                             self.set_field_occupation(
                                 &FIELD_F1,
-                                self.get_field_occupation(FIELD_H1),
+                                self.get_field_occupation(&FIELD_H1),
                             );
                             self.set_field_occupation(&FIELD_H1, None);
                         }
@@ -161,14 +161,14 @@ impl Position {
     /// - `player_color` - The player that performs the turn
     /// - `returns` - Returns whether the turn is legal
     pub(crate) fn is_legal_move(&self, turn: Turn, check_for_check: bool) -> MoveLegality {
-        let moving_piece = match self.get_field_occupation(turn.from) {
+        let moving_piece = match self.get_field_occupation(&turn.from) {
             Some(piece) => piece,
             None => return MoveLegality::FullyIllegal,
         };
         let active_color = moving_piece.get_color();
 
         // Check if move is capture and whether it captures an enemy piece
-        let is_capture = match self.get_field_occupation(turn.to) {
+        let is_capture = match self.get_field_occupation(&turn.to) {
             Some(piece) => {
                 if piece.get_color() == active_color {
                     return MoveLegality::FullyIllegal;
@@ -283,7 +283,7 @@ impl Position {
         }
 
         // Check if a pawn can capture diagonally
-        if turn.from.column != turn.to.column && self.get_field_occupation(turn.to).is_none() {
+        if turn.from.column != turn.to.column && self.get_field_occupation(&turn.to).is_none() {
             let Some(field) = self.en_passant else {
                 return MoveLegality::FullyIllegal;
             };
@@ -315,7 +315,7 @@ impl Position {
     /// - `returns` - Whether one of the fields is blocked
     pub(crate) fn castling_fields_blocked(&self, fields: &[Field]) -> bool {
         for field in fields {
-            if self.get_field_occupation(*field).is_some() {
+            if self.get_field_occupation(field).is_some() {
                 return true;
             }
         }
@@ -340,13 +340,14 @@ impl Position {
                             // Handling of the next loops
                             match self.is_legal_move(turn, false) {
                                 MoveLegality::Legal => {
-                                    if self.get_field_occupation(turn.to).is_none() {
+                                    if self.get_field_occupation(&turn.to).is_none() {
                                         continue;
                                     }
                                     break;
                                 }
                                 MoveLegality::LastLegal => {
-                                    if let Some(target_piece) = self.get_field_occupation(turn.to) {
+                                    if let Some(target_piece) = self.get_field_occupation(&turn.to)
+                                    {
                                         if PieceType::King == target_piece.get_type() {
                                             return true;
                                         }
@@ -471,7 +472,7 @@ impl Position {
     /// - `field` - The field of the piece to return
     /// - `returns` - The occupation of the given field
     #[inline]
-    pub(crate) fn get_field_occupation(&self, field: Field) -> Option<Piece> {
+    pub(crate) fn get_field_occupation(&self, field: &Field) -> Option<Piece> {
         self.board_position[field.row as usize][field.column as usize]
     }
 
