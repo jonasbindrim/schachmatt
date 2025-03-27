@@ -1,10 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::{
-        Board::{self, *},
-        Field, LAN, Turn,
-        data_structures::piece::piece_type::PieceType,
-    };
+    use crate::{Board::*, LAN, Turn, data_structures::piece::piece_type::PieceType};
 
     #[test]
     pub fn import_lan_pawn_push() {

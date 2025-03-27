@@ -1,10 +1,7 @@
 #[cfg(test)]
 mod tests {
 
-    use crate::{
-        Board::{self, *},
-        FEN, Field, GameResult, PlayerColor, Position, Turn,
-    };
+    use crate::{Board::*, FEN, GameResult, PlayerColor, Position, Turn};
 
     /// Tests whether the conversion from a move into the algebraic chess notation works as idented
     #[test]
