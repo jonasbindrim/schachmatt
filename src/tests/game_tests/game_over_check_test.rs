@@ -1,7 +1,10 @@
 #[cfg(test)]
 mod tests {
 
-    use crate::{Board, FEN, Field, GameResult, PlayerColor, Position, Turn};
+    use crate::{
+        Board::{self, *},
+        FEN, Field, GameResult, PlayerColor, Position, Turn,
+    };
 
     /// Tests whether the conversion from a move into the algebraic chess notation works as idented
     #[test]
@@ -32,8 +35,8 @@ mod tests {
     fn test_40_move_counter() {
         let mut game = FEN::import("7k/8/8/8/8/8/8/K7 w - - 49 1").unwrap();
         let turn = Turn {
-            from: Field::new(Board::COLUMN_A, Board::ROW_1).unwrap(),
-            to: Field::new(Board::COLUMN_B, Board::ROW_1).unwrap(),
+            from: FIELD_A1,
+            to: FIELD_B1,
             promotion: None,
         };
         game.turn(&turn).unwrap();

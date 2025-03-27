@@ -1,6 +1,8 @@
 use crate::{
-    Board, Field, ParserError, Piece, PlayerColor, Position, Turn,
-    data_structures::piece::piece_type::PieceType, util::error::error_messages::SAN_IMPORT_ERROR,
+    Board::{self, FIELD_A1, FIELD_E1},
+    Field, ParserError, Piece, PlayerColor, Position, Turn,
+    data_structures::piece::piece_type::PieceType,
+    util::error::error_messages::SAN_IMPORT_ERROR,
 };
 
 use pest::{Parser, iterators::Pair};
@@ -144,8 +146,8 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Result<
     let player_color = position.get_active_color();
 
     // Initiate with row for white
-    let mut target_field = Field::new(Board::COLUMN_A, Board::ROW_1).unwrap();
-    let mut starting_field = Field::new(Board::COLUMN_E, Board::ROW_1).unwrap();
+    let mut target_field = FIELD_A1;
+    let mut starting_field = FIELD_E1;
 
     // Change row if color is black
     if player_color == PlayerColor::Black {
