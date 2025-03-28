@@ -33,41 +33,45 @@ impl<'a> PieceMoveIterator<'a> {
         let iterator = &self.move_iterator[self.index];
 
         // Calculate the row increment for the next move
-        let row_increment = match iterator.row.increment {
+        let row_increment = match iterator.row.direction {
             Some(incr) => {
-                let increment = iterator.row.start + self.increment * incr;
-                if (incr > 0 && increment > iterator.row.end) || (incr < 0 && increment < iterator.row.end) {
+                let increment = iterator.row.min_step + self.increment * incr;
+                if (incr > 0 && increment > iterator.row.max_step)
+                    || (incr < 0 && increment < iterator.row.max_step)
+                {
                     return None;
                 }
                 increment
-            },
-            None => iterator.row.start,
+            }
+            None => iterator.row.min_step,
         };
 
         // Calculate the column increment for the next move
-        let column_increment = match iterator.column.increment {
+        let column_increment = match iterator.column.direction {
             Some(incr) => {
-                let increment = iterator.column.start + self.increment * incr;
-                if (incr > 0 && increment > iterator.column.end) || (incr < 0 && increment < iterator.column.end) {
+                let increment = iterator.column.min_step + self.increment * incr;
+                if (incr > 0 && increment > iterator.column.max_step)
+                    || (incr < 0 && increment < iterator.column.max_step)
+                {
                     return None;
                 }
                 increment
-            },
-            None => iterator.column.start,
+            }
+            None => iterator.column.min_step,
         };
 
         // Calculate next iterator field
-        let temp_row = self.base_field.row as i8 + row_increment;
-        let temp_column = self.base_field.column as i8 + column_increment;
+        let target_row = self.base_field.row as i8 + row_increment;
+        let target_column = self.base_field.column as i8 + column_increment;
 
         // Check if turn is in bounds and return if so
-        if Self::out_of_bounds_check(temp_row, temp_column) {
+        if Self::out_of_bounds_check(target_row, target_column) {
             return Option::None;
         }
 
         let turn = Turn {
             from: self.base_field,
-            to: Field::new(temp_column as u8, temp_row as u8)?,
+            to: Field::new(target_column as u8, target_row as u8)?,
             promotion: None,
         };
 
