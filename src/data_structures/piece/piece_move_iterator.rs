@@ -30,20 +30,31 @@ impl<'a> PieceMoveIterator<'a> {
     /// Returns the current turn stored in this iterator if its valid
     /// - `returns` - Turn stored in this iterator
     pub(crate) fn current(&mut self) -> Option<Turn> {
-        let current_move = &self.move_iterator[self.index];
+        let iterator = &self.move_iterator[self.index];
 
-        // Check if another element in the iterator step exists
-        let row_increment = current_move.row.start + self.increment * current_move.row.increment;
-        let column_increment =
-            current_move.column.start + self.increment * current_move.column.increment;
+        // Calculate the row increment for the next move
+        let row_increment = match iterator.row.increment {
+            Some(incr) => {
+                let increment = iterator.row.start + self.increment * incr;
+                if (incr > 0 && increment > iterator.row.end) || (incr < 0 && increment < iterator.row.end) {
+                    return None;
+                }
+                increment
+            },
+            None => iterator.row.start,
+        };
 
-        if (current_move.row.increment >= 0 && row_increment > current_move.row.end)
-            || (current_move.row.increment < 0 && row_increment < current_move.row.end)
-            || (current_move.column.increment >= 0 && column_increment > current_move.column.end)
-            || (current_move.column.increment < 0 && column_increment < current_move.column.end)
-        {
-            return Option::None;
-        }
+        // Calculate the column increment for the next move
+        let column_increment = match iterator.column.increment {
+            Some(incr) => {
+                let increment = iterator.column.start + self.increment * incr;
+                if (incr > 0 && increment > iterator.column.end) || (incr < 0 && increment < iterator.column.end) {
+                    return None;
+                }
+                increment
+            },
+            None => iterator.column.start,
+        };
 
         // Calculate next iterator field
         let temp_row = self.base_field.row as i8 + row_increment;
