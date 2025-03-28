@@ -7,7 +7,7 @@ use crate::{
 use super::{position_internal::BOARD_FIELDS, util::move_legality::MoveLegality};
 
 impl Position {
-    /// Creates a new game
+    /// Creates a new position
     /// - `returns` - A new position with the default board setup
     /// # Panics
     /// This panic indicates an error in the library.
