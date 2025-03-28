@@ -30,33 +30,48 @@ impl<'a> PieceMoveIterator<'a> {
     /// Returns the current turn stored in this iterator if its valid
     /// - `returns` - Turn stored in this iterator
     pub(crate) fn current(&mut self) -> Option<Turn> {
-        let current_move = &self.move_iterator[self.index];
+        let iterator = &self.move_iterator[self.index];
 
-        // Check if another element in the iterator step exists
-        let row_increment = current_move.row.start + self.increment * current_move.row.increment;
-        let column_increment =
-            current_move.column.start + self.increment * current_move.column.increment;
+        // Calculate the row increment for the next move
+        let row_increment = match iterator.row.direction {
+            Some(incr) => {
+                let increment = iterator.row.min_step + self.increment * incr;
+                if (incr > 0 && increment > iterator.row.max_step)
+                    || (incr < 0 && increment < iterator.row.max_step)
+                {
+                    return None;
+                }
+                increment
+            }
+            None => iterator.row.min_step,
+        };
 
-        if (current_move.row.increment >= 0 && row_increment > current_move.row.end)
-            || (current_move.row.increment < 0 && row_increment < current_move.row.end)
-            || (current_move.column.increment >= 0 && column_increment > current_move.column.end)
-            || (current_move.column.increment < 0 && column_increment < current_move.column.end)
-        {
-            return Option::None;
-        }
+        // Calculate the column increment for the next move
+        let column_increment = match iterator.column.direction {
+            Some(incr) => {
+                let increment = iterator.column.min_step + self.increment * incr;
+                if (incr > 0 && increment > iterator.column.max_step)
+                    || (incr < 0 && increment < iterator.column.max_step)
+                {
+                    return None;
+                }
+                increment
+            }
+            None => iterator.column.min_step,
+        };
 
         // Calculate next iterator field
-        let temp_row = self.base_field.row as i8 + row_increment;
-        let temp_column = self.base_field.column as i8 + column_increment;
+        let target_row = self.base_field.row as i8 + row_increment;
+        let target_column = self.base_field.column as i8 + column_increment;
 
         // Check if turn is in bounds and return if so
-        if Self::out_of_bounds_check(temp_row, temp_column) {
+        if Self::out_of_bounds_check(target_row, target_column) {
             return Option::None;
         }
 
         let turn = Turn {
             from: self.base_field,
-            to: Field::new(temp_column as u8, temp_row as u8)?,
+            to: Field::new(target_column as u8, target_row as u8)?,
             promotion: None,
         };
 
