@@ -23,16 +23,16 @@ pub fn from_string(raw: &str) -> Option<Turn> {
             Rule::from_to_turn => {
                 let (from, to) = handle_from_to_turn_rule(turn_type);
                 return Some(Turn {
-                    from,
-                    to,
+                    current: from,
+                    target: to,
                     promotion: None,
                 });
             }
             Rule::piece_descriptor_turn => {
                 let (from, to) = handle_piece_descriptor_turn_rule(turn_type);
                 return Some(Turn {
-                    from,
-                    to,
+                    current: from,
+                    target: to,
                     promotion: None,
                 });
             }
@@ -71,8 +71,8 @@ fn handle_promotion_turn_rule(promotion_turn: Pair<Rule>) -> Turn {
                 let piece_type = PieceType::import_piecetype(piece_representation as char).unwrap();
 
                 return Turn {
-                    from: from_field.unwrap(),
-                    to: to_field.unwrap(),
+                    current: from_field.unwrap(),
+                    target: to_field.unwrap(),
                     promotion: Some(piece_type),
                 };
             }

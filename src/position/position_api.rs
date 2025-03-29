@@ -42,7 +42,7 @@ impl Position {
             loop {
                 while let Some(mut turn) = piece_iterator.current() {
                     // if turn is a promotion turn insert a dummy figure to make the move legal
-                    if is_pawn && (turn.to.row == Board::ROW_8 || turn.to.row == Board::ROW_1) {
+                    if is_pawn && matches!(turn.target.row, Board::ROW_8 | Board::ROW_1) {
                         turn.promotion = Some(PieceType::Queen);
                     }
 
@@ -50,18 +50,14 @@ impl Position {
                         MoveLegality::TemporarelyIllegal => continue,
                         MoveLegality::FullyIllegal => break,
                         MoveLegality::Legal => {
-                            if is_pawn
-                                && (turn.to.row == Board::ROW_8 || turn.to.row == Board::ROW_1)
-                            {
+                            if is_pawn && matches!(turn.target.row, Board::ROW_8 | Board::ROW_1) {
                                 turns.append(&mut Position::push_turn(turn));
                             } else {
                                 turns.push(turn);
                             }
                         }
                         MoveLegality::LastLegal => {
-                            if is_pawn
-                                && (turn.to.row == Board::ROW_8 || turn.to.row == Board::ROW_1)
-                            {
+                            if is_pawn && matches!(turn.target.row, Board::ROW_8 | Board::ROW_1) {
                                 turns.append(&mut Position::push_turn(turn));
                             } else {
                                 turns.push(turn);
