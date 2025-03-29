@@ -65,8 +65,8 @@ impl<'a> PieceMoveIterator<'a> {
         let target_column = (self.base_field.column as i8 + column_increment) as u8;
 
         let turn = Turn {
-            from: self.base_field,
-            to: Field::new(target_column, target_row)?,
+            current: self.base_field,
+            target: Field::new(target_column, target_row)?,
             promotion: None,
         };
 

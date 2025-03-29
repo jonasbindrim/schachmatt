@@ -13,46 +13,14 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/8/3K4/8 w - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         let turns = [
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_E1,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_E2,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_E3,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_D1,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_D3,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_C1,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_C2,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_C3,
-                promotion: None,
-            },
+            Turn::new(FIELD_D2, FIELD_E1, None),
+            Turn::new(FIELD_D2, FIELD_E2, None),
+            Turn::new(FIELD_D2, FIELD_E3, None),
+            Turn::new(FIELD_D2, FIELD_D1, None),
+            Turn::new(FIELD_D2, FIELD_D3, None),
+            Turn::new(FIELD_D2, FIELD_C1, None),
+            Turn::new(FIELD_D2, FIELD_C2, None),
+            Turn::new(FIELD_D2, FIELD_C3, None),
         ];
         assert!(possible_moves.len() == turns.len());
         for item in turns {
@@ -69,40 +37,32 @@ mod tests {
         // Test horizontally
         let mut column = Board::COLUMN_A;
         while column < COLUMN_AMOUNT as u8 {
-            let test_turn = Turn {
-                from: FIELD_D2,
-                to: Field::new(column, Board::ROW_2).unwrap(),
-                promotion: None,
-            };
-            if test_turn.from != test_turn.to {
+            let test_turn = Turn::new(FIELD_D2, Field::new(column, Board::ROW_2).unwrap(), None);
+            if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             column += 1;
         }
         let mut row = Board::ROW_1;
         while row < ROW_AMOUNT as u8 {
-            let test_turn = Turn {
-                from: FIELD_D2,
-                to: Field::new(Board::COLUMN_D, row).unwrap(),
-                promotion: None,
-            };
-            if test_turn.from != test_turn.to {
+            let test_turn = Turn::new(FIELD_D2, Field::new(Board::COLUMN_D, row).unwrap(), None);
+            if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             row += 1;
         }
         let mut lower_right_counter = -1;
         while lower_right_counter < 5 {
-            let test_turn = Turn {
-                from: FIELD_D2,
-                to: Field::new_from_usize(
+            let test_turn = Turn::new(
+                FIELD_D2,
+                Field::new_from_usize(
                     (3 + lower_right_counter) as usize,
                     (1 + lower_right_counter) as usize,
                 )
                 .unwrap(),
-                promotion: None,
-            };
-            if test_turn.from != test_turn.to {
+                None,
+            );
+            if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             lower_right_counter += 1;
@@ -110,16 +70,16 @@ mod tests {
 
         let mut lower_left_counter = -3;
         while lower_left_counter < 2 {
-            let test_turn = Turn {
-                from: FIELD_D2,
-                to: Field::new_from_usize(
+            let test_turn = Turn::new(
+                FIELD_D2,
+                Field::new_from_usize(
                     (3 + lower_left_counter) as usize,
                     (1 - lower_left_counter) as usize,
                 )
                 .unwrap(),
-                promotion: None,
-            };
-            if test_turn.from != test_turn.to {
+                None,
+            );
+            if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             lower_left_counter += 1;
@@ -135,24 +95,16 @@ mod tests {
         // Test horizontally
         let mut column = Board::COLUMN_A;
         while column < COLUMN_AMOUNT as u8 {
-            let test_turn = Turn {
-                from: FIELD_D2,
-                to: Field::new(column, Board::ROW_2).unwrap(),
-                promotion: None,
-            };
-            if test_turn.from != test_turn.to {
+            let test_turn = Turn::new(FIELD_D2, Field::new(column, Board::ROW_2).unwrap(), None);
+            if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             column += 1;
         }
         let mut row = Board::ROW_1;
         while row < ROW_AMOUNT as u8 {
-            let test_turn = Turn {
-                from: FIELD_D2,
-                to: Field::new(Board::COLUMN_D, row).unwrap(),
-                promotion: None,
-            };
-            if test_turn.from != test_turn.to {
+            let test_turn = Turn::new(FIELD_D2, Field::new(Board::COLUMN_D, row).unwrap(), None);
+            if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             row += 1;
@@ -165,46 +117,14 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/2N5/8/8 w - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         let turns = [
-            Turn {
-                from: FIELD_C3,
-                to: FIELD_A2,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_C3,
-                to: FIELD_B1,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_C3,
-                to: FIELD_A4,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_C3,
-                to: FIELD_D1,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_C3,
-                to: FIELD_B5,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_C3,
-                to: FIELD_E2,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_C3,
-                to: FIELD_D5,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_C3,
-                to: FIELD_E4,
-                promotion: None,
-            },
+            Turn::new(FIELD_C3, FIELD_A2, None),
+            Turn::new(FIELD_C3, FIELD_B1, None),
+            Turn::new(FIELD_C3, FIELD_A4, None),
+            Turn::new(FIELD_C3, FIELD_D1, None),
+            Turn::new(FIELD_C3, FIELD_B5, None),
+            Turn::new(FIELD_C3, FIELD_E2, None),
+            Turn::new(FIELD_C3, FIELD_D5, None),
+            Turn::new(FIELD_C3, FIELD_E4, None),
         ];
         assert!(possible_moves.len() == turns.len());
         for item in turns {
@@ -218,11 +138,7 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/3P4/8/8 w - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
-        let test_turn = Turn {
-            from: FIELD_D3,
-            to: FIELD_D4,
-            promotion: None,
-        };
+        let test_turn = Turn::new(FIELD_D3, FIELD_D4, None);
         assert!(possible_moves.contains(&test_turn));
     }
 
@@ -232,16 +148,8 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/8/3P4/8 w - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         let test_turn = [
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_D3,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D2,
-                to: FIELD_D4,
-                promotion: None,
-            },
+            Turn::new(FIELD_D2, FIELD_D3, None),
+            Turn::new(FIELD_D2, FIELD_D4, None),
         ];
         assert!(possible_moves.len() == test_turn.len());
         assert!(possible_moves.contains(&test_turn[0]));
@@ -257,16 +165,16 @@ mod tests {
 
         let mut lowleft_to_topright_counter = -1;
         while lowleft_to_topright_counter < 5 {
-            let test_turn = Turn {
-                from: FIELD_D2,
-                to: Field::new_from_usize(
+            let test_turn = Turn::new(
+                FIELD_D2,
+                Field::new_from_usize(
                     (3 + lowleft_to_topright_counter) as usize,
                     (1 + lowleft_to_topright_counter) as usize,
                 )
                 .unwrap(),
-                promotion: None,
-            };
-            if test_turn.from != test_turn.to {
+                None,
+            );
+            if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             lowleft_to_topright_counter += 1;
@@ -274,16 +182,16 @@ mod tests {
 
         let mut lowright_to_topleft_counter = -3;
         while lowright_to_topleft_counter < 2 {
-            let test_turn = Turn {
-                from: FIELD_D2,
-                to: Field::new_from_usize(
+            let test_turn = Turn::new(
+                FIELD_D2,
+                Field::new_from_usize(
                     (3 + lowright_to_topleft_counter) as usize,
                     (1 - lowright_to_topleft_counter) as usize,
                 )
                 .unwrap(),
-                promotion: None,
-            };
-            if test_turn.from != test_turn.to {
+                None,
+            );
+            if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             lowright_to_topleft_counter += 1;
@@ -296,11 +204,7 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/3p4/8/8 b - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
-        let test_turn = Turn {
-            from: FIELD_D3,
-            to: FIELD_D2,
-            promotion: None,
-        };
+        let test_turn = Turn::new(FIELD_D3, FIELD_D2, None);
         assert!(possible_moves.contains(&test_turn));
     }
 
@@ -310,16 +214,8 @@ mod tests {
         let game = FEN::import("8/3p4/8/8/8/8/8/8 b - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         let test_turn = [
-            Turn {
-                from: FIELD_D7,
-                to: FIELD_D6,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_D7,
-                to: FIELD_D5,
-                promotion: None,
-            },
+            Turn::new(FIELD_D7, FIELD_D6, None),
+            Turn::new(FIELD_D7, FIELD_D5, None),
         ];
         assert!(possible_moves.len() == test_turn.len());
         assert!(possible_moves.contains(&test_turn[0]));
@@ -332,11 +228,7 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/2pp4/3P4/8 w - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
-        let test_turn = Turn {
-            from: FIELD_D2,
-            to: FIELD_C3,
-            promotion: None,
-        };
+        let test_turn = Turn::new(FIELD_D2, FIELD_C3, None);
         assert!(possible_moves.contains(&test_turn));
     }
 
@@ -346,11 +238,7 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/2p5/2PP4/8 b - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
-        let test_turn = Turn {
-            from: FIELD_C3,
-            to: FIELD_D2,
-            promotion: None,
-        };
+        let test_turn = Turn::new(FIELD_C3, FIELD_D2, None);
         assert!(possible_moves.contains(&test_turn));
     }
 
@@ -360,11 +248,7 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/3rrr2/R7/3PKP2 w - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
-        let test_turn = Turn {
-            from: FIELD_A2,
-            to: FIELD_E2,
-            promotion: None,
-        };
+        let test_turn = Turn::new(FIELD_A2, FIELD_E2, None);
         let test_move = possible_moves.first().unwrap();
         assert!(*test_move == test_turn);
     }
@@ -375,11 +259,7 @@ mod tests {
         let game = FEN::import("8/8/8/3P4/3P4/8/8/8 w - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         assert!(possible_moves.len() == 1);
-        let test_turn = Turn {
-            from: FIELD_D5,
-            to: FIELD_D6,
-            promotion: None,
-        };
+        let test_turn = Turn::new(FIELD_D5, FIELD_D6, None);
         let test_move = possible_moves.first().unwrap();
         assert!(*test_move == test_turn);
     }
@@ -390,16 +270,8 @@ mod tests {
         let game = FEN::import("8/8/8/Pp6/8/8/8/8 w - b5 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         let test_turn = [
-            Turn {
-                from: FIELD_A5,
-                to: FIELD_A6,
-                promotion: None,
-            },
-            Turn {
-                from: FIELD_A5,
-                to: FIELD_B6,
-                promotion: None,
-            },
+            Turn::new(FIELD_A5, FIELD_A6, None),
+            Turn::new(FIELD_A5, FIELD_B6, None),
         ];
         assert!(possible_moves.len() == test_turn.len());
         assert!(possible_moves.contains(&test_turn[0]));
@@ -411,26 +283,10 @@ mod tests {
         let game = FEN::import("8/P7/8/8/8/8/8/8 w - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         let test_turn = [
-            Turn {
-                from: FIELD_A7,
-                to: FIELD_A8,
-                promotion: Some(PieceType::Queen),
-            },
-            Turn {
-                from: FIELD_A7,
-                to: FIELD_A8,
-                promotion: Some(PieceType::Rook),
-            },
-            Turn {
-                from: FIELD_A7,
-                to: FIELD_A8,
-                promotion: Some(PieceType::Bishop),
-            },
-            Turn {
-                from: FIELD_A7,
-                to: FIELD_A8,
-                promotion: Some(PieceType::Knight),
-            },
+            Turn::new(FIELD_A7, FIELD_A8, Some(PieceType::Queen)),
+            Turn::new(FIELD_A7, FIELD_A8, Some(PieceType::Rook)),
+            Turn::new(FIELD_A7, FIELD_A8, Some(PieceType::Bishop)),
+            Turn::new(FIELD_A7, FIELD_A8, Some(PieceType::Knight)),
         ];
         assert!(possible_moves.len() == test_turn.len());
         for turns in test_turn {
@@ -443,26 +299,10 @@ mod tests {
         let game = FEN::import("8/8/8/8/8/8/p7/8 b - - 0 1").unwrap();
         let possible_moves = game.get_possible_moves();
         let test_turn = [
-            Turn {
-                from: FIELD_A2,
-                to: FIELD_A1,
-                promotion: Some(PieceType::Queen),
-            },
-            Turn {
-                from: FIELD_A2,
-                to: FIELD_A1,
-                promotion: Some(PieceType::Rook),
-            },
-            Turn {
-                from: FIELD_A2,
-                to: FIELD_A1,
-                promotion: Some(PieceType::Bishop),
-            },
-            Turn {
-                from: FIELD_A2,
-                to: FIELD_A1,
-                promotion: Some(PieceType::Knight),
-            },
+            Turn::new(FIELD_A2, FIELD_A1, Some(PieceType::Queen)),
+            Turn::new(FIELD_A2, FIELD_A1, Some(PieceType::Rook)),
+            Turn::new(FIELD_A2, FIELD_A1, Some(PieceType::Bishop)),
+            Turn::new(FIELD_A2, FIELD_A1, Some(PieceType::Knight)),
         ];
         assert!(possible_moves.len() == test_turn.len());
         for turns in test_turn {

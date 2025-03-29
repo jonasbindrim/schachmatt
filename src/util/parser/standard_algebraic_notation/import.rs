@@ -82,17 +82,17 @@ fn import_piece_move_full(san_data: Pair<Rule>, position: &Position) -> Result<T
     }
 
     for turn in possible_moves {
-        if target_field.unwrap() == turn.to
-            && position.get_field_occupation(&turn.from) == piece_type
+        if target_field.unwrap() == turn.target
+            && position.get_field_occupation(&turn.current) == piece_type
         {
             let mut ok: bool = true;
             if let Some(column_value) = from_column {
-                if turn.from.column != column_value {
+                if turn.current.column != column_value {
                     ok = false;
                 }
             }
             if let Some(row_value) = from_row {
-                if turn.from.row != row_value {
+                if turn.current.row != row_value {
                     ok = false;
                 }
             }
@@ -168,7 +168,7 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Result<
 
     Ok(possible_moves
         .into_iter()
-        .find(|&turn| turn.to == target_field && turn.from == starting_field)
+        .find(|&turn| turn.target == target_field && turn.current == starting_field)
         .unwrap())
 }
 
@@ -202,11 +202,11 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Tur
     }
 
     for turn in possible_moves {
-        let from_occupation = position.get_field_occupation(&turn.from);
+        let from_occupation = position.get_field_occupation(&turn.current);
         let Some(moving_piece) = from_occupation else {
             todo!() // TODO: Handle illegal move
         };
-        if target_field.unwrap() == turn.to
+        if target_field.unwrap() == turn.target
             && promotion_piece == turn.promotion
             && moving_piece.get_type() == PieceType::Pawn
         {
@@ -215,12 +215,12 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Tur
                     // Is a capture move
                     match from_row {
                         Some(row) => {
-                            if column == turn.from.column && row == turn.from.row {
+                            if column == turn.current.column && row == turn.current.row {
                                 return Ok(turn);
                             }
                         }
                         None => {
-                            if column == turn.from.column {
+                            if column == turn.current.column {
                                 return Ok(turn);
                             }
                         }

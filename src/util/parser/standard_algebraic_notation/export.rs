@@ -12,8 +12,10 @@ use crate::{
 pub fn from_turn(turn: Turn, current_position: &Position) -> String {
     let mut san_turn = String::new();
 
-    let mut is_capture = current_position.get_field_occupation(&turn.to).is_some();
-    let from_field = current_position.get_field_occupation(&turn.from);
+    let mut is_capture = current_position
+        .get_field_occupation(&turn.target)
+        .is_some();
+    let from_field = current_position.get_field_occupation(&turn.current);
 
     let Some(moving_piece) = from_field else {
         todo!() // TODO: Handle illegal move
@@ -22,29 +24,31 @@ pub fn from_turn(turn: Turn, current_position: &Position) -> String {
     if moving_piece.get_type() == PieceType::Pawn {
         let check_field: i8 = {
             match current_position.active_color {
-                PlayerColor::Black => (turn.to.row as i8) + 1,
-                PlayerColor::White => (turn.to.row as i8) - 1,
+                PlayerColor::Black => (turn.target.row as i8) + 1,
+                PlayerColor::White => (turn.target.row as i8) - 1,
             }
         };
 
         if let Some(field) = current_position.en_passant {
-            if turn.to.column == field.column && check_field == field.row as i8 {
+            if turn.target.column == field.column && check_field == field.row as i8 {
                 is_capture = true;
             }
         }
 
         if is_capture {
-            san_turn.push((turn.from.column + b'a') as char);
+            san_turn.push((turn.current.column + b'a') as char);
         }
         to_move(&mut san_turn, turn, current_position, is_capture);
     } else {
         if PieceType::King == moving_piece.get_type() {
             // Is kingside castle
-            if turn.from.column + 2 == turn.to.column {
+            if turn.current.column + 2 == turn.target.column {
                 return String::from("O-O");
             }
 
-            if turn.from.column == Board::COLUMN_E && turn.from.column - 2 == turn.to.column {
+            if turn.current.column == Board::COLUMN_E
+                && turn.current.column - 2 == turn.target.column
+            {
                 return String::from("O-O-O");
             }
         }
@@ -63,10 +67,10 @@ pub fn from_turn(turn: Turn, current_position: &Position) -> String {
 /// - `turn` - The turn which was played
 /// - `current_position` - The position the turn was played in
 fn add_field_descriptor(base: &mut String, turn: Turn, current_position: &Position) {
-    let column = turn.from.column;
-    let row = turn.from.row;
+    let column = turn.current.column;
+    let row = turn.current.row;
 
-    let occupation = current_position.get_field_occupation(&turn.from);
+    let occupation = current_position.get_field_occupation(&turn.current);
     if !is_unique_descriptor(turn, current_position, occupation, None, None) {
         if is_unique_descriptor(turn, current_position, occupation, Some(column), None) {
             base.push((column + b'a') as char);
@@ -91,7 +95,7 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
     }
 
     // Add target_field
-    base.push_str(&turn.to.to_string());
+    base.push_str(&turn.target.to_string());
 
     // Check if promotion
     if let Some(piece) = turn.promotion {
@@ -131,15 +135,15 @@ fn is_unique_descriptor(
 
     let mut counter = 0;
     for turn in possible_moves {
-        if turn.to == checked_turn.to
-            && occupation == current_position.get_field_occupation(&turn.from)
+        if turn.target == checked_turn.target
+            && occupation == current_position.get_field_occupation(&turn.current)
         {
             match column {
                 Some(column_value) => {
-                    if turn.from.column == column_value {
+                    if turn.current.column == column_value {
                         match row {
                             Some(row_value) => {
-                                if turn.from.row == row_value {
+                                if turn.current.row == row_value {
                                     counter += 1;
                                 }
                             }
@@ -149,7 +153,7 @@ fn is_unique_descriptor(
                 }
                 None => match row {
                     Some(row_value) => {
-                        if turn.from.row == row_value {
+                        if turn.current.row == row_value {
                             counter += 1;
                         }
                     }

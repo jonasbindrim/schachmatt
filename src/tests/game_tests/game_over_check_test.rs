@@ -31,11 +31,7 @@ mod tests {
     #[test]
     fn test_40_move_counter() {
         let mut game = FEN::import("7k/8/8/8/8/8/8/K7 w - - 49 1").unwrap();
-        let turn = Turn {
-            from: FIELD_A1,
-            to: FIELD_B1,
-            promotion: None,
-        };
+        let turn = Turn::new(FIELD_A1, FIELD_B1, None);
         game.turn(&turn).unwrap();
         assert!(matches!(game.game_over_check().unwrap(), GameResult::Draw));
         assert_eq!(FEN::export(&game), "7k/8/8/8/8/8/8/1K6 b - - 50 1");

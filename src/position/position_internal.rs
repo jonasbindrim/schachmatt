@@ -38,12 +38,12 @@ impl Position {
     /// # Panics
     /// This panic indicates an error in the library.
     pub(crate) fn internal_turn(&mut self, action: &Turn) {
-        let from_field = self.get_field_occupation(&action.from);
+        let from_field = self.get_field_occupation(&action.current);
         let Some(moving_piece) = from_field else {
             todo!() // TODO: Do something if illegal move is played
         };
 
-        let to_field = self.get_field_occupation(&action.to);
+        let to_field = self.get_field_occupation(&action.target);
 
         // Increase move counter if no piece has been taken and no pawn has been moved
         if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
@@ -53,20 +53,20 @@ impl Position {
         }
 
         // Move the piece
-        self.set_field_occupation(&action.to, Some(moving_piece));
-        self.set_field_occupation(&action.from, None);
+        self.set_field_occupation(&action.target, Some(moving_piece));
+        self.set_field_occupation(&action.current, None);
 
         if PieceType::King == moving_piece.get_type() {
             match moving_piece.get_color() {
                 PlayerColor::Black => {
-                    if action.from == FIELD_E8 {
-                        if action.to == FIELD_C8 {
+                    if action.current == FIELD_E8 {
+                        if action.target == FIELD_C8 {
                             self.set_field_occupation(
                                 &FIELD_D8,
                                 self.get_field_occupation(&FIELD_A8),
                             );
                             self.set_field_occupation(&FIELD_A8, None);
-                        } else if action.to == FIELD_G8 {
+                        } else if action.target == FIELD_G8 {
                             self.set_field_occupation(
                                 &FIELD_F8,
                                 self.get_field_occupation(&FIELD_H8),
@@ -78,14 +78,14 @@ impl Position {
                     self.castling_black.queenside = false;
                 }
                 PlayerColor::White => {
-                    if action.from == FIELD_E1 {
-                        if action.to == FIELD_C1 {
+                    if action.current == FIELD_E1 {
+                        if action.target == FIELD_C1 {
                             self.set_field_occupation(
                                 &FIELD_D1,
                                 self.get_field_occupation(&FIELD_A1),
                             );
                             self.set_field_occupation(&FIELD_A1, None);
-                        } else if action.to == FIELD_G1 {
+                        } else if action.target == FIELD_G1 {
                             self.set_field_occupation(
                                 &FIELD_F1,
                                 self.get_field_occupation(&FIELD_H1),
@@ -103,16 +103,16 @@ impl Position {
         if PieceType::Rook == moving_piece.get_type() {
             match moving_piece.get_color() {
                 PlayerColor::Black => {
-                    if action.from == FIELD_A8 {
+                    if action.current == FIELD_A8 {
                         self.castling_black.queenside = false;
-                    } else if action.from == FIELD_H8 {
+                    } else if action.current == FIELD_H8 {
                         self.castling_black.kingside = false;
                     }
                 }
                 PlayerColor::White => {
-                    if action.from == FIELD_A1 {
+                    if action.current == FIELD_A1 {
                         self.castling_white.queenside = false;
-                    } else if action.from == FIELD_H1 {
+                    } else if action.current == FIELD_H1 {
                         self.castling_white.kingside = false;
                     }
                 }
@@ -121,17 +121,17 @@ impl Position {
 
         // Promote if possible
         if PieceType::Pawn == moving_piece.get_type()
-            && (action.to.row == Board::ROW_1 || action.to.row == Board::ROW_8)
+            && matches!(action.target.row, Board::ROW_1 | Board::ROW_8)
         {
             self.set_field_occupation(
-                &action.to,
+                &action.target,
                 Some(Piece::new(action.promotion.unwrap(), self.active_color)),
             );
         }
 
         // Remove piece taken with en passant
         if let Some(field) = self.en_passant {
-            if action.to.column == field.column && action.from.row == field.row {
+            if action.target.column == field.column && action.current.row == field.row {
                 self.set_field_occupation(&field, None);
                 self.halfmove_clock = 0;
             }
@@ -142,9 +142,9 @@ impl Position {
 
         // Check if a pawn has moved two field for possible en passant
         if PieceType::Pawn == moving_piece.get_type()
-            && action.from.row.abs_diff(action.to.row) == 2
+            && action.current.row.abs_diff(action.target.row) == 2
         {
-            self.en_passant = Some(action.to);
+            self.en_passant = Some(action.target);
         }
 
         // Raise fullmove counter
@@ -161,14 +161,14 @@ impl Position {
     /// - `player_color` - The player that performs the turn
     /// - `returns` - Returns whether the turn is legal
     pub(crate) fn is_legal_move(&self, turn: Turn, check_for_check: bool) -> MoveLegality {
-        let Some(moving_piece) = self.get_field_occupation(&turn.from) else {
+        let Some(moving_piece) = self.get_field_occupation(&turn.current) else {
             return MoveLegality::FullyIllegal;
         };
 
         let active_color = moving_piece.get_color();
 
         // Check if move is capture and whether it captures an enemy piece
-        let is_capture = match self.get_field_occupation(&turn.to) {
+        let is_capture = match self.get_field_occupation(&turn.target) {
             Some(piece) => {
                 if piece.get_color() == active_color {
                     return MoveLegality::FullyIllegal;
@@ -212,16 +212,16 @@ impl Position {
     /// - `active_color` - The currently active color
     /// - `returns` - Whether or not the move is legal
     fn is_king_move_legal(&self, turn: Turn, active_color: PlayerColor) -> MoveLegality {
-        let step = turn.to.column as i8 - turn.from.column as i8;
+        let step = turn.target.column as i8 - turn.current.column as i8;
         if step == 2 {
-            if turn.from.row == Board::ROW_8
+            if turn.current.row == Board::ROW_8
                 && active_color == PlayerColor::Black
                 && self.castling_black.kingside
             {
                 if self.is_castle_illegal(&CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, active_color) {
                     return MoveLegality::FullyIllegal;
                 }
-            } else if turn.from.row == Board::ROW_1
+            } else if turn.current.row == Board::ROW_1
                 && active_color == PlayerColor::White
                 && self.castling_white.kingside
             {
@@ -232,14 +232,14 @@ impl Position {
                 return MoveLegality::FullyIllegal;
             }
         } else if step == -2 {
-            if turn.from.row == Board::ROW_8
+            if turn.current.row == Board::ROW_8
                 && active_color == PlayerColor::Black
                 && self.castling_black.queenside
             {
                 if self.is_castle_illegal(&CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED, active_color) {
                     return MoveLegality::FullyIllegal;
                 }
-            } else if turn.from.row == Board::ROW_1
+            } else if turn.current.row == Board::ROW_1
                 && active_color == PlayerColor::White
                 && self.castling_white.queenside
             {
@@ -265,17 +265,19 @@ impl Position {
         is_capture: bool,
     ) -> MoveLegality {
         // Forward moves
-        if turn.from.column == turn.to.column {
+        if turn.current.column == turn.target.column {
             if is_capture {
                 return MoveLegality::FullyIllegal;
             }
 
             if match active_color {
                 PlayerColor::Black => {
-                    turn.to.row.abs_diff(turn.from.row) == 2 && turn.from.row != Board::ROW_7
+                    turn.current.row.abs_diff(turn.target.row) == 2
+                        && turn.current.row != Board::ROW_7
                 }
                 PlayerColor::White => {
-                    turn.from.row.abs_diff(turn.to.row) == 2 && turn.from.row != Board::ROW_2
+                    turn.current.row.abs_diff(turn.target.row) == 2
+                        && turn.current.row != Board::ROW_2
                 }
             } {
                 return MoveLegality::FullyIllegal;
@@ -283,12 +285,14 @@ impl Position {
         }
 
         // Check if a pawn can capture diagonally
-        if turn.from.column != turn.to.column && self.get_field_occupation(&turn.to).is_none() {
+        if turn.current.column != turn.target.column
+            && self.get_field_occupation(&turn.target).is_none()
+        {
             let Some(field) = self.en_passant else {
                 return MoveLegality::FullyIllegal;
             };
 
-            if turn.to.column != field.column || turn.from.row != field.row {
+            if turn.target.column != field.column || turn.current.row != field.row {
                 return MoveLegality::FullyIllegal;
             }
         }
@@ -338,13 +342,14 @@ impl Position {
                             // Handling of the next loops
                             match self.is_legal_move(turn, false) {
                                 MoveLegality::Legal => {
-                                    if self.get_field_occupation(&turn.to).is_none() {
+                                    if self.get_field_occupation(&turn.target).is_none() {
                                         continue;
                                     }
                                     break;
                                 }
                                 MoveLegality::LastLegal => {
-                                    if let Some(target_piece) = self.get_field_occupation(&turn.to)
+                                    if let Some(target_piece) =
+                                        self.get_field_occupation(&turn.target)
                                     {
                                         if PieceType::King == target_piece.get_type() {
                                             return true;
@@ -387,7 +392,7 @@ impl Position {
                         while let Some(turn) = piece_iterator.current() {
                             // Dont check castling options
                             if PieceType::King == piece.get_type()
-                                && turn.from.column.abs_diff(turn.to.column) == 2
+                                && turn.current.column.abs_diff(turn.target.column) == 2
                             {
                                 continue;
                             }
