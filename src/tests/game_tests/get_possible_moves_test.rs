@@ -4,6 +4,7 @@ mod tests {
         Board::{self, *},
         FEN, Field, Turn,
         data_structures::piece::piece_type::PieceType,
+        position::position_struct::{COLUMN_AMOUNT, ROW_AMOUNT},
     };
 
     /// Tests the possible moves of the king
@@ -67,7 +68,7 @@ mod tests {
         assert!(possible_moves.len() == 23);
         // Test horizontally
         let mut column = Board::COLUMN_A;
-        while column < 8 {
+        while column < COLUMN_AMOUNT as u8 {
             let test_turn = Turn {
                 from: FIELD_D2,
                 to: Field::new(column, Board::ROW_2).unwrap(),
@@ -79,7 +80,7 @@ mod tests {
             column += 1;
         }
         let mut row = Board::ROW_1;
-        while row < 8 {
+        while row < ROW_AMOUNT as u8 {
             let test_turn = Turn {
                 from: FIELD_D2,
                 to: Field::new(Board::COLUMN_D, row).unwrap(),
@@ -133,7 +134,7 @@ mod tests {
         assert!(possible_moves.len() == 14);
         // Test horizontally
         let mut column = Board::COLUMN_A;
-        while column < 8 {
+        while column < COLUMN_AMOUNT as u8 {
             let test_turn = Turn {
                 from: FIELD_D2,
                 to: Field::new(column, Board::ROW_2).unwrap(),
@@ -145,7 +146,7 @@ mod tests {
             column += 1;
         }
         let mut row = Board::ROW_1;
-        while row < 8 {
+        while row < ROW_AMOUNT as u8 {
             let test_turn = Turn {
                 from: FIELD_D2,
                 to: Field::new(Board::COLUMN_D, row).unwrap(),

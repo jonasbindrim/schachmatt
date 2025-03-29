@@ -1,6 +1,9 @@
 use crate::{
     Board, Field, Piece, PlayerColor, Position,
-    position::{position_struct::BoardSetup, util::castling_rights::CastlingRights},
+    position::{
+        position_struct::{BoardSetup, COLUMN_AMOUNT, ROW_AMOUNT},
+        util::castling_rights::CastlingRights,
+    },
     util::error::{error_messages::FEN_IMPORT_ERROR, parser_error::ParserError},
 };
 
@@ -24,7 +27,7 @@ pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
     }
 
     // 1. Board position
-    let mut board_position = [[None; 8]; 8];
+    let mut board_position = [[None; COLUMN_AMOUNT]; ROW_AMOUNT];
     if let Some(error) = string_to_piece_data(fen_parts.first().unwrap(), &mut board_position) {
         return Err(error);
     }
@@ -70,8 +73,8 @@ fn string_to_piece_data(piece_data: &str, board: &mut BoardSetup) -> Option<Pars
     // Split the different rows at '/'
     let rows: Vec<&str> = piece_data.split('/').collect();
 
-    // Return error if data does not contain exactly 8 rows
-    if rows.len() != 8 {
+    // Return error if expected row amount doesnt match
+    if rows.len() != ROW_AMOUNT {
         return Some(ParserError::new(FEN_IMPORT_ERROR));
     }
 
@@ -81,13 +84,13 @@ fn string_to_piece_data(piece_data: &str, board: &mut BoardSetup) -> Option<Pars
             if *char_index >= b'1' && *char_index <= b'8' {
                 // Any amount of none pieces
                 let empty_fields_amount = char_index - b'0';
-                if piece_counter + empty_fields_amount as usize > 8 {
+                if piece_counter + empty_fields_amount as usize > COLUMN_AMOUNT {
                     return Some(ParserError::new(FEN_IMPORT_ERROR));
                 }
                 piece_counter += empty_fields_amount as usize;
             } else if let Some(piece) = Piece::import_piece(*char_index as char) {
                 // Any real (not-none) piece
-                if piece_counter > 7 {
+                if piece_counter > (COLUMN_AMOUNT - 1) {
                     return Some(ParserError::new(FEN_IMPORT_ERROR));
                 }
 

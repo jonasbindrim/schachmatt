@@ -61,17 +61,12 @@ impl<'a> PieceMoveIterator<'a> {
         };
 
         // Calculate next iterator field
-        let target_row = self.base_field.row as i8 + row_increment;
-        let target_column = self.base_field.column as i8 + column_increment;
-
-        // Check if turn is in bounds and return if so
-        if Self::out_of_bounds_check(target_row, target_column) {
-            return Option::None;
-        }
+        let target_row = (self.base_field.row as i8 + row_increment) as u8;
+        let target_column = (self.base_field.column as i8 + column_increment) as u8;
 
         let turn = Turn {
             from: self.base_field,
-            to: Field::new(target_column as u8, target_row as u8)?,
+            to: Field::new(target_column, target_row)?,
             promotion: None,
         };
 
@@ -88,14 +83,5 @@ impl<'a> PieceMoveIterator<'a> {
             return true;
         }
         false
-    }
-
-    /// Checks if a field would be out of bounds
-    /// - `row` - The row to check
-    /// - `column` - The column to check
-    /// - `returns` - True if the field is out of bounds
-    #[inline]
-    fn out_of_bounds_check(row: i8, column: i8) -> bool {
-        !(0..=7).contains(&row) || !(0..=7).contains(&column)
     }
 }
