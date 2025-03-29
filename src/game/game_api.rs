@@ -97,7 +97,7 @@ impl Game {
     /// Index 0 contains the starting position
     /// - `returns` - All positions played in this game.
     #[must_use]
-    pub fn get_all_position(&self) -> Vec<Position> {
+    pub fn get_all_positions(&self) -> Vec<Position> {
         self.position_history.clone()
     }
 
