@@ -1,5 +1,7 @@
 use core::fmt;
 
+use crate::Board::{COLUMN_H, ROW_8};
+
 /// Represents a board location in a chess game.
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[cfg_attr(test, derive(Debug))]
@@ -14,7 +16,7 @@ impl Field {
     /// For easy usage use the board constants as arguments (Board::)
     #[must_use]
     pub const fn new(column: u8, row: u8) -> Option<Self> {
-        if column > 7 || row > 7 {
+        if column > COLUMN_H || row > ROW_8 {
             return None;
         }
 
