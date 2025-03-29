@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 extern crate pest;
 
 #[macro_use]
@@ -12,6 +14,7 @@ mod position;
 pub use crate::position::position_struct::Position;
 
 mod data_structures;
+pub use crate::data_structures::board_descriptors as Board;
 pub use crate::data_structures::field::Field;
 pub use crate::data_structures::game_result::GameResult;
 pub use crate::data_structures::piece::Piece;

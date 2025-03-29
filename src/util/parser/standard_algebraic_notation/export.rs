@@ -1,4 +1,6 @@
-use crate::{Piece, PlayerColor, Position, Turn, data_structures::piece::piece_type::PieceType};
+use crate::{
+    Board, Piece, PlayerColor, Position, Turn, data_structures::piece::piece_type::PieceType,
+};
 
 /// Converts a `Turn` into its corresponding SAN representation.
 /// - `turn` - The turn object that will be converted
@@ -10,52 +12,53 @@ use crate::{Piece, PlayerColor, Position, Turn, data_structures::piece::piece_ty
 pub fn from_turn(turn: Turn, current_position: &Position) -> String {
     let mut san_turn = String::new();
 
-    let target_field =
-        current_position.board_position[turn.to.row as usize][turn.to.column as usize];
-    let moving_piece =
-        current_position.board_position[turn.from.row as usize][turn.from.column as usize];
+    let mut is_capture = current_position
+        .get_field_occupation(&turn.target)
+        .is_some();
+    let from_field = current_position.get_field_occupation(&turn.current);
 
-    match moving_piece.get_type() {
-        PieceType::None => unreachable!(),
-        PieceType::Pawn => {
-            let check_field: i8 = {
-                match current_position.active_color {
-                    PlayerColor::Black => (turn.to.row as i8) + 1,
-                    PlayerColor::White => (turn.to.row as i8) - 1,
-                }
-            };
+    let Some(moving_piece) = from_field else {
+        todo!() // TODO: Handle illegal move
+    };
 
-            let mut is_capture: bool = PieceType::None != target_field.get_type();
-            if let Some(field) = current_position.en_passant {
-                if turn.to.column == field.column && check_field == field.row as i8 {
-                    is_capture = true;
-                }
+    if moving_piece.get_type() == PieceType::Pawn {
+        let check_field: i8 = {
+            match current_position.active_color {
+                PlayerColor::Black => (turn.target.row as i8) + 1,
+                PlayerColor::White => (turn.target.row as i8) - 1,
             }
+        };
 
-            if is_capture {
-                san_turn.push((turn.from.column + b'a') as char);
+        if let Some(field) = current_position.en_passant {
+            if turn.target.column == field.column && check_field == field.row as i8 {
+                is_capture = true;
             }
-            to_move(&mut san_turn, turn, current_position, is_capture);
         }
-        _ => {
-            if PieceType::King == moving_piece.get_type() {
-                // Is kingside castle
-                if turn.from.column + 2 == turn.to.column {
-                    return String::from("O-O");
-                } else if turn.from.column == 4 && turn.from.column - 2 == turn.to.column {
-                    return String::from("O-O-O");
-                }
-            }
-            san_turn.push(PieceType::export_piecetype_uppercase(moving_piece.get_type()).unwrap());
-            add_field_descriptor(&mut san_turn, turn, current_position);
 
-            let captured_piece =
-                current_position.board_position[turn.to.row as usize][turn.to.column as usize];
-            let is_capture = PieceType::None != captured_piece.get_type();
-            to_move(&mut san_turn, turn, current_position, is_capture);
+        if is_capture {
+            san_turn.push((turn.current.column + b'a') as char);
         }
+        to_move(&mut san_turn, turn, current_position, is_capture);
+    } else {
+        if PieceType::King == moving_piece.get_type() {
+            // Is kingside castle
+            if turn.current.column + 2 == turn.target.column {
+                return String::from("O-O");
+            }
+
+            if turn.current.column == Board::COLUMN_E
+                && turn.current.column - 2 == turn.target.column
+            {
+                return String::from("O-O-O");
+            }
+        }
+        san_turn.push(PieceType::export_piecetype_uppercase(
+            moving_piece.get_type(),
+        ));
+        add_field_descriptor(&mut san_turn, turn, current_position);
+        to_move(&mut san_turn, turn, current_position, is_capture);
     }
-    
+
     san_turn
 }
 
@@ -64,14 +67,14 @@ pub fn from_turn(turn: Turn, current_position: &Position) -> String {
 /// - `turn` - The turn which was played
 /// - `current_position` - The position the turn was played in
 fn add_field_descriptor(base: &mut String, turn: Turn, current_position: &Position) {
-    let column = turn.from.column;
-    let row = turn.from.row;
+    let column = turn.current.column;
+    let row = turn.current.row;
 
-    let piece = current_position.board_position[row as usize][column as usize];
-    if !is_unique_descriptor(turn, current_position, piece, None, None) {
-        if is_unique_descriptor(turn, current_position, piece, Some(column), None) {
+    let occupation = current_position.get_field_occupation(&turn.current);
+    if !is_unique_descriptor(turn, current_position, occupation, None, None) {
+        if is_unique_descriptor(turn, current_position, occupation, Some(column), None) {
             base.push((column + b'a') as char);
-        } else if is_unique_descriptor(turn, current_position, piece, None, Some(row)) {
+        } else if is_unique_descriptor(turn, current_position, occupation, None, Some(row)) {
             base.push((row + b'1') as char);
         } else {
             base.push((column + b'a') as char);
@@ -92,17 +95,19 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
     }
 
     // Add target_field
-    base.push_str(&turn.to.to_string());
+    base.push_str(&turn.target.to_string());
 
     // Check if promotion
     if let Some(piece) = turn.promotion {
-        base.push('=');
-        base.push(PieceType::export_piecetype_uppercase(piece).unwrap());
+        base.push_str(&format!(
+            "={}",
+            PieceType::export_piecetype_uppercase(piece)
+        ));
     }
 
     // Check if is in check
     let mut copy_position = current_position.clone();
-    copy_position.turn(&turn);
+    copy_position.turn(&turn).unwrap();
     if copy_position.is_in_check(copy_position.get_active_color()) {
         if copy_position.get_possible_moves().is_empty() {
             base.push('#');
@@ -122,7 +127,7 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
 fn is_unique_descriptor(
     checked_turn: Turn,
     current_position: &Position,
-    piece: Piece,
+    occupation: Option<Piece>,
     column: Option<u8>,
     row: Option<u8>,
 ) -> bool {
@@ -130,17 +135,15 @@ fn is_unique_descriptor(
 
     let mut counter = 0;
     for turn in possible_moves {
-        if turn.to == checked_turn.to
-            && piece
-                == current_position.board_position[turn.from.row as usize]
-                    [turn.from.column as usize]
+        if turn.target == checked_turn.target
+            && occupation == current_position.get_field_occupation(&turn.current)
         {
             match column {
                 Some(column_value) => {
-                    if turn.from.column == column_value {
+                    if turn.current.column == column_value {
                         match row {
                             Some(row_value) => {
-                                if turn.from.row == row_value {
+                                if turn.current.row == row_value {
                                     counter += 1;
                                 }
                             }
@@ -150,7 +153,7 @@ fn is_unique_descriptor(
                 }
                 None => match row {
                     Some(row_value) => {
-                        if turn.from.row == row_value {
+                        if turn.current.row == row_value {
                             counter += 1;
                         }
                     }

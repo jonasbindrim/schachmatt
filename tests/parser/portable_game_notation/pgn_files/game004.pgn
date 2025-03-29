@@ -1,0 +1,29 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2023.01.13"]
+[Round "-"]
+[White ""]
+[Black ""]
+[Result "1-0"]
+[CurrentPosition "B5r1/p1b2p2/n3p1pk/2q3Np/5P1n/P3Q1R1/1P3P1P/6RK b - -"]
+[Timezone "UTC"]
+[ECO "B10"]
+[ECOUrl "https://www.chess.com/openings/Caro-Kann-Defense-Hillbilly-Attack-2...d5"]
+[UTCDate "2023.01.13"]
+[UTCTime "15:38:57"]
+[WhiteElo "1264"]
+[BlackElo "1217"]
+[TimeControl "180"]
+[Termination ""]
+[StartTime "15:38:57"]
+[EndDate "2023.01.13"]
+[EndTime "15:43:54"]
+[Link "https://www.chess.com/game/live/67363390229"]
+[FEN "B5r1/p1b2p2/n3p1pk/2q3Np/5P1n/P3Q1R1/1P3P1P/6RK b - - 0 36"]
+
+1. e4 c6 2. Bc4 d5 3. exd5 cxd5 4. Bb3 Nc6 5. d4 Bf5 6. Nf3 e6 7. O-O Bd6 8. c3
+Nge7 9. c4 O-O 10. c5 Bc7 11. Nc3 Bg4 12. Bg5 Qd7 13. Qd3 h6 14. Bd2 Nf5 15. Be3
+Nb4 16. Qd2 Bxf3 17. gxf3 Nh4 18. Qe2 Kh7 19. Kh1 b6 20. Rg1 bxc5 21. dxc5 Rg8
+22. a3 Na6 23. Bc2+ g6 24. Rg4 Nf5 25. Rag1 h5 26. R4g2 Nh4 27. Rg3 Nf5 28. Rg5
+Bd8 29. R5g2 Nh4 30. Rg3 Bc7 31. f4 d4 32. Ne4 dxe3 33. Ng5+ Kh6 34. Qxe3 Qc6+
+35. Be4 Qxc5 36. Bxa8 1-0

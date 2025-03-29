@@ -1,0 +1,21 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2023.01.07"]
+[Round "?"]
+[White ""]
+[Black ""]
+[Result "1-0"]
+[ECO "B12"]
+[WhiteElo "1284"]
+[BlackElo "1256"]
+[TimeControl "300"]
+[EndTime "11:13:16 PST"]
+[Termination ""]
+[FEN "8/2k3pp/8/1pR1P3/1P1r4/P7/5b1P/5K2 b - - 1 37"]
+
+1. e4 c6 2. d4 d5 3. e5 c5 4. c3 Nc6 5. Bb5 a6 6. Bxc6+ bxc6 7. Nf3 Bg4 8. Qa4
+Qb6 9. O-O Bxf3 10. gxf3 cxd4 11. cxd4 e6 12. b3 Ne7 13. Be3 Nf5 14. Rd1 Be7 15.
+Nc3 O-O 16. Rab1 Nh4 17. f4 f6 18. a3 fxe5 19. fxe5 Nf5 20. b4 Bh4 21. Qc2 Nxe3
+22. fxe3 Rf2 23. Qd3 Raf8 24. Na4 Qb5 25. Qxb5 cxb5 26. Nc5 R8f3 27. Nxe6 Rxe3
+28. Rbc1 Ree2 29. Rc8+ Kf7 30. Rf1 Kxe6 31. Rxf2 Rxf2 32. Rc6+ Kd7 33. Rxa6 Rd2
+34. Rd6+ Kc7 35. Rxd5 Bf2+ 36. Kf1 Rxd4 37. Rc5+ 1-0

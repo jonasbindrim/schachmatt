@@ -1,0 +1,33 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2023.01.20"]
+[Round "-"]
+[White ""]
+[Black ""]
+[Result "1-0"]
+[CurrentPosition "1k6/8/4R3/6r1/1P3R2/P4B2/7p/7K b - -"]
+[Timezone "UTC"]
+[ECO "C23"]
+[ECOUrl "https://www.chess.com/openings/Bishops-Opening"]
+[UTCDate "2023.01.20"]
+[UTCTime "16:37:22"]
+[WhiteElo "1340"]
+[BlackElo "1285"]
+[TimeControl "300"]
+[Termination ""]
+[StartTime "16:37:22"]
+[EndDate "2023.01.20"]
+[EndTime "16:45:17"]
+[Link "https://www.chess.com/game/live/67971763847"]
+[FEN "1k6/8/4R3/6r1/1P3R2/P4B2/7p/7K b - - 0 48"]
+
+1. e4 e5 2. Bc4 d6 3. a3 a6 4. d3 b5 5. Bb3 c5 6. Nc3 Nf6 7. Bg5 Be7 8. h3 h6 9.
+Bh4 g5 10. Bg3 Bb7 $6 11. Nf3 Nbd7 12. Qe2 Qc7 13. Bh2 Rf8 $6 14. g4 $6 O-O-O 15.
+Qd2 $4 Nb6 $4 16. O-O $4 h5 17. Nxg5 hxg4 $2 18. Nxf7 $2 gxh3 $4 19. Nxd8 Bxd8 20. Qh6 $6
+Rg8+ $4 21. Kh1 Qg7 $4 22. Qxg7 Rxg7 23. f3 $2 c4 24. dxc4 bxc4 25. Ba2 d5 26.
+exd5 $6 Nfxd5 $2 27. Bxe5 $6 Rg6 $2 28. Ne4 Ne3 29. Rfc1 $4 Rh6 $4 30. Bf4 $1 Nxc2 31.
+Rxc2 Rh4 32. Be3 $6 Bxe4 33. fxe4 Rxe4 34. Bxb6 Bxb6 35. Bxc4 Kb8 36. Bxa6 Bc7
+37. Bd3 Rh4 $6 38. Rac1 Bb6 $6 39. b4 $6 Kb7 40. Bf5 $6 Be3 $2 41. Re1 Bf4 $2 42. Re7+
+Kb6 43. Re6+ Kb7 $6 44. Rcc6 $2 Rh5 45. Bg4 $2 Rg5 $2 46. Bf3 h2 $6 47. Rc4+ Kb8 48.
+Rxf4 {<br /><br />So hätte die Partien weitergehen können...} (48. Rxf4 Rg1+ 49.
+Kxh2 Rg7 50. Ra6 Rh7+ 51. Kg3 Rg7+ 52. Kf2 {+66.8}) 1-0

@@ -1,7 +1,9 @@
 use crate::{
-    Field, Piece, PlayerColor, Position,
-    data_structures::piece::piece_type::PieceType,
-    position::util::castling_rights::CastlingRights,
+    Board, Field, Piece, PlayerColor, Position,
+    position::{
+        position_struct::{BoardSetup, COLUMN_AMOUNT, ROW_AMOUNT},
+        util::castling_rights::CastlingRights,
+    },
     util::error::{error_messages::FEN_IMPORT_ERROR, parser_error::ParserError},
 };
 
@@ -25,7 +27,7 @@ pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
     }
 
     // 1. Board position
-    let mut board_position = [[Piece::new(PieceType::None, None); 8]; 8];
+    let mut board_position = [[None; COLUMN_AMOUNT]; ROW_AMOUNT];
     if let Some(error) = string_to_piece_data(fen_parts.first().unwrap(), &mut board_position) {
         return Err(error);
     }
@@ -67,32 +69,32 @@ pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
 /// - `piece_data` - The piece data of a fen string
 /// - `board` - The board which gets filled with the `piece_data`
 /// - `returns` - An error if the conversion fails
-fn string_to_piece_data(piece_data: &str, board: &mut [[Piece; 8]; 8]) -> Option<ParserError> {
+fn string_to_piece_data(piece_data: &str, board: &mut BoardSetup) -> Option<ParserError> {
     // Split the different rows at '/'
     let rows: Vec<&str> = piece_data.split('/').collect();
 
-    // Return error if data doesnt contain exactly 8 rows
-    if rows.len() != 8 {
+    // Return error if expected row amount doesnt match
+    if rows.len() != ROW_AMOUNT {
         return Some(ParserError::new(FEN_IMPORT_ERROR));
     }
 
-    for row_counter in (0..8).rev() {
+    for row_counter in ((Board::ROW_1 as usize)..=(Board::ROW_8 as usize)).rev() {
         let mut piece_counter: usize = 0;
         for char_index in rows[row_counter].as_bytes() {
             if *char_index >= b'1' && *char_index <= b'8' {
                 // Any amount of none pieces
                 let empty_fields_amount = char_index - b'0';
-                if piece_counter + empty_fields_amount as usize > 8 {
+                if piece_counter + empty_fields_amount as usize > COLUMN_AMOUNT {
                     return Some(ParserError::new(FEN_IMPORT_ERROR));
                 }
                 piece_counter += empty_fields_amount as usize;
             } else if let Some(piece) = Piece::import_piece(*char_index as char) {
                 // Any real (not-none) piece
-                if piece_counter > 7 {
+                if piece_counter > (COLUMN_AMOUNT - 1) {
                     return Some(ParserError::new(FEN_IMPORT_ERROR));
                 }
 
-                board[7 - row_counter][piece_counter] = piece;
+                board[Board::COLUMN_H as usize - row_counter][piece_counter] = Some(piece);
                 piece_counter += 1;
             } else {
                 return Some(ParserError::new(FEN_IMPORT_ERROR));
@@ -134,7 +136,7 @@ fn string_to_field(field_data: &str) -> Result<Option<Field>, ParserError> {
     }
 
     // Convert field
-    match Field::from_string(field_data) {
+    match Field::new_from_string(field_data) {
         Some(field) => Ok(Some(field)),
         None => Err(ParserError::new(FEN_IMPORT_ERROR)),
     }

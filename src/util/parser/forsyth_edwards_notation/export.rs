@@ -1,4 +1,7 @@
-use crate::{Piece, PlayerColor, Position, position::util::castling_rights::CastlingRights};
+use crate::{
+    Board, PlayerColor, Position,
+    position::{position_struct::BoardSetup, util::castling_rights::CastlingRights},
+};
 
 /// Converts a `Position` into a string in FEN notation.
 /// - `position` - The position that gets converted
@@ -44,27 +47,27 @@ pub fn export_to_fen(position: &Position) -> String {
 /// Converts the board position of a game into a fen compatible position string
 /// - `board_position` - A two-dimensional array describing the current board
 /// - `returns` - The board position part of a fen
-fn export_piece_placement_data(board_position: &[[Piece; 8]; 8]) -> String {
+fn export_piece_placement_data(board_position: &BoardSetup) -> String {
     let mut piece_data: String = String::new();
 
-    for row in (0..8).rev() {
+    for row in ((Board::ROW_1 as usize)..=(Board::ROW_8 as usize)).rev() {
         let mut empty_counter = 0;
-        for column in 0..8 {
-            match board_position[row][column].export_piece() {
-                Some(letter) => {
-                    if empty_counter != 0 {
-                        piece_data.push_str(&empty_counter.to_string());
-                        empty_counter = 0;
-                    }
-                    piece_data.push(letter);
-                }
-                None => empty_counter += 1,
+        for column in (Board::COLUMN_A as usize)..=(Board::COLUMN_H as usize) {
+            let Some(piece) = board_position[row][column] else {
+                empty_counter += 1;
+                continue;
+            };
+
+            if empty_counter != 0 {
+                piece_data.push_str(&empty_counter.to_string());
+                empty_counter = 0;
             }
+            piece_data.push(piece.export_piece());
         }
         if empty_counter != 0 {
             piece_data.push_str(&empty_counter.to_string());
         }
-        if row != 0 {
+        if row != Board::ROW_1 as usize {
             piece_data.push('/');
         }
     }

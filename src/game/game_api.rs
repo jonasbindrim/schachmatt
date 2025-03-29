@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use crate::{FEN, Game, GameResult, PlayerColor, Position, Turn, util::error::error_messages};
+use crate::{
+    FEN, Game, GameResult, PlayerColor, Position, Turn,
+    util::error::error_messages::{self},
+};
 
 impl Game {
     /// Creates a new `Game` with the default chess board setup.
@@ -43,6 +46,11 @@ impl Game {
             .insert(key.to_string(), value.to_string());
     }
 
+    /// Returns all existing metadata keys
+    pub fn get_metadata_keys(&self) -> Vec<String> {
+        self.game_metadata.keys().cloned().collect()
+    }
+
     /// Returns a copy of the current game state.
     /// - `returns` - A copy of the current game state.
     /// # Panics
@@ -58,18 +66,23 @@ impl Game {
     }
 
     /// Executes the given turn.
+    /// Returns a result which indicates whether the given turn was legal.
+    /// An illegal turn is not executed and an error is returned.
     /// - `turn` - The turn to play
-    pub fn execute_turn(&mut self, turn: Turn) {
+    pub fn execute_turn(&mut self, turn: Turn) -> Result<(), String> {
         let mut current_position = self.get_current_state();
-        current_position.turn(&turn);
+        current_position.turn(&turn)?;
+
         self.position_history.push(current_position);
         self.turn_history.push(turn);
+
+        Ok(())
     }
 
     /// Returns the result of this game.
-    /// - `returns` - The result of this game
+    /// - `returns` - The result of this game. Is none if the game has not concluded.
     #[must_use]
-    pub fn get_game_result(&mut self) -> GameResult {
+    pub fn get_game_result(&mut self) -> Option<GameResult> {
         self.get_current_state_reference().game_over_check()
     }
 
@@ -78,6 +91,22 @@ impl Game {
     #[must_use]
     pub fn get_color_at_turn(&self) -> PlayerColor {
         self.get_current_state_reference().active_color
+    }
+
+    /// Returns all position played in this game.
+    /// Index 0 contains the starting position
+    /// - `returns` - All positions played in this game.
+    #[must_use]
+    pub fn get_all_position(&self) -> Vec<Position> {
+        self.position_history.clone()
+    }
+
+    /// Returns the position after the given halfmove.
+    /// - `halfmove` - 0 = Starting position. X = Position after halfmove x.
+    /// - `returns` - The position after the given halfmove
+    #[must_use]
+    pub fn get_position_by_turn(&self, halfmove: u16) -> Option<Position> {
+        Some(self.position_history.get(halfmove as usize)?.clone())
     }
 
     /// Returns the latest turn played in this game.
