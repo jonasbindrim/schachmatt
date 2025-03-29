@@ -52,7 +52,7 @@ fn export_piece_placement_data(board_position: &BoardSetup) -> String {
 
     for row in ((Board::ROW_1 as usize)..=(Board::ROW_8 as usize)).rev() {
         let mut empty_counter = 0;
-        for column in (Board::COLUMN_A as usize)..8 {
+        for column in (Board::COLUMN_A as usize)..=(Board::COLUMN_H as usize) {
             let Some(piece) = board_position[row][column] else {
                 empty_counter += 1;
                 continue;
