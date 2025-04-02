@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod long_algebraic_notation_export_tests {
     use schachmatt::{Board::*, LAN, PieceType, Turn};
 
     #[test]
