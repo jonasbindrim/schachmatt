@@ -1,3 +1,4 @@
+mod forsyth_edwards_notation;
 mod long_algebraic_notation;
 mod portable_game_notation;
 mod standard_algbraic_notation;
