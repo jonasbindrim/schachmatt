@@ -46,13 +46,13 @@ mod forsyth_edwards_notation_import_tests {
 
     #[test]
     #[should_panic(expected = "Returned error")]
-    pub fn import_test_invalid_fullmove_counter() {
+    pub fn import_test_invalid_halfmove_clock() {
         FEN::import("8/8/8/8/8/8/8/8 w K - -1 1").expect("Returned error");
     }
 
     #[test]
     #[should_panic(expected = "Returned error")]
-    pub fn import_test_invalid_halfmove_clock() {
+    pub fn import_test_invalid_fullmove_counter() {
         FEN::import("8/8/8/8/8/8/8/8 w K - 0 -1").expect("Returned error");
     }
 

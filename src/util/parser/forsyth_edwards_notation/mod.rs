@@ -1,6 +1,7 @@
-//! Forsyth-Edwards-Notation.
-//! Methods to convert `Position` into and load `Position` from FEN representations.
+//! Forsyth-Edwards-Notation.  
+//! Methods to convert `Position` into FEN notation and import `Position` from FEN representations.
 
+mod error;
 mod export;
 mod import;
 

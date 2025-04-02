@@ -4,177 +4,229 @@ use crate::{
         position_struct::{BoardSetup, COLUMN_AMOUNT, ROW_AMOUNT},
         util::castling_rights::CastlingRights,
     },
-    util::error::{error_messages::FEN_IMPORT_ERROR, parser_error::ParserError},
 };
+
+use super::error::FenParserError;
 
 pub(crate) const DEFAULT_BOARD_SETUP: &str =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+const PIECE_PLACEMENT_DATA: &str = "Piece placement data";
+const ACTIVE_COLOR: &str = "Active color";
+const CASTLING_AVAILABILITY: &str = "Castling availability";
+const EN_PASSANT_TARGET_SQUARE: &str = "En passant target square";
+const HALFMOVE_CLOCK: &str = "Halfmove clock";
+const FULLMOVE_NUMBER: &str = "Fullmove number";
+
 /// Converts a string in FEN notation into a `Position`.
 /// which is described in the fen notation.
-/// - `fen_notation` - The fen string to be converted
-/// - `returns` - The position described in the fen string or an error
+/// - `fen_input` - A string containing a position as a fen notation
+/// - `returns` - The position described in the input string or an error
 /// # Errors
-/// Returns a `ParserError` when the string cannot be converted into `Position`.
-/// # Panics
-/// This panic indicates an error in the library.
-pub fn import_from_fen(fen_notation: &str) -> Result<Position, ParserError> {
+/// Returns a `FenParserError` when the input cannot be converted into `Position`.
+pub fn import_from_fen(fen_input: &str) -> Result<Position, FenParserError> {
     // Split fen string and check if amount of blocks is correct
-    let fen_parts: Vec<&str> = fen_notation.split_ascii_whitespace().collect();
+    let fen_parts: Vec<&str> = fen_input.split_ascii_whitespace().collect();
 
-    if fen_parts.len() != 6 {
-        return Err(ParserError::new(FEN_IMPORT_ERROR));
-    }
-
-    // 1. Board position
+    // 1. Piece placement data
+    let Some(piece_placement_input) = fen_parts.first() else {
+        return Err(FenParserError::FenDataMissing {
+            missing_part: PIECE_PLACEMENT_DATA.to_string(),
+            fen_input: fen_input.to_string(),
+        });
+    };
     let mut board_position = [[None; COLUMN_AMOUNT]; ROW_AMOUNT];
-    if let Some(error) = string_to_piece_data(fen_parts.first().unwrap(), &mut board_position) {
-        return Err(error);
-    }
+    compute_piece_placement_data(piece_placement_input, &mut board_position)?;
 
     // 2. Active color
-    let active_color: PlayerColor = string_to_active_color(fen_parts.get(1).unwrap())?;
+    let Some(active_color) = fen_parts.get(1) else {
+        return Err(FenParserError::FenDataMissing {
+            missing_part: ACTIVE_COLOR.to_string(),
+            fen_input: fen_input.to_string(),
+        });
+    };
+    let active_color: PlayerColor = string_to_active_color(active_color)?;
 
     // 3. Castling availability
-    let (black_kingside, black_queenside, white_kingside, white_queenside) =
-        string_to_castling_rights(fen_parts.get(2).unwrap())?;
+    let Some(castling_availability) = fen_parts.get(2) else {
+        return Err(FenParserError::FenDataMissing {
+            missing_part: CASTLING_AVAILABILITY.to_string(),
+            fen_input: fen_input.to_string(),
+        });
+    };
+    let (white_castle, black_castle) = string_to_castling_rights(castling_availability)?;
 
     // 4. En passant target square
-    let en_passant = string_to_field(fen_parts.get(3).unwrap())?;
+    let Some(en_passant) = fen_parts.get(3) else {
+        return Err(FenParserError::FenDataMissing {
+            missing_part: EN_PASSANT_TARGET_SQUARE.to_string(),
+            fen_input: fen_input.to_string(),
+        });
+    };
+    let en_passant = get_en_passant_square(en_passant)?;
 
     // 5. Halfmove clock
-    let halfmove_clock = string_to_u16(fen_parts.get(4).unwrap())?;
+    let Some(halfmove_clock) = fen_parts.get(4) else {
+        return Err(FenParserError::FenDataMissing {
+            missing_part: EN_PASSANT_TARGET_SQUARE.to_string(),
+            fen_input: fen_input.to_string(),
+        });
+    };
+    let halfmove_clock = match halfmove_clock.parse::<u16>() {
+        Ok(value) => value,
+        Err(_) => {
+            return Err(FenParserError::UnrecognisedContent {
+                input: halfmove_clock.to_string(),
+                fen_part: HALFMOVE_CLOCK.to_string(),
+            });
+        }
+    };
 
-    // 6. Fullmove number
-    let fullmove_counter = string_to_u16(fen_parts.get(5).unwrap())?;
+    // 6. Fullmove counter
+    let Some(fullmove_counter) = fen_parts.get(5) else {
+        return Err(FenParserError::FenDataMissing {
+            missing_part: EN_PASSANT_TARGET_SQUARE.to_string(),
+            fen_input: fen_input.to_string(),
+        });
+    };
+    let fullmove_counter = match fullmove_counter.parse::<u16>() {
+        Ok(value) => value,
+        Err(_) => {
+            return Err(FenParserError::UnrecognisedContent {
+                input: halfmove_clock.to_string(),
+                fen_part: FULLMOVE_NUMBER.to_string(),
+            });
+        }
+    };
 
     Ok(Position {
         board_position,
         active_color,
-        castling_white: CastlingRights {
-            queenside: white_queenside,
-            kingside: white_kingside,
-        },
-        castling_black: CastlingRights {
-            queenside: black_queenside,
-            kingside: black_kingside,
-        },
+        castling_white: white_castle,
+        castling_black: black_castle,
         en_passant,
         halfmove_clock,
         fullmove_counter,
     })
 }
 
-/// Converts the string part the fen notation into a two dimensional array of pieces
+/// Computes the piece placement data and adds the correct pieces to the board
 /// - `piece_data` - The piece data of a fen string
 /// - `board` - The board which gets filled with the `piece_data`
-/// - `returns` - An error if the conversion fails
-fn string_to_piece_data(piece_data: &str, board: &mut BoardSetup) -> Option<ParserError> {
+fn compute_piece_placement_data(
+    piece_data: &str,
+    board: &mut BoardSetup,
+) -> Result<(), FenParserError> {
     // Split the different rows at '/'
     let rows: Vec<&str> = piece_data.split('/').collect();
 
-    // Return error if expected row amount doesnt match
-    if rows.len() != ROW_AMOUNT {
-        return Some(ParserError::new(FEN_IMPORT_ERROR));
-    }
-
     for row_counter in ((Board::ROW_1 as usize)..=(Board::ROW_8 as usize)).rev() {
         let mut piece_counter: usize = 0;
-        for char_index in rows[row_counter].as_bytes() {
+        let Some(current_row) = rows.get(row_counter) else {
+            return Err(FenParserError::InvalidPiecePlacementData(format!(
+                "Row {} is missing",
+                row_counter + 1
+            )));
+        };
+        for char_index in current_row.as_bytes() {
             if *char_index >= b'1' && *char_index <= b'8' {
                 // Any amount of none pieces
                 let empty_fields_amount = char_index - b'0';
                 if piece_counter + empty_fields_amount as usize > COLUMN_AMOUNT {
-                    return Some(ParserError::new(FEN_IMPORT_ERROR));
+                    return Err(FenParserError::InvalidPiecePlacementData(format!(
+                        "Row {} contains more than {COLUMN_AMOUNT} fields",
+                        row_counter + 1
+                    )));
                 }
                 piece_counter += empty_fields_amount as usize;
             } else if let Some(piece) = Piece::import_piece(*char_index as char) {
                 // Any real (not-none) piece
                 if piece_counter > (COLUMN_AMOUNT - 1) {
-                    return Some(ParserError::new(FEN_IMPORT_ERROR));
+                    return Err(FenParserError::InvalidPiecePlacementData(format!(
+                        "Row {} contains more than {COLUMN_AMOUNT} fields",
+                        row_counter + 1
+                    )));
                 }
 
                 board[Board::COLUMN_H as usize - row_counter][piece_counter] = Some(piece);
                 piece_counter += 1;
             } else {
-                return Some(ParserError::new(FEN_IMPORT_ERROR));
+                return Err(FenParserError::UnrecognisedContent {
+                    input: (*char_index as char).to_string(),
+                    fen_part: PIECE_PLACEMENT_DATA.to_string(),
+                });
             }
         }
     }
-    None
+    Ok(())
 }
 
 /// Converts the active color part of a fen string into a `PlayerColor`
 /// - `color_data` - The player at turn part of a fen string
 /// - `returns` - The player at turn or an error
-fn string_to_active_color(color_data: &str) -> Result<PlayerColor, ParserError> {
+fn string_to_active_color(color_data: &str) -> Result<PlayerColor, FenParserError> {
     match color_data {
         "w" => Ok(PlayerColor::White),
         "b" => Ok(PlayerColor::Black),
-        _ => Err(ParserError::new(FEN_IMPORT_ERROR)),
-    }
-}
-
-/// This function converts a string into a u16 if possible or returns an error
-/// - `number_data` - Number as string
-/// - `returns` - Number as u16 or an error
-fn string_to_u16(number_data: &str) -> Result<u16, ParserError> {
-    match number_data.parse::<u16>() {
-        Ok(value) => Ok(value),
-        Err(_) => Err(ParserError::new(FEN_IMPORT_ERROR)),
+        _ => Err(FenParserError::UnrecognisedContent {
+            input: color_data.to_string(),
+            fen_part: ACTIVE_COLOR.to_string(),
+        }),
     }
 }
 
 /// This function converts a string to a field
-fn string_to_field(field_data: &str) -> Result<Option<Field>, ParserError> {
+fn get_en_passant_square(field_data: &str) -> Result<Option<Field>, FenParserError> {
     // Check if no field is set
-    if field_data.len() == 1 {
-        match field_data {
-            "-" => return Ok(None),
-            _ => return Err(ParserError::new(FEN_IMPORT_ERROR)),
-        }
+    if field_data == "-" {
+        return Ok(None);
     }
 
     // Convert field
     match Field::new_from_string(field_data) {
         Some(field) => Ok(Some(field)),
-        None => Err(ParserError::new(FEN_IMPORT_ERROR)),
+        None => Err(FenParserError::UnrecognisedContent {
+            input: field_data.to_string(),
+            fen_part: EN_PASSANT_TARGET_SQUARE.to_string(),
+        }),
     }
 }
 
 /// This functions converts a string into the rights to castle
 /// - `castling_data` - The castling part of a fen string
 /// - `returns` - The castling rights in the following order  
-///     0: Black kingside castling rights  
-///     1: Black queenside castling rights  
-///     2: White kingside castling rights  
-///     3: White queenside castling rights
-fn string_to_castling_rights(castling_data: &str) -> Result<(bool, bool, bool, bool), ParserError> {
+///     0: White castling rights
+///     1: Black castling rights
+fn string_to_castling_rights(
+    castling_data: &str,
+) -> Result<(CastlingRights, CastlingRights), FenParserError> {
     let letters = castling_data.as_bytes();
-    if letters.len() > 4 {
-        return Err(ParserError::new(FEN_IMPORT_ERROR));
-    }
 
-    let mut castling_black_kingside = false;
-    let mut castling_black_queenside = false;
-    let mut castling_white_kingside = false;
-    let mut castling_white_queenside = false;
+    let mut castling_black = CastlingRights {
+        queenside: false,
+        kingside: false,
+    };
+
+    let mut castling_white = CastlingRights {
+        queenside: false,
+        kingside: false,
+    };
 
     for position in letters {
         match *position as char {
-            'K' => castling_white_kingside = true,
-            'Q' => castling_white_queenside = true,
-            'k' => castling_black_kingside = true,
-            'q' => castling_black_queenside = true,
+            'K' => castling_white.kingside = true,
+            'Q' => castling_white.queenside = true,
+            'k' => castling_black.kingside = true,
+            'q' => castling_black.queenside = true,
             '-' => break,
-            _ => return Err(ParserError::new(FEN_IMPORT_ERROR)),
+            _ => {
+                return Err(FenParserError::UnrecognisedContent {
+                    input: (*position as char).to_string(),
+                    fen_part: CASTLING_AVAILABILITY.to_string(),
+                });
+            }
         }
     }
 
-    Ok((
-        castling_black_kingside,
-        castling_black_queenside,
-        castling_white_kingside,
-        castling_white_queenside,
-    ))
+    Ok((castling_white, castling_black))
 }
