@@ -12,8 +12,7 @@ use self::{
     piece_type::PieceType,
 };
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(test, derive(Debug))]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Piece {
     piece_type: PieceType,
     piece_color: PlayerColor,

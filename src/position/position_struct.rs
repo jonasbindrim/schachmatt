@@ -7,8 +7,7 @@ pub(crate) const ROW_AMOUNT: usize = 8;
 pub(crate) const COLUMN_AMOUNT: usize = 8;
 
 /// A `Position` is defined as a state in a chess game.
-#[derive(Clone, PartialEq)]
-#[cfg_attr(test, derive(Debug))]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Position {
     // For the board position: The first array dimension is the row, the second one is the column
     pub(crate) board_position: BoardSetup,

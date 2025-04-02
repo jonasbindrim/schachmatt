@@ -1,6 +1,5 @@
 /// Defines the two player colors
-#[derive(Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(test, derive(Debug))]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PlayerColor {
     Black,
     White,
