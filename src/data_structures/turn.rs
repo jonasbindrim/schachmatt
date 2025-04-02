@@ -1,8 +1,7 @@
 use crate::{Field, PieceType};
 
 /// A `Turn` is defined as a combination of two fields and an optional promotion piece.
-#[derive(Copy, Clone, PartialEq, Eq)]
-#[cfg_attr(test, derive(Debug))]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Turn {
     pub(crate) current: Field,
     pub(crate) target: Field,

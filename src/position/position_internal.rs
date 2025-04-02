@@ -270,10 +270,12 @@ impl Position {
                 return MoveLegality::FullyIllegal;
             }
 
-            if  turn.current.row.abs_diff(turn.target.row) == 2 && match active_color {
-                PlayerColor::Black => turn.current.row != Board::ROW_7,
-                PlayerColor::White => turn.current.row != Board::ROW_2,
-            } {
+            if turn.current.row.abs_diff(turn.target.row) == 2
+                && match active_color {
+                    PlayerColor::Black => turn.current.row != Board::ROW_7,
+                    PlayerColor::White => turn.current.row != Board::ROW_2,
+                }
+            {
                 return MoveLegality::FullyIllegal;
             }
         }
