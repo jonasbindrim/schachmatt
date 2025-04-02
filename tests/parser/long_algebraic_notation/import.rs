@@ -9,7 +9,7 @@ mod long_algebraic_notation_import_tests {
     }
 
     #[test]
-    pub fn import_lan_push_ambigious() {
+    pub fn import_lan_push_ambiguous() {
         let turn = LAN::import("e4e5").unwrap();
         assert_eq!(turn, Turn::new(FIELD_E4, FIELD_E5, None));
     }
