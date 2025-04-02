@@ -21,7 +21,7 @@ mod long_algebraic_notation_export_tests {
     }
 
     #[test]
-    pub fn export_lan_pawn_capture_en_paslant() {
+    pub fn export_lan_pawn_capture_en_passant() {
         let test_turn = Turn::new(FIELD_A5, FIELD_B6, None);
         assert_eq!(LAN::export(&test_turn), "a5b6");
     }
