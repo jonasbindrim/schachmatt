@@ -195,8 +195,8 @@ fn get_en_passant_square(field_data: &str) -> Result<Option<Field>, FenParserErr
 /// This functions converts a string into the rights to castle
 /// - `castling_data` - The castling part of a fen string
 /// - `returns` - The castling rights in the following order  
-///     0: White castling rights
-///     1: Black castling rights
+///   0: White castling rights
+///   1: Black castling rights
 fn string_to_castling_rights(
     castling_data: &str,
 ) -> Result<(CastlingRights, CastlingRights), FenParserError> {

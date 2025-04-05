@@ -1,6 +1,7 @@
 //! Portable Game Notation.
 //! Methods to convert `Game` into and load `Game` from PGN representations.
 
+mod error;
 mod export;
 mod import;
 
