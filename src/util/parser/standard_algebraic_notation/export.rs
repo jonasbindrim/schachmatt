@@ -9,7 +9,7 @@ use crate::{
 /// # Panics
 /// This panic indicates an error in the library.
 #[must_use]
-pub fn from_turn(turn: Turn, current_position: &Position) -> String {
+pub fn from_turn(turn: &Turn, current_position: &Position) -> String {
     let mut san_turn = String::new();
 
     let mut is_capture = current_position
@@ -66,7 +66,7 @@ pub fn from_turn(turn: Turn, current_position: &Position) -> String {
 /// - `base` - The base string which gets data appended to
 /// - `turn` - The turn which was played
 /// - `current_position` - The position the turn was played in
-fn add_field_descriptor(base: &mut String, turn: Turn, current_position: &Position) {
+fn add_field_descriptor(base: &mut String, turn: &Turn, current_position: &Position) {
     let column = turn.current.column;
     let row = turn.current.row;
 
@@ -88,7 +88,7 @@ fn add_field_descriptor(base: &mut String, turn: Turn, current_position: &Positi
 /// - `turn` - The turn which was played
 /// - `current_position` - The position the turn was played at
 /// - `is_capture` - Indicates whether the current turn is a capturing turn
-fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_capture: bool) {
+fn to_move(base: &mut String, turn: &Turn, current_position: &Position, is_capture: bool) {
     // Add capture
     if is_capture {
         base.push('x');
@@ -107,7 +107,7 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
 
     // Check if is in check
     let mut copy_position = current_position.clone();
-    copy_position.turn(&turn).unwrap();
+    copy_position.turn(turn).unwrap();
     if copy_position.is_in_check(copy_position.get_active_color()) {
         if copy_position.get_possible_moves().is_empty() {
             base.push('#');
@@ -125,7 +125,7 @@ fn to_move(base: &mut String, turn: Turn, current_position: &Position, is_captur
 /// - `row` - The row the piece is located at
 /// - `returns` - Whether the move indicator is unique
 fn is_unique_descriptor(
-    checked_turn: Turn,
+    checked_turn: &Turn,
     current_position: &Position,
     occupation: Option<Piece>,
     column: Option<u8>,

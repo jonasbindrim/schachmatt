@@ -24,9 +24,7 @@ fn format_turndata(game: &mut Game) -> String {
     let mut result = String::new();
     let mut first_fullmove_indicator: bool = true;
 
-    for position_index in 0..game.position_history.len() {
-        let position = game.get_state_at_index_reference(position_index);
-
+    for (position_index, position) in game.position_history.iter().enumerate() {
         // Add game result. Only done once in the last position
         if position_index == game.position_history.len() - 1 {
             let game_result = match position.game_over_check() {
@@ -61,7 +59,7 @@ fn format_turndata(game: &mut Game) -> String {
         }
 
         // Add turn san data
-        let turn = game.get_turn_at_index(position_index);
+        let turn = game.get_turn_at_index(position_index).unwrap();
         result.push_str(&SAN::export(turn, position));
         result.push(' ');
     }
