@@ -1,7 +1,6 @@
 use crate::{
-    Board, FEN, GameResult, Position, Turn,
+    Board, FEN, GameResult, LAN, Position, PositionError, Turn,
     data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
-    util::error::error_messages::ILLEGAL_TURN_ERROR,
 };
 
 use super::{position_internal::BOARD_FIELDS, util::move_legality::MoveLegality};
@@ -80,10 +79,10 @@ impl Position {
     /// - `action` - The turn which should be played
     /// # Panics
     /// This panic indicates an error in the library.
-    pub fn turn(&mut self, action: &Turn) -> Result<(), &str> {
+    pub fn turn(&mut self, action: &Turn) -> Result<(), PositionError> {
         let possible_moves = self.get_possible_moves();
         if !possible_moves.contains(action) {
-            return Err(ILLEGAL_TURN_ERROR);
+            return Err(PositionError::IllegalTurnError(LAN::export(action)));
         }
 
         self.internal_turn(action);

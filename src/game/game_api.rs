@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{
-    FEN, Game, GameResult, PlayerColor, Position, Turn,
-    util::error::error_messages::{self},
-};
+use crate::{FEN, Game, GameResult, PlayerColor, Position, PositionError, Turn};
 
 impl Game {
     /// Creates a new `Game` with the default chess board setup.
@@ -58,18 +55,14 @@ impl Game {
     /// This panic indicates an error in the library.
     #[must_use]
     pub fn get_current_state(&self) -> Position {
-        let Some(position) = self.position_history.last() else {
-            panic!("{}", error_messages::INTERNAL_ERROR_MESSAGE)
-        };
-
-        position.clone()
+        self.position_history.last().unwrap().clone()
     }
 
     /// Executes the given turn.
     /// Returns a result which indicates whether the given turn was legal.
     /// An illegal turn is not executed and an error is returned.
     /// - `turn` - The turn to play
-    pub fn execute_turn(&mut self, turn: Turn) -> Result<(), String> {
+    pub fn execute_turn(&mut self, turn: Turn) -> Result<(), PositionError> {
         let mut current_position = self.get_current_state();
         current_position.turn(&turn)?;
 
