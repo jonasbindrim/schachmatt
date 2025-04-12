@@ -1,7 +1,19 @@
-use crate::{Game, GameResult, PlayerColor, SAN};
+use crate::{
+    Game, GameResult, PlayerColor, SAN,
+    util::metadata::{
+        METADATA_KEY_BLACK, METADATA_KEY_DATE, METADATA_KEY_EVENT, METADATA_KEY_RESULT,
+        METADATA_KEY_ROUND, METADATA_KEY_SITE, METADATA_KEY_WHITE,
+    },
+};
 
-static REQUIRED_TAGS: [&str; 6] = ["Event", "Site", "Date", "Round", "White", "Black"];
-static RESULT_TAG: &str = "Result";
+static REQUIRED_TAGS: [&str; 6] = [
+    METADATA_KEY_BLACK,
+    METADATA_KEY_WHITE,
+    METADATA_KEY_DATE,
+    METADATA_KEY_ROUND,
+    METADATA_KEY_EVENT,
+    METADATA_KEY_SITE,
+];
 
 /// Converts a `Game` into its PGN representation.
 /// - `game` - The game which is converted
@@ -27,18 +39,9 @@ fn format_turndata(game: &mut Game) -> String {
     for (position_index, position) in game.position_history.iter().enumerate() {
         // Add game result. Only done once in the last position
         if position_index == game.position_history.len() - 1 {
-            let game_result = match position.game_over_check() {
-                Some(result) => match result {
-                    GameResult::Draw => "1/2-1/2",
-                    GameResult::Over(player_color) => match player_color {
-                        PlayerColor::Black => "0-1",
-                        PlayerColor::White => "1-0",
-                    },
-                },
-                None => "*",
-            };
-            game.set_metadata("Result", game_result);
-            result.push_str(game_result);
+            let game_result = GameResult::to_string(position.game_over_check().as_ref());
+            game.set_metadata(METADATA_KEY_RESULT, &game_result); // TODO: Only set if metadata does not exist already
+            result.push_str(&game_result);
             break;
         }
 
@@ -87,20 +90,10 @@ fn add_seven_tag_roster(game: &mut Game) {
         }
     }
 
-    if game.get_metadata(RESULT_TAG).is_some() {
+    if game.get_metadata(METADATA_KEY_RESULT).is_some() {
         return;
     }
 
-    let result = match game.get_game_result() {
-        Some(game_result) => match game_result {
-            GameResult::Over(player_color) => match player_color {
-                PlayerColor::Black => "0-1",
-                PlayerColor::White => "1-0",
-            },
-            GameResult::Draw => "1/2-1/2",
-        },
-        None => "*",
-    };
-
-    game.set_metadata(RESULT_TAG, result);
+    let result = GameResult::to_string(game.get_game_result().as_ref());
+    game.set_metadata(METADATA_KEY_RESULT, &result);
 }
