@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{FEN, Game, GameResult, PlayerColor, Position, PositionError, Turn};
+use crate::{util::metadata::{METADATA_KEY_FEN, METADATA_KEY_RESULT}, Game, GameResult, PlayerColor, Position, PositionError, Turn, FEN};
 
 impl Game {
     /// Creates a new `Game` with the default chess board setup.
@@ -17,7 +17,7 @@ impl Game {
 
         let position_fen = FEN::export(&starting_position);
         if position_fen != FEN::DEFAULT_BOARD_SETUP {
-            game.set_metadata("FEN", &position_fen);
+            game.set_metadata(METADATA_KEY_FEN, &position_fen);
         }
         game.position_history.push(starting_position);
 
@@ -72,10 +72,18 @@ impl Game {
         Ok(())
     }
 
-    /// Returns the result of this game.
+    /// Returns the result of this game. A check is done whether a result is contained in the metadata.
+    /// Only if no result is found in the metadata the actual position is checked.
     /// - `returns` - The result of this game. Is none if the game has not concluded.
     #[must_use]
     pub fn get_game_result(&mut self) -> Option<GameResult> {
+        if let Some(result) = self.get_metadata(METADATA_KEY_RESULT) {
+            let result = GameResult::from_string(&result);
+            if result.is_some() {
+                return result;
+            }
+        }
+
         self.get_current_state_reference().game_over_check()
     }
 
@@ -115,14 +123,6 @@ impl Default for Game {
     /// - `returns` - A new `Game` with the default board setup
     #[must_use]
     fn default() -> Self {
-        let mut game = Game {
-            game_metadata: HashMap::<String, String>::new(),
-            position_history: Vec::<Position>::new(),
-            turn_history: Vec::<Turn>::new(),
-        };
-
-        game.position_history.push(Position::new());
-
-        game
+        Game::new(Position::default())
     }
 }
