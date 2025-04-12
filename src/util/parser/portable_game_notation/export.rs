@@ -1,4 +1,10 @@
-use crate::{util::metadata::{METADATA_KEY_BLACK, METADATA_KEY_DATE, METADATA_KEY_EVENT, METADATA_KEY_RESULT, METADATA_KEY_ROUND, METADATA_KEY_SITE, METADATA_KEY_WHITE}, Game, GameResult, PlayerColor, SAN};
+use crate::{
+    Game, GameResult, PlayerColor, SAN,
+    util::metadata::{
+        METADATA_KEY_BLACK, METADATA_KEY_DATE, METADATA_KEY_EVENT, METADATA_KEY_RESULT,
+        METADATA_KEY_ROUND, METADATA_KEY_SITE, METADATA_KEY_WHITE,
+    },
+};
 
 static REQUIRED_TAGS: [&str; 6] = [
     METADATA_KEY_BLACK,
@@ -6,7 +12,7 @@ static REQUIRED_TAGS: [&str; 6] = [
     METADATA_KEY_DATE,
     METADATA_KEY_ROUND,
     METADATA_KEY_EVENT,
-    METADATA_KEY_SITE
+    METADATA_KEY_SITE,
 ];
 
 /// Converts a `Game` into its PGN representation.

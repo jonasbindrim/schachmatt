@@ -1,7 +1,7 @@
 use super::player_color::PlayerColor;
 
 /// Represents the result of a chess game.
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum GameResult {
     /// The game ended in a draw.
     Draw,

@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod position_tests {
+mod position_turn {
     use schachmatt::{Field, Position, Turn};
 
     #[test]

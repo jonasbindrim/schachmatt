@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use crate::{util::metadata::{METADATA_KEY_FEN, METADATA_KEY_RESULT}, Game, GameResult, PlayerColor, Position, PositionError, Turn, FEN};
+use crate::{
+    FEN, Game, GameResult, PlayerColor, Position, PositionError, Turn,
+    util::metadata::{METADATA_KEY_FEN, METADATA_KEY_RESULT},
+};
 
 impl Game {
     /// Creates a new `Game` with the default chess board setup.
@@ -50,9 +53,6 @@ impl Game {
 
     /// Returns a copy of the current game state.
     /// - `returns` - A copy of the current game state.
-    /// # Panics
-    /// Panics when the `Game` has no current state.
-    /// This panic indicates an error in the library.
     #[must_use]
     pub fn get_current_state(&self) -> Position {
         self.position_history.last().unwrap().clone()
@@ -115,6 +115,16 @@ impl Game {
     #[must_use]
     pub fn get_last_turn(&self) -> Option<Turn> {
         self.turn_history.last().copied()
+    }
+
+    /// Sets the result of the game. This is used store results which can not be seen by the last position available.
+    /// E.g. if a player resigns or the players agree to a draw. Game results set using this method will be considered
+    /// more important than the result provided by the last position.
+    pub fn set_game_result(&mut self, game_result: Option<GameResult>) {
+        self.set_metadata(
+            METADATA_KEY_RESULT,
+            &GameResult::to_string(game_result.as_ref()),
+        );
     }
 }
 

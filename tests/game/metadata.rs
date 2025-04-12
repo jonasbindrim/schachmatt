@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod game_metadata_tests {
-    use schachmatt::{Game, FEN};
+    use schachmatt::{FEN, Game};
 
     #[test]
     fn metadata_is_empty_initially() {
@@ -15,7 +15,10 @@ mod game_metadata_tests {
         let metadata_keys = game.get_metadata_keys();
         assert_eq!(metadata_keys.len(), 1);
         assert!(metadata_keys.contains(&String::from("Fen")));
-        assert_eq!(game.get_metadata("Fen").unwrap(), "rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
+        assert_eq!(
+            game.get_metadata("Fen").unwrap(),
+            "rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1"
+        );
     }
 
     #[test]
@@ -33,9 +36,11 @@ mod game_metadata_tests {
     fn metadata_is_overridden_correctly() {
         let custom_position = FEN::import("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1").unwrap();
         let mut game = Game::new(custom_position);
-        assert_eq!(game.get_metadata("Fen").unwrap(), "rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
+        assert_eq!(
+            game.get_metadata("Fen").unwrap(),
+            "rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1"
+        );
         game.set_metadata("Fen", "Testvalue");
         assert_eq!(game.get_metadata("Fen").unwrap(), "Testvalue");
     }
-
 }
