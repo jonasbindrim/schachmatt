@@ -15,7 +15,7 @@ mod test_get_game_result {
 
     #[test]
     fn test_position_check_is_used_if_metadata_is_empty() {
-        let mut game = Game::default();
+        let game = Game::default();
         assert_eq!(game.get_current_state().game_over_check(), Option::None);
         assert_eq!(game.get_game_result(), Option::None);
     }

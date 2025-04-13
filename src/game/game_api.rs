@@ -76,7 +76,7 @@ impl Game {
     /// Only if no result is found in the metadata the actual position is checked.
     /// - `returns` - The result of this game. Is none if the game has not concluded.
     #[must_use]
-    pub fn get_game_result(&mut self) -> Option<GameResult> {
+    pub fn get_game_result(&self) -> Option<GameResult> {
         if let Some(result) = self.get_metadata(METADATA_KEY_RESULT) {
             let result = GameResult::from_string(&result);
             if result.is_some() {
