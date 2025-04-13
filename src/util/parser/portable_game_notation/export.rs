@@ -27,7 +27,7 @@ pub fn game_to_pgn(game: &Game) -> String {
 
     add_seven_tag_roster(&mut metadata, game_result);
 
-    let metadata = format_metadata(game);
+    let metadata = format_metadata(&metadata);
     let turndata = format_turndata(game);
     format!("{}\n{}", metadata, turndata)
 }
@@ -75,9 +75,8 @@ fn format_turndata(game: &Game) -> String {
 /// Formats the metadata of the given game into pgn format
 /// - `game` - The game containing the metadata that gets appended
 /// - `returns` - The formatted metadata output
-fn format_metadata(game: &Game) -> String {
-    let metadata_map = game.get_metadata_map();
-    metadata_map
+fn format_metadata(metadata: &HashMap<String, String>) -> String {
+    metadata
         .iter()
         .map(|(key, value)| format!("[{} \"{}\"]\n", key, value))
         .collect::<Vec<String>>()
