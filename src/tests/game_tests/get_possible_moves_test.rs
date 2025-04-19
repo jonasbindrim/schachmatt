@@ -3,7 +3,7 @@ mod tests {
     use crate::{
         Board::{self, *},
         FEN, Field, Turn,
-        data_structures::piece::piece_type::PieceType,
+        piece::piece_type::PieceType,
         position::position_struct::{COLUMN_AMOUNT, ROW_AMOUNT},
     };
 

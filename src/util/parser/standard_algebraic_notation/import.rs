@@ -1,7 +1,7 @@
 use crate::{
     Board::{self, FIELD_A1, FIELD_E1},
     Field, Piece, PlayerColor, Position, Turn,
-    data_structures::piece::piece_type::PieceType,
+    piece::piece_type::PieceType,
 };
 
 use pest::{Parser, iterators::Pair};

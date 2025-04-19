@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
 
-    use crate::{Board::*, FEN, Turn, data_structures::piece::piece_type::PieceType};
+    use crate::{Board::*, FEN, Turn, piece::piece_type::PieceType};
 
     #[test]
     fn en_passant_test1() {

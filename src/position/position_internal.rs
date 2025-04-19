@@ -1,7 +1,7 @@
 use crate::{
     Board::{self, *},
-    Field, Piece, PlayerColor, Position, Turn,
-    data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
+    Field, Piece, PieceType, PlayerColor, Position, Turn,
+    piece::piece_move_iterator::PieceMoveIterator,
     util::castle_data::{
         CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED,
         CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED,

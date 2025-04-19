@@ -1,6 +1,6 @@
 use crate::{
-    Board, FEN, GameResult, LAN, Position, PositionError, Turn,
-    data_structures::piece::{piece_move_iterator::PieceMoveIterator, piece_type::PieceType},
+    Board, FEN, GameResult, LAN, PieceType, Position, PositionError, Turn,
+    piece::piece_move_iterator::PieceMoveIterator,
 };
 
 use super::{position_internal::BOARD_FIELDS, util::move_legality::MoveLegality};

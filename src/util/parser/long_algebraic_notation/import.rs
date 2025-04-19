@@ -1,4 +1,4 @@
-use crate::{Field, Turn, data_structures::piece::piece_type::PieceType};
+use crate::{Field, PieceType, Turn};
 
 use pest::{Parser, iterators::Pair};
 
