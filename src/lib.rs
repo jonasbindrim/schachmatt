@@ -17,11 +17,15 @@ pub use crate::position::util::errors::PositionError;
 mod data_structures;
 pub use crate::data_structures::board_descriptors as Board;
 pub use crate::data_structures::field::Field;
-pub use crate::data_structures::game_result::GameResult;
 pub use crate::data_structures::piece::Piece;
 pub use crate::data_structures::piece::piece_type::PieceType;
-pub use crate::data_structures::player_color::PlayerColor;
 pub use crate::data_structures::turn::Turn;
+
+mod game_result;
+pub use crate::game_result::GameResult;
+
+mod player_color;
+pub use crate::player_color::PlayerColor;
 
 mod util;
 pub use crate::util::parser::forsyth_edwards_notation as FEN;

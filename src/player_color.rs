@@ -1,4 +1,4 @@
-/// Defines the two player colors
+/// Defines the two player colors of a chess game `Black` and `White`.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PlayerColor {
     Black,

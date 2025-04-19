@@ -1,6 +1,7 @@
-use super::player_color::PlayerColor;
+use crate::PlayerColor;
 
-/// Represents the result of a chess game.
+/// Represents the result of a chess game. An ongoing game is not considered a result.
+/// The game can end in a draw or with one of the players winning.
 #[derive(PartialEq, Debug)]
 pub enum GameResult {
     /// The game ended in a draw.
@@ -10,6 +11,8 @@ pub enum GameResult {
 }
 
 impl GameResult {
+    /// Returns the string representation of the game result.
+    /// If the game is ongoing, it returns `*`.
     pub fn to_string(result: Option<&Self>) -> String {
         let Some(result) = result else {
             return String::from("*");
@@ -24,6 +27,8 @@ impl GameResult {
         }
     }
 
+    /// Converts a string representation of the game result to a `GameResult` enum.
+    /// Returns `None` if the string is not a valid representation of a game result.
     pub fn from_string(result: &str) -> Option<GameResult> {
         match result {
             "1-0" => Some(Self::Over(PlayerColor::White)),
