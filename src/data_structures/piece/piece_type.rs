@@ -44,6 +44,7 @@ impl PieceType {
     /// - `returns` - A `PieceType` object
     #[must_use]
     pub fn import_piecetype(piece_identifier: char) -> Option<Self> {
+        // TODO Should probably allow uppercase as well
         match piece_identifier {
             'b' => Some(PieceType::Bishop),
             'q' => Some(PieceType::Queen),

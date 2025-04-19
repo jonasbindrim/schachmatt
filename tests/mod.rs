@@ -1,5 +1,6 @@
+mod field;
 mod game;
-mod parser;
-mod position;
 mod game_result;
+mod parser;
 mod player_color;
+mod position;

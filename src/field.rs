@@ -36,10 +36,7 @@ impl Field {
             return None;
         };
 
-        Some(Field {
-            column: checked_column,
-            row: checked_row,
-        })
+        Self::new(checked_column, checked_row)
     }
 
     /// Converts a field from a string into the field data type if possible.
@@ -49,16 +46,18 @@ impl Field {
     #[must_use]
     pub fn new_from_string(field: &str) -> Option<Self> {
         let byte_field = field.as_bytes();
-        if byte_field.len() == 2 {
-            let letter = byte_field[0] as char;
-            let number = (byte_field[1]) - b'0';
-            if ('a'..='h').contains(&letter) && (1..=8).contains(&number) {
-                return Some(Field {
-                    column: (letter as u8) - b'a',
-                    row: number - 1,
-                });
-            }
+
+        if byte_field.len() != 2 {
+            return None;
         }
+
+        let number = byte_field[1] - b'0' - 1;
+        if byte_field[0] >= b'a' && byte_field[0] <= b'h' {
+            return Self::new(byte_field[0] - b'a', number);
+        } else if byte_field[0] >= b'A' && byte_field[0] <= b'H' {
+            return Self::new(byte_field[0] - b'A', number);
+        }
+
         Option::None
     }
 }

@@ -14,9 +14,11 @@ mod position;
 pub use crate::position::position_struct::Position;
 pub use crate::position::util::errors::PositionError;
 
+mod field;
+pub use crate::field::Field;
+
 mod data_structures;
 pub use crate::data_structures::board_descriptors as Board;
-pub use crate::data_structures::field::Field;
 pub use crate::data_structures::piece::Piece;
 pub use crate::data_structures::piece::piece_type::PieceType;
 pub use crate::data_structures::turn::Turn;
