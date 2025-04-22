@@ -1,9 +1,8 @@
 use crate::{
-    Board, FEN, GameResult, LAN, PieceType, Position, PositionError, Turn,
-    piece::piece_move_iterator::PieceMoveIterator,
+    piece::piece_move_iterator::PieceMoveIterator, Board, Field, GameResult, PieceType, PlayerColor, Position, PositionError, Turn, FEN, LAN
 };
 
-use super::{position_internal::BOARD_FIELDS, util::move_legality::MoveLegality};
+use super::{position_internal::BOARD_FIELDS, position_struct::BoardSetup, util::{castling_rights::CastlingRights, move_legality::MoveLegality}};
 
 impl Position {
     /// Creates a new position
@@ -13,6 +12,52 @@ impl Position {
     #[must_use]
     pub fn new() -> Position {
         FEN::import(FEN::DEFAULT_BOARD_SETUP).unwrap()
+    }
+
+    /// Returns a copy of the current board position.
+    /// - `returns` - A copy of the current board position
+    #[must_use]
+    pub fn get_board_position(&self) -> BoardSetup {
+        self.board_position
+    }
+
+    /// Returns the currently active color.
+    /// - `returns` - The currently active color
+    #[must_use]
+    pub fn get_active_color(&self) -> PlayerColor {
+        self.active_color
+    }
+
+    /// Returns the castling rights for the specified `PlayerColor`.
+    /// - `color` - The color for which to return the `CastlingRights`
+    /// - `returns` - The castling right for the specified `PlayerColor`
+    #[must_use]
+    pub fn get_castling_rights(&self, color: PlayerColor) -> CastlingRights {
+        match color {
+            PlayerColor::Black => self.castling_black,
+            PlayerColor::White => self.castling_white,
+        }
+    }
+
+    /// Returns the `Field` which can be captured using the en passant rule.
+    /// - `returns` - The `Field` which can be captured using the en passant rule
+    #[must_use]
+    pub fn get_en_passant(&self) -> Option<Field> {
+        self.en_passant
+    }
+
+    /// Returns the amount of halfmoves played to reach this position.
+    /// - `returns` - The amount of halfmoves played to reach this position
+    #[must_use]
+    pub fn get_halfmove_counter(&self) -> u16 {
+        self.halfmove_clock
+    }
+
+    /// Returns the amount moves played to reach this position.
+    /// - `returns` - The amount of moves played to reach this position
+    #[must_use]
+    pub fn get_fullmove_counter(&self) -> u16 {
+        self.fullmove_counter
     }
 
     /// Checks which moves are possible for the player which has to move and
