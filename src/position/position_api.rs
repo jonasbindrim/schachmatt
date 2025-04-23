@@ -1,17 +1,36 @@
 use crate::{
-    piece::piece_move_iterator::PieceMoveIterator, Board, Field, GameResult, PieceType, PlayerColor, Position, PositionError, Turn, FEN, LAN
+    Board, FEN, Field, GameResult, LAN, PieceType, PlayerColor, Position, PositionError, Turn,
+    piece::piece_move_iterator::PieceMoveIterator,
 };
 
-use super::{position_internal::BOARD_FIELDS, position_struct::BoardSetup, util::{castling_rights::CastlingRights, move_legality::MoveLegality}};
+use super::{
+    position_internal::BOARD_FIELDS,
+    position_struct::BoardSetup,
+    util::{castling_rights::CastlingRights, move_legality::MoveLegality},
+};
 
 impl Position {
     /// Creates a new position
     /// - `returns` - A new position with the default board setup
-    /// # Panics
-    /// This panic indicates an error in the library.
     #[must_use]
-    pub fn new() -> Position {
-        FEN::import(FEN::DEFAULT_BOARD_SETUP).unwrap()
+    pub fn new(
+        board_position: BoardSetup,
+        active_color: PlayerColor,
+        castling_white: CastlingRights,
+        castling_black: CastlingRights,
+        en_passant: Option<Field>,
+        halfmove_clock: u16,
+        fullmove_counter: u16,
+    ) -> Position {
+        Position {
+            board_position,
+            active_color,
+            castling_white,
+            castling_black,
+            en_passant,
+            halfmove_clock,
+            fullmove_counter,
+        }
     }
 
     /// Returns a copy of the current board position.
@@ -63,8 +82,6 @@ impl Position {
     /// Checks which moves are possible for the player which has to move and
     /// returns an array containing all the possible moves.
     /// - `returns` - An array of all the possible moves
-    /// # Panics
-    /// This panic indicates an error in the library.
     #[must_use]
     pub fn get_possible_moves(&self) -> Vec<Turn> {
         let mut turns: Vec<Turn> = Vec::<Turn>::new();
@@ -122,8 +139,6 @@ impl Position {
 
     /// Executes the given turn. Returns an error if the given turn is an illegal move.
     /// - `action` - The turn which should be played
-    /// # Panics
-    /// This panic indicates an error in the library.
     pub fn turn(&mut self, action: &Turn) -> Result<(), PositionError> {
         let possible_moves = self.get_possible_moves();
         if !possible_moves.contains(action) {
@@ -158,6 +173,6 @@ impl Position {
 
 impl Default for Position {
     fn default() -> Self {
-        Self::new()
+        FEN::import(FEN::DEFAULT_BOARD_SETUP).unwrap()
     }
 }

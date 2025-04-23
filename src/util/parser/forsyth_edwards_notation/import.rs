@@ -99,15 +99,16 @@ pub fn import_from_fen(fen_input: &str) -> Result<Position, FenParserError> {
         }
     };
 
-    Ok(Position {
+    let position = Position::new(
         board_position,
         active_color,
-        castling_white: white_castle,
-        castling_black: black_castle,
+        white_castle,
+        black_castle,
         en_passant,
         halfmove_clock,
         fullmove_counter,
-    })
+    );
+    Ok(position)
 }
 
 /// Computes the piece placement data and adds the correct pieces to the board

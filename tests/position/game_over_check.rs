@@ -5,7 +5,7 @@ mod test_game_over_check {
     /// Tests whether the conversion from a move into the algebraic chess notation works as idented
     #[test]
     fn test_game_over_check_1() {
-        let position = Position::new();
+        let position = Position::default();
         let result = position.game_over_check();
         assert!(result.is_none());
     }

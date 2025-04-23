@@ -6,7 +6,7 @@ use crate::{
 };
 
 impl Game {
-    /// Creates a new `Game` with the default chess board setup.
+    /// Creates a new `Game` with the given board setup as the starting position.
     /// To start a game in the classic chess board setup use `Game::default()`.
     /// - `starting_position` - The `Position` the `Game` should start from
     /// - `returns` - A new `Game` with the given board setup
@@ -91,7 +91,7 @@ impl Game {
     /// - `returns` - The currently active player color
     #[must_use]
     pub fn get_color_at_turn(&self) -> PlayerColor {
-        self.get_current_state_reference().active_color
+        self.get_current_state_reference().get_active_color()
     }
 
     /// Returns all position played in this game.

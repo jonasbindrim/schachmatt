@@ -5,8 +5,8 @@ use crate::Board::{COLUMN_H, ROW_8};
 /// Represents a board location in a chess game.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Field {
-    pub(crate) column: u8, // Column (a-h) is represented as values (0-7)
-    pub(crate) row: u8,    // Row (1-8) is represented as values (0-7)
+    pub(super) column: u8, // Column (a-h) is represented as values (0-7)
+    pub(super) row: u8,    // Row (1-8) is represented as values (0-7)
 }
 
 impl Field {

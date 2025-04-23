@@ -28,7 +28,7 @@ pub fn game_from_pgn(pgn_string: &str) -> Result<Game, PgnParserError> {
     parse_metadata_lines(&pgn_lines[0..part_seperator], &mut game)?;
 
     // Handle turn data
-    game.push_position(Position::new());
+    game.push_position(Position::default());
     let mut turn_data = String::new();
     for line in &pgn_lines[part_seperator + 1..] {
         turn_data.push_str(line);

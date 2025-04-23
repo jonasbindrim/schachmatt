@@ -10,11 +10,11 @@ pub(crate) const COLUMN_AMOUNT: usize = 8;
 #[derive(Clone, PartialEq, Debug)]
 pub struct Position {
     // For the board position: The first array dimension is the row, the second one is the column
-    pub(crate) board_position: BoardSetup,
-    pub(crate) active_color: PlayerColor,
-    pub(crate) castling_white: CastlingRights,
-    pub(crate) castling_black: CastlingRights,
-    pub(crate) en_passant: Option<Field>,
-    pub(crate) halfmove_clock: u16,
-    pub(crate) fullmove_counter: u16,
+    pub(super) board_position: BoardSetup,
+    pub(super) active_color: PlayerColor,
+    pub(super) castling_white: CastlingRights,
+    pub(super) castling_black: CastlingRights,
+    pub(super) en_passant: Option<Field>,
+    pub(super) halfmove_clock: u16,
+    pub(super) fullmove_counter: u16,
 }

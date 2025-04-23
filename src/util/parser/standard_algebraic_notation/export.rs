@@ -21,13 +21,13 @@ pub fn from_turn(turn: &Turn, current_position: &Position) -> String {
 
     if moving_piece.get_type() == PieceType::Pawn {
         let check_field: i8 = {
-            match current_position.active_color {
+            match current_position.get_active_color() {
                 PlayerColor::Black => (turn.target.row as i8) + 1,
                 PlayerColor::White => (turn.target.row as i8) - 1,
             }
         };
 
-        if let Some(field) = current_position.en_passant {
+        if let Some(field) = current_position.get_en_passant() {
             if turn.target.column == field.column && check_field == field.row as i8 {
                 is_capture = true;
             }

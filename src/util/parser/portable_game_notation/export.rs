@@ -39,25 +39,27 @@ fn format_turndata(game: &Game) -> String {
     let mut result = String::new();
     let mut first_fullmove_indicator: bool = true;
 
-    for (position_index, position) in game.position_history.iter().enumerate() {
+    let position_history = game.get_all_positions();
+
+    for (position_index, position) in position_history.iter().enumerate() {
         // Add game result. Only done once in the last position
-        if position_index == game.position_history.len() - 1 {
+        if position_index == position_history.len() - 1 {
             let game_result = GameResult::to_string(position.game_over_check().as_ref());
             result.push_str(&game_result);
             break;
         }
 
         // Print fullmove counter
-        match position.active_color {
+        match position.get_active_color() {
             PlayerColor::Black => {
                 if first_fullmove_indicator {
-                    result.push_str(&position.fullmove_counter.to_string());
+                    result.push_str(&position.get_fullmove_counter().to_string());
                     result.push_str(".. ");
                     first_fullmove_indicator = false;
                 }
             }
             PlayerColor::White => {
-                result.push_str(&position.fullmove_counter.to_string());
+                result.push_str(&position.get_fullmove_counter().to_string());
                 result.push_str(". ");
                 first_fullmove_indicator = false;
             }
