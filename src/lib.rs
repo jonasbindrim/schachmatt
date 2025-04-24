@@ -8,7 +8,7 @@ extern crate pest_derive;
 mod tests;
 
 mod game;
-pub use crate::game::game_struct::Game;
+pub use crate::game::Game;
 
 mod position;
 pub use crate::position::position_struct::Position;

@@ -1,10 +1,19 @@
 use std::collections::HashMap;
 
 use crate::{
-    FEN, Game, GameResult, PlayerColor, Position, PositionError, Turn,
-    ruleset::{Ruleset, classic::CLASSIC_RULESET},
+    CLASSIC_RULESET, FEN, GameResult, PlayerColor, Position, PositionError, Turn,
+    ruleset::Ruleset,
     util::metadata::{METADATA_KEY_FEN, METADATA_KEY_RESULT},
 };
+
+/// Represents a game of chess.
+#[derive(Clone)]
+pub struct Game {
+    pub(super) game_metadata: HashMap<String, String>,
+    pub(super) position_history: Vec<Position>,
+    pub(super) turn_history: Vec<Turn>,
+    pub(super) ruleset: Ruleset,
+}
 
 impl Game {
     /// Creates a new `Game` with the given set of rules to run the game.
@@ -61,6 +70,12 @@ impl Game {
         self.game_metadata.keys().cloned().collect()
     }
 
+    /// Returns the whole map of metadata
+    /// - `returns` - The whole metadata map
+    pub fn get_metadata_map(&self) -> &HashMap<String, String> {
+        &self.game_metadata
+    }
+
     /// Returns a copy of the current game state.
     /// - `returns` - A copy of the current game state.
     #[must_use]
@@ -94,17 +109,17 @@ impl Game {
             }
         }
 
-        self.get_current_state_reference().game_over_check()
+        self.position_history.last().unwrap().game_over_check()
     }
 
     /// Returns the color of the player who has to move.
     /// - `returns` - The currently active player color
     #[must_use]
     pub fn get_color_at_turn(&self) -> PlayerColor {
-        self.get_current_state_reference().get_active_color()
+        self.position_history.last().unwrap().get_active_color()
     }
 
-    /// Returns all position played in this game.
+    /// Returns all positions played in this game.
     /// Index 0 contains the starting position
     /// - `returns` - All positions played in this game.
     #[must_use]
@@ -118,6 +133,14 @@ impl Game {
     #[must_use]
     pub fn get_position_by_turn(&self, halfmove: u16) -> Option<Position> {
         Some(self.position_history.get(halfmove as usize)?.clone())
+    }
+
+    /// Returns all turns executed in this game.
+    /// Index 0 contains the first turn played in the starting position
+    /// - `returns` - All turns executed in this game.
+    #[must_use]
+    pub fn get_all_turns(&self) -> Vec<Turn> {
+        self.turn_history.clone()
     }
 
     /// Returns the latest turn played in this game.
