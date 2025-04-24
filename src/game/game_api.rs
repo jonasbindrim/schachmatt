@@ -2,20 +2,30 @@ use std::collections::HashMap;
 
 use crate::{
     FEN, Game, GameResult, PlayerColor, Position, PositionError, Turn,
+    ruleset::{Ruleset, classic::CLASSIC_RULESET},
     util::metadata::{METADATA_KEY_FEN, METADATA_KEY_RESULT},
 };
 
 impl Game {
-    /// Creates a new `Game` with the given board setup as the starting position.
-    /// To start a game in the classic chess board setup use `Game::default()`.
-    /// - `starting_position` - The `Position` the `Game` should start from
-    /// - `returns` - A new `Game` with the given board setup
+    /// Creates a new `Game` with the given set of rules to run the game.
+    /// To start a game with the classic rules use `Game::default()`.
+    /// - `ruleset` - The set of rules used to run this game
     #[must_use]
-    pub fn new(starting_position: Position) -> Game {
+    pub fn new(ruleset: &Ruleset) -> Game {
+        Self::new_from_position(ruleset, ruleset.generate_initial_position())
+    }
+
+    /// Creates a new `Game` with the given set of rules to run the game and the given board setup.
+    /// To start a game with the classic rules use `Game::default()`.
+    /// - `ruleset` - The set of rules used to run this game
+    /// - `starting_position` - Used as the starting position for this game. This overrides the position from the ruleset
+    #[must_use]
+    pub fn new_from_position(ruleset: &Ruleset, starting_position: Position) -> Game {
         let mut game = Game {
             game_metadata: HashMap::<String, String>::new(),
             position_history: Vec::<Position>::new(),
             turn_history: Vec::<Turn>::new(),
+            ruleset: ruleset.clone(),
         };
 
         let position_fen = FEN::export(&starting_position);
@@ -133,6 +143,6 @@ impl Default for Game {
     /// - `returns` - A new `Game` with the default board setup
     #[must_use]
     fn default() -> Self {
-        Game::new(Position::default())
+        Game::new(&CLASSIC_RULESET)
     }
 }

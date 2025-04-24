@@ -30,6 +30,10 @@ pub use crate::game_result::GameResult;
 mod player_color;
 pub use crate::player_color::PlayerColor;
 
+mod ruleset;
+pub use crate::ruleset::Ruleset;
+pub use crate::ruleset::classic::CLASSIC_RULESET;
+
 mod util;
 pub use crate::util::board_descriptors as Board;
 pub use crate::util::parser::forsyth_edwards_notation as FEN;

@@ -3,7 +3,7 @@ use pest::{
     iterators::{Pair, Pairs},
 };
 
-use crate::{Game, Position, SAN};
+use crate::{Game, Position, SAN, ruleset::classic::CLASSIC_RULESET};
 
 use super::error::PgnParserError;
 
@@ -17,7 +17,7 @@ struct PgnStruct;
 /// - `returns` - A game or an error
 pub fn game_from_pgn(pgn_string: &str) -> Result<Game, PgnParserError> {
     let pgn_lines: Vec<&str> = pgn_string.lines().collect();
-    let mut game = Game::new_empty();
+    let mut game = Game::new_from_position(&CLASSIC_RULESET, Position::default());
 
     // Find the index of the line which seperates metadata and gamedata
     let part_seperator = match find_empty_line(&pgn_lines) {
@@ -28,7 +28,6 @@ pub fn game_from_pgn(pgn_string: &str) -> Result<Game, PgnParserError> {
     parse_metadata_lines(&pgn_lines[0..part_seperator], &mut game)?;
 
     // Handle turn data
-    game.push_position(Position::default());
     let mut turn_data = String::new();
     for line in &pgn_lines[part_seperator + 1..] {
         turn_data.push_str(line);
