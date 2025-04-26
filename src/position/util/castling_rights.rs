@@ -5,9 +5,11 @@ pub struct CastlingRights {
 }
 
 impl CastlingRights {
-
-    pub fn new(queenside: bool, kingside: bool) -> Self {   
-        CastlingRights { queenside, kingside }
+    pub fn new(queenside: bool, kingside: bool) -> Self {
+        CastlingRights {
+            queenside,
+            kingside,
+        }
     }
 
     pub fn set_queenside(&mut self, queenside: bool) {

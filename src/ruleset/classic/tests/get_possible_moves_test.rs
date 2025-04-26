@@ -1,7 +1,10 @@
 #[cfg(test)]
 mod tests {
     use crate::{
-        piece::piece_type::PieceType, position::position_struct::{COLUMN_AMOUNT, ROW_AMOUNT}, Columns, Field, Fields::*, Rows, Turn, CLASSIC_RULESET, FEN
+        CLASSIC_RULESET, Columns, FEN, Field,
+        Fields::*,
+        PieceType, Rows, Turn,
+        position::position_struct::{COLUMN_AMOUNT, ROW_AMOUNT},
     };
 
     /// Tests the possible moves of the king

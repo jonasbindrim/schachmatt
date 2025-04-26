@@ -25,7 +25,7 @@ impl Ruleset {
             get_possible_turns,
             execute_turn,
             game_over_check,
-            is_in_check
+            is_in_check,
         }
     }
 

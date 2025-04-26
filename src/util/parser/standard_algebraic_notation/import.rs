@@ -1,5 +1,7 @@
 use crate::{
-    piece::piece_type::PieceType, Columns, Field, Fields::{FIELD_A1, FIELD_E1}, Piece, PlayerColor, Position, Rows, Turn, CLASSIC_RULESET
+    CLASSIC_RULESET, Columns, Field,
+    Fields::{FIELD_A1, FIELD_E1},
+    Piece, PieceType, PlayerColor, Position, Rows, Turn,
 };
 
 use pest::{Parser, iterators::Pair};

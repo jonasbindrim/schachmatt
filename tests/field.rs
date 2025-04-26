@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod field {
     mod new {
-        use schachmatt::{ Columns::*, Field, Fields::*, Rows::*};
+        use schachmatt::{Columns::*, Field, Fields::*, Rows::*};
 
         #[test]
         fn test_new_a0() {
@@ -20,7 +20,7 @@ mod field {
     }
 
     mod new_from_usize {
-        use schachmatt::{ Columns::*, Field, Fields::*, Rows::*};
+        use schachmatt::{Columns::*, Field, Fields::*, Rows::*};
 
         #[test]
         fn test_new_a0() {

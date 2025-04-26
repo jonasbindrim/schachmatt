@@ -1,4 +1,4 @@
-use crate::{Field, GameResult, Piece, PlayerColor, PositionError, Ruleset, Turn, FEN, LAN};
+use crate::{FEN, Field, GameResult, LAN, Piece, PlayerColor, PositionError, Ruleset, Turn};
 
 use super::util::castling_rights::CastlingRights;
 
@@ -18,7 +18,6 @@ pub struct Position {
     pub(super) halfmove_clock: u16,
     pub(super) fullmove_counter: u16,
 }
-
 
 impl Position {
     /// Creates a new position
@@ -135,7 +134,7 @@ impl Position {
 
     /// Returns a list of all possible legal turns from the current position
     pub fn get_possible_turns(&self, ruleset: &Ruleset) -> Vec<Turn> {
-        ruleset.get_possible_turns(&self)
+        ruleset.get_possible_turns(self)
     }
 
     /// Executes the given turn. Returns an error if the given turn is an illegal move.
@@ -146,14 +145,14 @@ impl Position {
             return Err(PositionError::IllegalTurnError(LAN::export(turn)));
         }
 
-        Ok(ruleset.execute_turn(&self, turn))
+        Ok(ruleset.execute_turn(self, turn))
     }
 
     /// Returns the result of the game in the current position.
     /// - `returns` - The game result in the current position
     #[must_use]
     pub fn game_over_check(&self, ruleset: &Ruleset) -> Option<GameResult> {
-        ruleset.game_over_check(&self)
+        ruleset.game_over_check(self)
     }
 }
 

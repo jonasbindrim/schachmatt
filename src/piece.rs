@@ -1,16 +1,4 @@
-mod move_iterators;
-pub(crate) mod piece_move_iterator;
-pub mod piece_type;
-
-use crate::PlayerColor;
-
-use self::{
-    move_iterators::{
-        BISHOP_ITERATORS, KING_ITERATORS, KNIGHT_ITERATORS, MoveIterator, PAWN_BLACK_ITERATORS,
-        PAWN_WHITE_ITERATORS, QUEEN_ITERATORS, ROOK_ITERATORS,
-    },
-    piece_type::PieceType,
-};
+use crate::{PieceType, PlayerColor};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Piece {
@@ -73,21 +61,5 @@ impl Piece {
             piece_type,
             piece_color,
         })
-    }
-
-    /// Returns the move iterators for the piece.
-    /// - `returns` - The move iterators for the piece
-    pub(crate) fn movement_modifiers(&self) -> &[MoveIterator] {
-        match self.get_type() {
-            PieceType::Pawn => match self.get_color() {
-                PlayerColor::Black => &PAWN_BLACK_ITERATORS,
-                PlayerColor::White => &PAWN_WHITE_ITERATORS,
-            },
-            PieceType::Rook => &ROOK_ITERATORS,
-            PieceType::Bishop => &BISHOP_ITERATORS,
-            PieceType::Knight => &KNIGHT_ITERATORS,
-            PieceType::Queen => &QUEEN_ITERATORS,
-            PieceType::King => &KING_ITERATORS,
-        }
     }
 }

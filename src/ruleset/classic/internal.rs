@@ -1,4 +1,15 @@
-use crate::{piece::piece_move_iterator::PieceMoveIterator, position::util::{castling_rights::CastlingRights, move_legality::MoveLegality}, util::castle_data::{CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED, CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED}, Field, Fields::*, GameResult, Piece, PieceType, PlayerColor, Position, Rows, Turn};
+use crate::{
+    Field,
+    Fields::*,
+    GameResult, Piece, PieceType, PlayerColor, Position, Rows, Turn,
+    position::util::{castling_rights::CastlingRights, move_legality::MoveLegality},
+    util::castle_data::{
+        CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED,
+        CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED,
+    },
+};
+
+use super::util::{move_iterators::get_movement_modifiers, piece_move_iterator::PieceMoveIterator};
 
 /// Takes a turn which is a promotion turn and returns a vector of each possible resulting promotion turn.
 /// - `turn` - The promotion turn
@@ -21,7 +32,6 @@ fn push_turn(turn: Turn) -> Vec<Turn> {
 
     promotion_turns
 }
-
 
 /// Returns the result of the game in the current position.
 /// - `returns` - The game result in the current position
@@ -60,7 +70,7 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
         // Check if current piece is a pawn
         let is_pawn = PieceType::Pawn == piece.get_type();
 
-        let mut piece_iterator = PieceMoveIterator::new(piece.movement_modifiers(), field);
+        let mut piece_iterator = PieceMoveIterator::new(get_movement_modifiers(&piece), field);
 
         loop {
             while let Some(mut turn) = piece_iterator.current() {
@@ -137,10 +147,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
                         position.set_field_occupation(&FIELD_H8, None);
                     }
                 }
-                position.set_castling_rights(
-                    PlayerColor::Black,
-                    CastlingRights::new(false, false),
-                );
+                position.set_castling_rights(PlayerColor::Black, CastlingRights::new(false, false));
             }
             PlayerColor::White => {
                 if turn.current == FIELD_E1 {
@@ -158,10 +165,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
                         position.set_field_occupation(&FIELD_H1, None);
                     }
                 }
-                position.set_castling_rights(
-                    PlayerColor::White,
-                    CastlingRights::new(false, false),
-                );
+                position.set_castling_rights(PlayerColor::White, CastlingRights::new(false, false));
             }
         }
     }
@@ -211,8 +215,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
     }
 
     // Update en passant field
-    if PieceType::Pawn == moving_piece.get_type()
-        && turn.current.row.abs_diff(turn.target.row) == 2
+    if PieceType::Pawn == moving_piece.get_type() && turn.current.row.abs_diff(turn.target.row) == 2
     {
         position.set_en_passant(Some(turn.target));
     } else {
@@ -288,16 +291,30 @@ fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor
     if step == 2 {
         if turn.current.row == Rows::ROW_8
             && active_color == PlayerColor::Black
-            && position.get_castling_rights(PlayerColor::Black).get_kingside()
+            && position
+                .get_castling_rights(PlayerColor::Black)
+                .get_kingside()
         {
-            if is_castle_illegal(position, &CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, active_color) {
+            if is_castle_illegal(
+                position,
+                &CASTLE_BK_BLOCKED,
+                CASTLE_BK_CHECKED,
+                active_color,
+            ) {
                 return MoveLegality::FullyIllegal;
             }
         } else if turn.current.row == Rows::ROW_1
             && active_color == PlayerColor::White
-            && position.get_castling_rights(PlayerColor::White).get_kingside()
+            && position
+                .get_castling_rights(PlayerColor::White)
+                .get_kingside()
         {
-            if is_castle_illegal(position, &CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, active_color) {
+            if is_castle_illegal(
+                position,
+                &CASTLE_WK_BLOCKED,
+                CASTLE_WK_CHECKED,
+                active_color,
+            ) {
                 return MoveLegality::FullyIllegal;
             }
         } else {
@@ -306,16 +323,30 @@ fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor
     } else if step == -2 {
         if turn.current.row == Rows::ROW_8
             && active_color == PlayerColor::Black
-            && position.get_castling_rights(PlayerColor::Black).get_queenside()
+            && position
+                .get_castling_rights(PlayerColor::Black)
+                .get_queenside()
         {
-            if is_castle_illegal(position, &CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED, active_color) {
+            if is_castle_illegal(
+                position,
+                &CASTLE_BQ_BLOCKED,
+                CASTLE_BQ_CHECKED,
+                active_color,
+            ) {
                 return MoveLegality::FullyIllegal;
             }
         } else if turn.current.row == Rows::ROW_1
             && active_color == PlayerColor::White
-            && position.get_castling_rights(PlayerColor::White).get_queenside()
+            && position
+                .get_castling_rights(PlayerColor::White)
+                .get_queenside()
         {
-            if is_castle_illegal(position, &CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED, active_color) {
+            if is_castle_illegal(
+                position,
+                &CASTLE_WQ_BLOCKED,
+                CASTLE_WQ_CHECKED,
+                active_color,
+            ) {
                 return MoveLegality::FullyIllegal;
             }
         } else {
@@ -378,7 +409,8 @@ fn is_castle_illegal(
     checked_fields: [Field; 3],
     player_color: PlayerColor,
 ) -> bool {
-    castling_fields_blocked(position, blocked_fields) || fields_under_attack(position, player_color, checked_fields)
+    castling_fields_blocked(position, blocked_fields)
+        || fields_under_attack(position, player_color, checked_fields)
 }
 
 /// Checks and returns if one of the given fields is blocked by another piece
@@ -402,7 +434,7 @@ pub(super) fn is_in_check(position: &Position, player_color: PlayerColor) -> boo
         if let Some(piece) = occupation {
             if piece.get_color() != player_color {
                 let mut piece_iterator =
-                    PieceMoveIterator::new(piece.movement_modifiers(), field);
+                    PieceMoveIterator::new(get_movement_modifiers(&piece), field);
 
                 loop {
                     while let Some(turn) = piece_iterator.current() {
@@ -442,18 +474,14 @@ pub(super) fn is_in_check(position: &Position, player_color: PlayerColor) -> boo
 /// - `player_color` - The color at turn
 /// - `fields` - The fields to check for being attacked
 /// - `returns` - Whether one of the fields is being attacked
-fn fields_under_attack(
-    position: &Position,
-    player_color: PlayerColor,
-    fields: [Field; 3],
-) -> bool {
+fn fields_under_attack(position: &Position, player_color: PlayerColor, fields: [Field; 3]) -> bool {
     for field in BOARD_FIELDS {
         let occupation = position.get_field_occupation(&field);
 
         if let Some(piece) = occupation {
             if piece.get_color() != player_color {
                 let mut piece_iterator =
-                    PieceMoveIterator::new(piece.movement_modifiers(), field);
+                    PieceMoveIterator::new(get_movement_modifiers(&piece), field);
 
                 loop {
                     while let Some(turn) = piece_iterator.current() {
@@ -542,7 +570,7 @@ where
     ClosureType: FnMut(Piece) -> Option<bool>,
 {
     for row in position.get_board_position() {
-        for piece in row.into_iter().flatten() {
+        for piece in row.iter().flatten() {
             if let Some(value) = func(*piece) {
                 return value;
             }

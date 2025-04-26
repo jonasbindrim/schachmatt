@@ -1,5 +1,6 @@
 use crate::{
-    position::{position_struct::BoardSetup, util::castling_rights::CastlingRights}, Columns, PlayerColor, Position, Rows
+    Columns, PlayerColor, Position, Rows,
+    position::{position_struct::BoardSetup, util::castling_rights::CastlingRights},
 };
 
 /// Converts a `Position` into a string in FEN notation.
@@ -8,7 +9,7 @@ use crate::{
 #[must_use]
 pub fn export_to_fen(position: &Position) -> String {
     // 1. Piece placement data
-    let piece_placement_data = export_piece_placement_data(&position.get_board_position());
+    let piece_placement_data = export_piece_placement_data(position.get_board_position());
 
     // 2. Active Color
     let active_color = match position.get_active_color() {

@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_game_over_check {
-    use schachmatt::{GameResult, PlayerColor, Position, CLASSIC_RULESET, FEN};
+    use schachmatt::{CLASSIC_RULESET, FEN, GameResult, PlayerColor, Position};
 
     #[test]
     fn test_game_over_check_1() {

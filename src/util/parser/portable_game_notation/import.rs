@@ -60,7 +60,7 @@ fn handle_move_entry(pairs: Pairs<Rule>, game: &mut Game) -> Result<(), PgnParse
                 .find(|pair| pair.as_rule() == Rule::san_move)
                 .unwrap();
 
-            let Ok(turn) = SAN::import(turn_rule.as_str(), &mut game.get_current_state()) else {
+            let Ok(turn) = SAN::import(turn_rule.as_str(), game.get_current_state()) else {
                 return Err(PgnParserError::IllegalTurn(turn_rule.as_str().to_string()));
             };
             if game.execute_turn(turn).is_err() {

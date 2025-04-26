@@ -7,8 +7,8 @@ extern crate pest_derive;
 
 mod constants;
 pub use crate::constants::columns as Columns;
-pub use crate::constants::rows as Rows;
 pub use crate::constants::fields as Fields;
+pub use crate::constants::rows as Rows;
 
 mod game;
 pub use crate::game::Game;
@@ -25,7 +25,9 @@ pub use crate::turn::Turn;
 
 mod piece;
 pub use crate::piece::Piece;
-pub use crate::piece::piece_type::PieceType;
+
+mod piece_type;
+pub use crate::piece_type::PieceType;
 
 mod game_result;
 pub use crate::game_result::GameResult;

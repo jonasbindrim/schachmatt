@@ -7,7 +7,9 @@ mod position_turn {
         let mut default_game = Game::default();
         let possible_moves = default_game.get_possible_turns();
         let legal_move = possible_moves.first().unwrap();
-        default_game.execute_turn(*legal_move).expect("Unexpected error");
+        default_game
+            .execute_turn(*legal_move)
+            .expect("Unexpected error");
     }
 
     #[test]
