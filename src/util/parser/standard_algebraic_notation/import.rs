@@ -1,7 +1,5 @@
 use crate::{
-    Board::{self, FIELD_A1, FIELD_E1},
-    Field, Piece, PlayerColor, Position, Turn,
-    piece::piece_type::PieceType,
+    piece::piece_type::PieceType, Board::{self, FIELD_A1, FIELD_E1}, Field, Piece, PlayerColor, Position, Turn, CLASSIC_RULESET
 };
 
 use pest::{Parser, iterators::Pair};
@@ -50,7 +48,7 @@ fn import_piece_move_full(
     san_data: Pair<Rule>,
     position: &Position,
 ) -> Result<Turn, SanParserError> {
-    let possible_moves = position.get_possible_moves();
+    let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
     let raw_turn = san_data.as_str().to_string();
 
     let mut piece_type: Option<Piece> = None;
@@ -141,7 +139,7 @@ fn import_piece_move(san_data: Pair<Rule>) -> (Field, Option<u8>, Option<u8>) {
 /// - `position` - The position in which the turn was played
 /// - `returns` - The resulting `Turn`
 fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Turn {
-    let possible_moves = position.get_possible_moves();
+    let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
     let player_color = position.get_active_color();
 
     // Initiate with row for white
@@ -173,7 +171,7 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Turn {
 
 /// Convert the san pawn moves into turns
 fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Turn, SanParserError> {
-    let possible_moves = position.get_possible_moves();
+    let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
     let raw_turn = san_data.as_str().to_string();
 
     let mut target_field: Option<Field> = None;

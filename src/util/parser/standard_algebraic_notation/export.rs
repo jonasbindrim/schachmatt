@@ -1,4 +1,4 @@
-use crate::{Board, Piece, PieceType, PlayerColor, Position, Turn};
+use crate::{Board, Piece, PieceType, PlayerColor, Position, Turn, CLASSIC_RULESET};
 
 /// Converts a `Turn` into its corresponding SAN representation.
 /// - `turn` - The turn object that will be converted
@@ -104,10 +104,9 @@ fn to_move(base: &mut String, turn: &Turn, current_position: &Position, is_captu
     }
 
     // Check if is in check
-    let mut copy_position = current_position.clone();
-    copy_position.turn(turn).unwrap();
-    if copy_position.is_in_check(copy_position.get_active_color()) {
-        if copy_position.get_possible_moves().is_empty() {
+    let copy_position = CLASSIC_RULESET.execute_turn(&current_position.clone(), turn);
+    if CLASSIC_RULESET.is_in_check(&copy_position, copy_position.get_active_color()) {
+        if CLASSIC_RULESET.get_possible_turns(&copy_position).is_empty() {
             base.push('#');
         } else {
             base.push('+');
@@ -129,7 +128,7 @@ fn is_unique_descriptor(
     column: Option<u8>,
     row: Option<u8>,
 ) -> bool {
-    let possible_moves = current_position.get_possible_moves();
+    let possible_moves = CLASSIC_RULESET.get_possible_turns(&current_position);
 
     let mut counter = 0;
     for turn in possible_moves {

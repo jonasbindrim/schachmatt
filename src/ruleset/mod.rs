@@ -1,4 +1,4 @@
-use crate::{GameResult, Position, Turn};
+use crate::{GameResult, PlayerColor, Position, Turn};
 
 pub(crate) mod classic;
 
@@ -9,6 +9,7 @@ pub struct Ruleset {
     get_possible_turns: fn(&Position) -> Vec<Turn>,
     execute_turn: fn(&Position, &Turn) -> Position,
     game_over_check: fn(&Position) -> Option<GameResult>,
+    is_in_check: fn(&Position, PlayerColor) -> bool,
 }
 
 impl Ruleset {
@@ -17,12 +18,14 @@ impl Ruleset {
         get_possible_turns: fn(&Position) -> Vec<Turn>,
         execute_turn: fn(&Position, &Turn) -> Position,
         game_over_check: fn(&Position) -> Option<GameResult>,
+        is_in_check: fn(&Position, PlayerColor) -> bool,
     ) -> Self {
         Ruleset {
             generate_initial_position,
             get_possible_turns,
             execute_turn,
             game_over_check,
+            is_in_check
         }
     }
 
@@ -40,5 +43,9 @@ impl Ruleset {
 
     pub fn game_over_check(&self, position: &Position) -> Option<GameResult> {
         (self.game_over_check)(position)
+    }
+
+    pub fn is_in_check(&self, position: &Position, player_color: PlayerColor) -> bool {
+        (self.is_in_check)(position, player_color)
     }
 }

@@ -5,8 +5,6 @@ extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
-mod tests;
-
 mod constants;
 pub use crate::constants::BOARD_FIELDS;
 

@@ -1,11 +1,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    Game, GameResult, PlayerColor, SAN,
     util::metadata::{
         METADATA_KEY_BLACK, METADATA_KEY_DATE, METADATA_KEY_EVENT, METADATA_KEY_RESULT,
         METADATA_KEY_ROUND, METADATA_KEY_SITE, METADATA_KEY_WHITE,
-    },
+    }, Game, GameResult, PlayerColor, CLASSIC_RULESET, SAN
 };
 
 static REQUIRED_TAGS: [&str; 6] = [
@@ -45,7 +44,7 @@ fn format_turndata(game: &Game) -> String {
     for (position_index, position) in position_history.iter().enumerate() {
         // Add game result. Only done once in the last position
         if position_index == position_history.len() - 1 {
-            let game_result = GameResult::to_string(position.game_over_check().as_ref());
+            let game_result = GameResult::to_string(CLASSIC_RULESET.game_over_check(position).as_ref());
             result.push_str(&game_result);
             break;
         }

@@ -82,6 +82,7 @@ impl Game {
         self.position_history.last().unwrap()
     }
 
+    /// Returns all possible turns in the current game state
     pub fn get_possible_turns(&self) -> Vec<Turn> {
         self.get_current_state().get_possible_turns(&self.ruleset)
     }

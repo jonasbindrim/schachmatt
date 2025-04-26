@@ -203,22 +203,15 @@ fn string_to_castling_rights(
 ) -> Result<(CastlingRights, CastlingRights), FenParserError> {
     let letters = castling_data.as_bytes();
 
-    let mut castling_black = CastlingRights {
-        queenside: false,
-        kingside: false,
-    };
-
-    let mut castling_white = CastlingRights {
-        queenside: false,
-        kingside: false,
-    };
+    let mut castling_black = CastlingRights::new(false, false);
+    let mut castling_white = CastlingRights::new(false, false);
 
     for position in letters {
         match *position as char {
-            'K' => castling_white.kingside = true,
-            'Q' => castling_white.queenside = true,
-            'k' => castling_black.kingside = true,
-            'q' => castling_black.queenside = true,
+            'K' => castling_white.set_kingside(true),
+            'Q' => castling_white.set_queenside(true),
+            'k' => castling_black.set_kingside(true),
+            'q' => castling_black.set_queenside(true),
             '-' => break,
             _ => {
                 return Err(FenParserError::UnrecognisedContent {

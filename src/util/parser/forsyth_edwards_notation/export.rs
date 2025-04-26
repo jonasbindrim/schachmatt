@@ -83,19 +83,19 @@ fn export_piece_placement_data(board_position: &BoardSetup) -> String {
 fn export_castling_data(white_castling: CastlingRights, black_castling: CastlingRights) -> String {
     let mut castling_data: String = String::new();
 
-    if white_castling.kingside {
+    if white_castling.get_kingside() {
         castling_data.push('K');
     }
 
-    if white_castling.queenside {
+    if white_castling.get_queenside() {
         castling_data.push('Q');
     }
 
-    if black_castling.kingside {
+    if black_castling.get_kingside() {
         castling_data.push('k');
     }
 
-    if black_castling.queenside {
+    if black_castling.get_queenside() {
         castling_data.push('q');
     }
 
