@@ -1,10 +1,7 @@
 #[cfg(test)]
 mod field {
     mod new {
-        use schachmatt::{
-            Board::{COLUMN_A, COLUMN_H, FIELD_A1, FIELD_H8, ROW_1, ROW_8},
-            Field,
-        };
+        use schachmatt::{ Columns::*, Field, Fields::*, Rows::*};
 
         #[test]
         fn test_new_a0() {
@@ -23,10 +20,7 @@ mod field {
     }
 
     mod new_from_usize {
-        use schachmatt::{
-            Board::{COLUMN_A, COLUMN_H, FIELD_A1, FIELD_H8, ROW_1, ROW_8},
-            Field,
-        };
+        use schachmatt::{ Columns::*, Field, Fields::*, Rows::*};
 
         #[test]
         fn test_new_a0() {
@@ -54,10 +48,7 @@ mod field {
     }
 
     mod new_from_string {
-        use schachmatt::{
-            Board::{FIELD_A1, FIELD_H8},
-            Field,
-        };
+        use schachmatt::{Field, Fields::*};
 
         #[test]
         fn test_new_a0() {

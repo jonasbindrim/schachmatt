@@ -1,5 +1,5 @@
 use crate::{
-    piece::piece_type::PieceType, Board::{self, FIELD_A1, FIELD_E1}, Field, Piece, PlayerColor, Position, Turn, CLASSIC_RULESET
+    piece::piece_type::PieceType, Columns, Field, Fields::{FIELD_A1, FIELD_E1}, Piece, PlayerColor, Position, Rows, Turn, CLASSIC_RULESET
 };
 
 use pest::{Parser, iterators::Pair};
@@ -148,17 +148,17 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Turn {
 
     // Change row if color is black
     if player_color == PlayerColor::Black {
-        starting_field.row = Board::ROW_8;
-        target_field.row = Board::ROW_8;
+        starting_field.row = Rows::ROW_8;
+        target_field.row = Rows::ROW_8;
     }
 
     // Check if castle is king or queenside
     match san_data.as_str() {
         "O-O" | "0-0" => {
-            target_field.column = Board::COLUMN_G;
+            target_field.column = Columns::COLUMN_G;
         }
         "O-O-O" | "0-0-0" => {
-            target_field.column = Board::COLUMN_C;
+            target_field.column = Columns::COLUMN_C;
         }
         _ => unreachable!(),
     };

@@ -1,4 +1,4 @@
-use crate::{constants::BOARD_FIELDS, piece::piece_move_iterator::PieceMoveIterator, position::util::{castling_rights::CastlingRights, move_legality::MoveLegality}, util::castle_data::{CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED, CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED}, Board::{self, *}, Field, GameResult, Piece, PieceType, PlayerColor, Position, Turn};
+use crate::{piece::piece_move_iterator::PieceMoveIterator, position::util::{castling_rights::CastlingRights, move_legality::MoveLegality}, util::castle_data::{CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED, CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED}, Field, Fields::*, GameResult, Piece, PieceType, PlayerColor, Position, Rows, Turn};
 
 /// Takes a turn which is a promotion turn and returns a vector of each possible resulting promotion turn.
 /// - `turn` - The promotion turn
@@ -65,7 +65,7 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
         loop {
             while let Some(mut turn) = piece_iterator.current() {
                 // if turn is a promotion turn insert a dummy figure to make the move legal
-                if is_pawn && matches!(turn.target.row, Board::ROW_8 | Board::ROW_1) {
+                if is_pawn && matches!(turn.target.row, Rows::ROW_8 | Rows::ROW_1) {
                     turn.promotion = Some(PieceType::Queen);
                 }
 
@@ -73,14 +73,14 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
                     MoveLegality::TemporarelyIllegal => continue,
                     MoveLegality::FullyIllegal => break,
                     MoveLegality::Legal => {
-                        if is_pawn && matches!(turn.target.row, Board::ROW_8 | Board::ROW_1) {
+                        if is_pawn && matches!(turn.target.row, Rows::ROW_8 | Rows::ROW_1) {
                             turns.append(&mut push_turn(turn));
                         } else {
                             turns.push(turn);
                         }
                     }
                     MoveLegality::LastLegal => {
-                        if is_pawn && matches!(turn.target.row, Board::ROW_8 | Board::ROW_1) {
+                        if is_pawn && matches!(turn.target.row, Rows::ROW_8 | Rows::ROW_1) {
                             turns.append(&mut push_turn(turn));
                         } else {
                             turns.push(turn);
@@ -194,7 +194,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
 
     // Promote if possible
     if PieceType::Pawn == moving_piece.get_type()
-        && matches!(turn.target.row, Board::ROW_1 | Board::ROW_8)
+        && matches!(turn.target.row, Rows::ROW_1 | Rows::ROW_8)
     {
         position.set_field_occupation(
             &turn.target,
@@ -286,14 +286,14 @@ fn is_legal_move(position: &Position, turn: Turn, check_for_check: bool) -> Move
 fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor) -> MoveLegality {
     let step = turn.target.column as i8 - turn.current.column as i8;
     if step == 2 {
-        if turn.current.row == Board::ROW_8
+        if turn.current.row == Rows::ROW_8
             && active_color == PlayerColor::Black
             && position.get_castling_rights(PlayerColor::Black).get_kingside()
         {
             if is_castle_illegal(position, &CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, active_color) {
                 return MoveLegality::FullyIllegal;
             }
-        } else if turn.current.row == Board::ROW_1
+        } else if turn.current.row == Rows::ROW_1
             && active_color == PlayerColor::White
             && position.get_castling_rights(PlayerColor::White).get_kingside()
         {
@@ -304,14 +304,14 @@ fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor
             return MoveLegality::FullyIllegal;
         }
     } else if step == -2 {
-        if turn.current.row == Board::ROW_8
+        if turn.current.row == Rows::ROW_8
             && active_color == PlayerColor::Black
             && position.get_castling_rights(PlayerColor::Black).get_queenside()
         {
             if is_castle_illegal(position, &CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED, active_color) {
                 return MoveLegality::FullyIllegal;
             }
-        } else if turn.current.row == Board::ROW_1
+        } else if turn.current.row == Rows::ROW_1
             && active_color == PlayerColor::White
             && position.get_castling_rights(PlayerColor::White).get_queenside()
         {
@@ -344,8 +344,8 @@ fn is_pawn_move_legal(
 
         if turn.current.row.abs_diff(turn.target.row) == 2
             && match active_color {
-                PlayerColor::Black => turn.current.row != Board::ROW_7,
-                PlayerColor::White => turn.current.row != Board::ROW_2,
+                PlayerColor::Black => turn.current.row != Rows::ROW_7,
+                PlayerColor::White => turn.current.row != Rows::ROW_2,
             }
         {
             return MoveLegality::FullyIllegal;

@@ -1,9 +1,8 @@
 use crate::{
-    Board, Field, Piece, PlayerColor, Position,
     position::{
         position_struct::{BoardSetup, COLUMN_AMOUNT, ROW_AMOUNT},
         util::castling_rights::CastlingRights,
-    },
+    }, Columns, Field, Piece, PlayerColor, Position, Rows
 };
 
 use super::error::FenParserError;
@@ -121,7 +120,7 @@ fn compute_piece_placement_data(
     // Split the different rows at '/'
     let rows: Vec<&str> = piece_data.split('/').collect();
 
-    for row_counter in ((Board::ROW_1 as usize)..=(Board::ROW_8 as usize)).rev() {
+    for row_counter in ((Rows::ROW_1 as usize)..=(Rows::ROW_8 as usize)).rev() {
         let mut piece_counter: usize = 0;
         let Some(current_row) = rows.get(row_counter) else {
             return Err(FenParserError::InvalidPiecePlacementData(format!(
@@ -149,7 +148,7 @@ fn compute_piece_placement_data(
                     )));
                 }
 
-                board[Board::COLUMN_H as usize - row_counter][piece_counter] = Some(piece);
+                board[Columns::COLUMN_H as usize - row_counter][piece_counter] = Some(piece);
                 piece_counter += 1;
             } else {
                 return Err(FenParserError::UnrecognisedContent {

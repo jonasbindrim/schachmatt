@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod long_algebraic_notation_export_tests {
-    use schachmatt::{Board::*, LAN, PieceType, Turn};
+    use schachmatt::{Fields::*, PieceType, Turn, LAN};
 
     #[test]
     pub fn export_lan_pawn_push() {

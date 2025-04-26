@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
 
-    use crate::{piece::piece_type::PieceType, Board::*, Turn, CLASSIC_RULESET, FEN};
+    use crate::{piece::piece_type::PieceType, Fields::*, Turn, CLASSIC_RULESET, FEN};
 
     #[test]
     fn en_passant_test1() {

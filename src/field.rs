@@ -1,6 +1,6 @@
 use core::fmt;
 
-use crate::Board::{COLUMN_H, ROW_8};
+use crate::{Columns::COLUMN_H, Rows::ROW_8};
 
 /// Represents a board location in a chess game.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]

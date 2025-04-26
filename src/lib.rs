@@ -6,7 +6,9 @@ extern crate pest;
 extern crate pest_derive;
 
 mod constants;
-pub use crate::constants::BOARD_FIELDS;
+pub use crate::constants::columns as Columns;
+pub use crate::constants::rows as Rows;
+pub use crate::constants::fields as Fields;
 
 mod game;
 pub use crate::game::Game;
@@ -36,7 +38,6 @@ pub use crate::ruleset::Ruleset;
 pub use crate::ruleset::classic::CLASSIC_RULESET;
 
 mod util;
-pub use crate::util::board_descriptors as Board;
 pub use crate::util::parser::forsyth_edwards_notation as FEN;
 pub use crate::util::parser::long_algebraic_notation as LAN;
 pub use crate::util::parser::portable_game_notation as PGN;

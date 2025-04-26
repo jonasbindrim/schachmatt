@@ -1,4 +1,4 @@
-use crate::{Board::*, Field};
+use crate::{Field, Fields::*};
 
 pub(crate) static CASTLE_BQ_CHECKED: [Field; 3] = [FIELD_E8, FIELD_D8, FIELD_C8];
 pub(crate) static CASTLE_BQ_BLOCKED: [Field; 3] = [FIELD_D8, FIELD_C8, FIELD_B8];

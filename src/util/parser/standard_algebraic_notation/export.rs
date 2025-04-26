@@ -1,4 +1,4 @@
-use crate::{Board, Piece, PieceType, PlayerColor, Position, Turn, CLASSIC_RULESET};
+use crate::{ Columns, Piece, PieceType, PlayerColor, Position, Turn, CLASSIC_RULESET};
 
 /// Converts a `Turn` into its corresponding SAN representation.
 /// - `turn` - The turn object that will be converted
@@ -44,7 +44,7 @@ pub fn from_turn(turn: &Turn, current_position: &Position) -> String {
                 return String::from("O-O");
             }
 
-            if turn.current.column == Board::COLUMN_E
+            if turn.current.column == Columns::COLUMN_E
                 && turn.current.column - 2 == turn.target.column
             {
                 return String::from("O-O-O");

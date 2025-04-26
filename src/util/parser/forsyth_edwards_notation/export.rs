@@ -1,6 +1,5 @@
 use crate::{
-    Board, PlayerColor, Position,
-    position::{position_struct::BoardSetup, util::castling_rights::CastlingRights},
+    position::{position_struct::BoardSetup, util::castling_rights::CastlingRights}, Columns, PlayerColor, Position, Rows
 };
 
 /// Converts a `Position` into a string in FEN notation.
@@ -52,9 +51,9 @@ pub fn export_to_fen(position: &Position) -> String {
 fn export_piece_placement_data(board_position: &BoardSetup) -> String {
     let mut piece_data: String = String::new();
 
-    for row in ((Board::ROW_1 as usize)..=(Board::ROW_8 as usize)).rev() {
+    for row in ((Rows::ROW_1 as usize)..=(Rows::ROW_8 as usize)).rev() {
         let mut empty_counter = 0;
-        for column in (Board::COLUMN_A as usize)..=(Board::COLUMN_H as usize) {
+        for column in (Columns::COLUMN_A as usize)..=(Columns::COLUMN_H as usize) {
             let Some(piece) = board_position[row][column] else {
                 empty_counter += 1;
                 continue;
@@ -69,7 +68,7 @@ fn export_piece_placement_data(board_position: &BoardSetup) -> String {
         if empty_counter != 0 {
             piece_data.push_str(&empty_counter.to_string());
         }
-        if row != Board::ROW_1 as usize {
+        if row != Rows::ROW_1 as usize {
             piece_data.push('/');
         }
     }

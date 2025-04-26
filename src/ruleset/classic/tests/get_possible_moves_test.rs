@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::{
-        piece::piece_type::PieceType, position::position_struct::{COLUMN_AMOUNT, ROW_AMOUNT}, Board::{self, *}, Field, Turn, CLASSIC_RULESET, FEN
+        piece::piece_type::PieceType, position::position_struct::{COLUMN_AMOUNT, ROW_AMOUNT}, Columns, Field, Fields::*, Rows, Turn, CLASSIC_RULESET, FEN
     };
 
     /// Tests the possible moves of the king
@@ -32,17 +32,17 @@ mod tests {
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 23);
         // Test horizontally
-        let mut column = Board::COLUMN_A;
+        let mut column = Columns::COLUMN_A;
         while column < COLUMN_AMOUNT as u8 {
-            let test_turn = Turn::new(FIELD_D2, Field::new(column, Board::ROW_2).unwrap(), None);
+            let test_turn = Turn::new(FIELD_D2, Field::new(column, Rows::ROW_2).unwrap(), None);
             if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             column += 1;
         }
-        let mut row = Board::ROW_1;
+        let mut row = Rows::ROW_1;
         while row < ROW_AMOUNT as u8 {
-            let test_turn = Turn::new(FIELD_D2, Field::new(Board::COLUMN_D, row).unwrap(), None);
+            let test_turn = Turn::new(FIELD_D2, Field::new(Columns::COLUMN_D, row).unwrap(), None);
             if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
@@ -90,17 +90,17 @@ mod tests {
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 14);
         // Test horizontally
-        let mut column = Board::COLUMN_A;
+        let mut column = Columns::COLUMN_A;
         while column < COLUMN_AMOUNT as u8 {
-            let test_turn = Turn::new(FIELD_D2, Field::new(column, Board::ROW_2).unwrap(), None);
+            let test_turn = Turn::new(FIELD_D2, Field::new(column, Rows::ROW_2).unwrap(), None);
             if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             column += 1;
         }
-        let mut row = Board::ROW_1;
+        let mut row = Rows::ROW_1;
         while row < ROW_AMOUNT as u8 {
-            let test_turn = Turn::new(FIELD_D2, Field::new(Board::COLUMN_D, row).unwrap(), None);
+            let test_turn = Turn::new(FIELD_D2, Field::new(Columns::COLUMN_D, row).unwrap(), None);
             if test_turn.current != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
