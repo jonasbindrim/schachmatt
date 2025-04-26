@@ -18,7 +18,7 @@ struct SanStruct;
 /// - `returns` - The `Turn` as an object
 /// # Panics
 /// This panic indicates an error in the library.
-pub fn from_string(raw: &str, current_position: &mut Position) -> Result<Turn, SanParserError> {
+pub fn from_string(raw: &str, current_position: &Position) -> Result<Turn, SanParserError> {
     // Cut potential "+" from raw string data as it doesnt convey any needed information
 
     let mut san_data = raw;

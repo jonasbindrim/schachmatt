@@ -7,6 +7,9 @@ extern crate pest_derive;
 
 mod tests;
 
+mod constants;
+pub use crate::constants::BOARD_FIELDS;
+
 mod game;
 pub use crate::game::Game;
 

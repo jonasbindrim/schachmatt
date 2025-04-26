@@ -76,11 +76,14 @@ impl Game {
         &self.game_metadata
     }
 
-    /// Returns a copy of the current game state.
-    /// - `returns` - A copy of the current game state.
+    /// Returns the current position in the game.
     #[must_use]
-    pub fn get_current_state(&self) -> Position {
-        self.position_history.last().unwrap().clone()
+    pub fn get_current_state(&self) -> &Position {
+        self.position_history.last().unwrap()
+    }
+
+    pub fn get_possible_turns(&self) -> Vec<Turn> {
+        self.get_current_state().get_possible_turns(&self.ruleset)
     }
 
     /// Executes the given turn.
@@ -88,10 +91,10 @@ impl Game {
     /// An illegal turn is not executed and an error is returned.
     /// - `turn` - The turn to play
     pub fn execute_turn(&mut self, turn: Turn) -> Result<(), PositionError> {
-        let mut current_position = self.get_current_state();
-        current_position.turn(&turn)?;
+        let current_position = self.get_current_state();
+        let updated_position = current_position.turn(&self.ruleset, &turn)?;
 
-        self.position_history.push(current_position);
+        self.position_history.push(updated_position);
         self.turn_history.push(turn);
 
         Ok(())
@@ -109,7 +112,7 @@ impl Game {
             }
         }
 
-        self.position_history.last().unwrap().game_over_check()
+        self.get_current_state().game_over_check(&self.ruleset)
     }
 
     /// Returns the color of the player who has to move.
