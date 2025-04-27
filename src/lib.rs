@@ -35,6 +35,9 @@ pub use crate::game_result::GameResult;
 mod player_color;
 pub use crate::player_color::PlayerColor;
 
+mod castling_rights;
+pub use crate::castling_rights::CastlingRights;
+
 mod ruleset;
 pub use crate::ruleset::Ruleset;
 pub use crate::ruleset::classic::CLASSIC_RULESET;

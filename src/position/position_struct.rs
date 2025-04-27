@@ -1,6 +1,6 @@
-use crate::{FEN, Field, GameResult, LAN, Piece, PlayerColor, PositionError, Ruleset, Turn};
-
-use super::util::castling_rights::CastlingRights;
+use crate::{
+    CastlingRights, FEN, Field, GameResult, LAN, Piece, PlayerColor, PositionError, Ruleset, Turn,
+};
 
 pub type BoardSetup = [[Option<Piece>; COLUMN_AMOUNT]; ROW_AMOUNT];
 pub(crate) const ROW_AMOUNT: usize = 8;

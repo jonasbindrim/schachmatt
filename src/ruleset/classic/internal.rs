@@ -1,8 +1,8 @@
 use crate::{
-    Field,
+    CastlingRights, Field,
     Fields::*,
     GameResult, Piece, PieceType, PlayerColor, Position, Rows, Turn,
-    position::util::{castling_rights::CastlingRights, move_legality::MoveLegality},
+    position::util::move_legality::MoveLegality,
     util::castle_data::{
         CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED,
         CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED,
