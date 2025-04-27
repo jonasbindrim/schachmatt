@@ -60,6 +60,26 @@ impl Field {
 
         Option::None
     }
+
+    pub fn set_column(&mut self, column: u8) {
+        if column <= COLUMN_H {
+            self.column = column;
+        }
+    }
+
+    pub fn set_row(&mut self, row: u8) {
+        if row <= ROW_8 {
+            self.row = row;
+        }
+    }
+
+    pub fn get_column(&self) -> u8 {
+        self.column
+    }
+
+    pub fn get_row(&self) -> u8 {
+        self.row
+    }
 }
 
 impl fmt::Display for Field {

@@ -10,33 +10,17 @@ pub use crate::constants::columns as Columns;
 pub use crate::constants::fields as Fields;
 pub use crate::constants::rows as Rows;
 
-mod game;
-pub use crate::game::Game;
-
-mod position;
-pub use crate::position::Position;
-pub use crate::position::PositionError;
-
-mod field;
-pub use crate::field::Field;
-
-mod turn;
-pub use crate::turn::Turn;
-
-mod piece;
-pub use crate::piece::Piece;
-
-mod piece_type;
-pub use crate::piece_type::PieceType;
-
-mod game_result;
-pub use crate::game_result::GameResult;
-
-mod player_color;
-pub use crate::player_color::PlayerColor;
-
-mod castling_rights;
-pub use crate::castling_rights::CastlingRights;
+mod chess;
+pub use crate::chess::castling_rights::CastlingRights;
+pub use crate::chess::field::Field;
+pub use crate::chess::game::Game;
+pub use crate::chess::game_result::GameResult;
+pub use crate::chess::piece::Piece;
+pub use crate::chess::piece_type::PieceType;
+pub use crate::chess::player_color::PlayerColor;
+pub use crate::chess::position::Position;
+pub use crate::chess::position::PositionError;
+pub use crate::chess::turn::Turn;
 
 mod ruleset;
 pub use crate::ruleset::Ruleset;

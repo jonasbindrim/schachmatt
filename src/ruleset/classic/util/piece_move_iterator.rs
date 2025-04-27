@@ -61,8 +61,8 @@ impl<'a> PieceMoveIterator<'a> {
         };
 
         // Calculate next iterator field
-        let target_row = (self.base_field.row as i8 + row_increment) as u8;
-        let target_column = (self.base_field.column as i8 + column_increment) as u8;
+        let target_row = (self.base_field.get_row() as i8 + row_increment) as u8;
+        let target_column = (self.base_field.get_column() as i8 + column_increment) as u8;
 
         let turn = Turn {
             current: self.base_field,

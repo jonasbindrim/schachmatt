@@ -3,7 +3,7 @@ use crate::{
     Columns::{self, COLUMN_AMOUNT},
     Field, Piece, PlayerColor, Position,
     Rows::{self, ROW_AMOUNT},
-    position::BoardSetup,
+    chess::position::BoardSetup,
 };
 
 use super::error::FenParserError;

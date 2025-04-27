@@ -86,12 +86,12 @@ fn import_piece_move_full(
         {
             let mut ok: bool = true;
             if let Some(column_value) = from_column {
-                if turn.current.column != column_value {
+                if turn.current.get_column() != column_value {
                     ok = false;
                 }
             }
             if let Some(row_value) = from_row {
-                if turn.current.row != row_value {
+                if turn.current.get_row() != row_value {
                     ok = false;
                 }
             }
@@ -150,17 +150,17 @@ fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Turn {
 
     // Change row if color is black
     if player_color == PlayerColor::Black {
-        starting_field.row = Rows::ROW_8;
-        target_field.row = Rows::ROW_8;
+        starting_field.set_row(Rows::ROW_8);
+        target_field.set_row(Rows::ROW_8);
     }
 
     // Check if castle is king or queenside
     match san_data.as_str() {
         "O-O" | "0-0" => {
-            target_field.column = Columns::COLUMN_G;
+            target_field.set_column(Columns::COLUMN_G);
         }
         "O-O-O" | "0-0-0" => {
-            target_field.column = Columns::COLUMN_C;
+            target_field.set_column(Columns::COLUMN_C);
         }
         _ => unreachable!(),
     };
@@ -215,12 +215,13 @@ fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Tur
                     // Is a capture move
                     match from_row {
                         Some(row) => {
-                            if column == turn.current.column && row == turn.current.row {
+                            if column == turn.current.get_column() && row == turn.current.get_row()
+                            {
                                 return Ok(turn);
                             }
                         }
                         None => {
-                            if column == turn.current.column {
+                            if column == turn.current.get_column() {
                                 return Ok(turn);
                             }
                         }
