@@ -1,6 +1,9 @@
 use crate::{
-    CastlingRights, Columns, Field, Piece, PlayerColor, Position, Rows,
-    position::position_struct::{BoardSetup, COLUMN_AMOUNT, ROW_AMOUNT},
+    CastlingRights,
+    Columns::{self, COLUMN_AMOUNT},
+    Field, Piece, PlayerColor, Position,
+    Rows::{self, ROW_AMOUNT},
+    position::BoardSetup,
 };
 
 use super::error::FenParserError;

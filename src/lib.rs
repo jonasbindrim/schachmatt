@@ -14,8 +14,8 @@ mod game;
 pub use crate::game::Game;
 
 mod position;
-pub use crate::position::position_struct::Position;
-pub use crate::position::util::errors::PositionError;
+pub use crate::position::Position;
+pub use crate::position::PositionError;
 
 mod field;
 pub use crate::field::Field;

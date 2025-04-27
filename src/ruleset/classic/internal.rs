@@ -2,14 +2,16 @@ use crate::{
     CastlingRights, Field,
     Fields::*,
     GameResult, Piece, PieceType, PlayerColor, Position, Rows, Turn,
-    position::util::move_legality::MoveLegality,
     util::castle_data::{
         CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED, CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED,
         CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED, CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED,
     },
 };
 
-use super::util::{move_iterators::get_movement_modifiers, piece_move_iterator::PieceMoveIterator};
+use super::util::{
+    move_iterators::get_movement_modifiers, move_legality::MoveLegality,
+    piece_move_iterator::PieceMoveIterator,
+};
 
 /// Takes a turn which is a promotion turn and returns a vector of each possible resulting promotion turn.
 /// - `turn` - The promotion turn

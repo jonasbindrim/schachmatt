@@ -1,6 +1,4 @@
-use crate::{
-    CastlingRights, Columns, PlayerColor, Position, Rows, position::position_struct::BoardSetup,
-};
+use crate::{CastlingRights, Columns, PlayerColor, Position, Rows, position::BoardSetup};
 
 /// Converts a `Position` into a string in FEN notation.
 /// - `position` - The position that gets converted

@@ -1,10 +1,17 @@
+use thiserror::Error;
+
 use crate::{
-    CastlingRights, FEN, Field, GameResult, LAN, Piece, PlayerColor, PositionError, Ruleset, Turn,
+    CastlingRights, Columns::COLUMN_AMOUNT, FEN, Field, GameResult, LAN, Piece, PlayerColor,
+    Rows::ROW_AMOUNT, Ruleset, Turn,
 };
 
 pub type BoardSetup = [[Option<Piece>; COLUMN_AMOUNT]; ROW_AMOUNT];
-pub(crate) const ROW_AMOUNT: usize = 8;
-pub(crate) const COLUMN_AMOUNT: usize = 8;
+
+#[derive(Error, Debug)]
+pub enum PositionError {
+    #[error("The given turn is not legal in the current position: {0}")]
+    IllegalTurnError(String),
+}
 
 /// A `Position` is defined as a state in a chess game.
 #[derive(Clone, PartialEq, Debug)]

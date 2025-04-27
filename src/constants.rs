@@ -7,6 +7,7 @@ pub mod columns {
     pub const COLUMN_F: u8 = 5;
     pub const COLUMN_G: u8 = 6;
     pub const COLUMN_H: u8 = 7;
+    pub const COLUMN_AMOUNT: usize = 8;
 }
 
 pub mod rows {
@@ -18,6 +19,7 @@ pub mod rows {
     pub const ROW_6: u8 = 5;
     pub const ROW_7: u8 = 6;
     pub const ROW_8: u8 = 7;
+    pub const ROW_AMOUNT: usize = 8;
 }
 
 pub mod fields {
