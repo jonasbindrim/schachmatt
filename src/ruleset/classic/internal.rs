@@ -41,7 +41,7 @@ pub(super) fn game_over_check(position: &Position) -> Option<GameResult> {
 
     // Check all other rules
     if !get_possible_turns(position).is_empty() {
-        if position.get_halfmove_counter() == 50 {
+        if position.get_halfmove_clock() == 50 {
             return Some(GameResult::Draw);
         }
         return None;
@@ -117,9 +117,9 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
 
     // Increase move counter if no piece has been taken and no pawn has been moved
     if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
-        position.set_halfmove_counter(0);
+        position.set_halfmove_clock(0);
     } else {
-        position.set_halfmove_counter(position.get_halfmove_counter() + 1);
+        position.set_halfmove_clock(position.get_halfmove_clock() + 1);
     }
 
     // Move the piece
@@ -209,7 +209,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
             && turn.current.get_row() == field.get_row()
         {
             position.set_field_occupation(&field, None);
-            position.set_halfmove_counter(0);
+            position.set_halfmove_clock(0);
         }
     }
 

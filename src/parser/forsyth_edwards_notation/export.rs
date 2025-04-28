@@ -27,7 +27,7 @@ pub fn export_to_fen(position: &Position) -> String {
     };
 
     // 5. Halfmove clock
-    let halfmove_clock = position.get_halfmove_counter();
+    let halfmove_clock = position.get_halfmove_clock();
 
     // 6. Fullmove counter
     let fullmove_counter = &position.get_fullmove_counter().to_string();

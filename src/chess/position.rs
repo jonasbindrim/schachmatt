@@ -115,15 +115,15 @@ impl Position {
         self.en_passant = en_passant;
     }
 
-    /// Returns the amount of halfmoves played to reach this position.
-    /// - `returns` - The amount of halfmoves played to reach this position
+    /// Returns the amount of halfmoves played since the last pawn move or capture.
+    /// - `returns` - The amount of halfmoves played since the last pawn move or capture
     #[must_use]
-    pub fn get_halfmove_counter(&self) -> u16 {
+    pub fn get_halfmove_clock(&self) -> u16 {
         self.halfmove_clock
     }
 
-    /// Sets the amount of halfmoves played to reach this position.
-    pub fn set_halfmove_counter(&mut self, halfmove_clock: u16) {
+    /// Sets the amount of halfmoves played since the last pawn move or capture.
+    pub fn set_halfmove_clock(&mut self, halfmove_clock: u16) {
         self.halfmove_clock = halfmove_clock;
     }
 
