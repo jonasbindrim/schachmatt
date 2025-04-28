@@ -1,6 +1,2 @@
-mod field;
-mod game;
-mod game_result;
+mod chess;
 mod parser;
-mod player_color;
-mod position;

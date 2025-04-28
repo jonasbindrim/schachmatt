@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod standard_algebraic_notation_export_tests {
-    use schachmatt::{Board::*, FEN, PieceType, SAN, Turn};
+    use schachmatt::{FEN, Fields::*, PieceType, SAN, Turn};
 
     #[test]
     pub fn export_san_pawn_push() {

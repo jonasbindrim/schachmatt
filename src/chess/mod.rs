@@ -1,0 +1,9 @@
+pub(crate) mod castling_rights;
+pub(crate) mod field;
+pub(crate) mod game;
+pub(crate) mod game_result;
+pub(crate) mod piece;
+pub(crate) mod piece_type;
+pub(crate) mod player_color;
+pub(crate) mod position;
+pub(crate) mod turn;
