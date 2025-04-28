@@ -44,14 +44,13 @@ impl PieceType {
     /// - `returns` - A `PieceType` object
     #[must_use]
     pub fn import_piecetype(piece_identifier: char) -> Option<Self> {
-        // TODO Should probably allow uppercase as well
         match piece_identifier {
-            'b' => Some(PieceType::Bishop),
-            'q' => Some(PieceType::Queen),
-            'n' => Some(PieceType::Knight),
-            'r' => Some(PieceType::Rook),
-            'k' => Some(PieceType::King),
-            'p' => Some(PieceType::Pawn),
+            'b' | 'B' => Some(PieceType::Bishop),
+            'q' | 'Q' => Some(PieceType::Queen),
+            'n' | 'N' => Some(PieceType::Knight),
+            'r' | 'R' => Some(PieceType::Rook),
+            'k' | 'K' => Some(PieceType::King),
+            'p' | 'P' => Some(PieceType::Pawn),
             _ => None,
         }
     }
