@@ -8,6 +8,7 @@ extern crate pest_derive;
 mod constants;
 pub use crate::constants::columns as Columns;
 pub use crate::constants::fields as Fields;
+pub use crate::constants::metadata as Metadata;
 pub use crate::constants::rows as Rows;
 
 mod chess;
@@ -26,8 +27,8 @@ mod ruleset;
 pub use crate::ruleset::Ruleset;
 pub use crate::ruleset::classic::CLASSIC_RULESET;
 
-mod util;
-pub use crate::util::parser::forsyth_edwards_notation as FEN;
-pub use crate::util::parser::long_algebraic_notation as LAN;
-pub use crate::util::parser::portable_game_notation as PGN;
-pub use crate::util::parser::standard_algebraic_notation as SAN;
+mod parser;
+pub use crate::parser::forsyth_edwards_notation as FEN;
+pub use crate::parser::long_algebraic_notation as LAN;
+pub use crate::parser::portable_game_notation as PGN;
+pub use crate::parser::standard_algebraic_notation as SAN;

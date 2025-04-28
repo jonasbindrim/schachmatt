@@ -8,7 +8,7 @@ use crate::{Game, Position, SAN, ruleset::classic::CLASSIC_RULESET};
 use super::error::PgnParserError;
 
 #[derive(Parser)]
-#[grammar = "util/parser/portable_game_notation/portable_game_notation.pest"]
+#[grammar = "parser/portable_game_notation/portable_game_notation.pest"]
 struct PgnStruct;
 
 /// Converts a string in PGN representation into a `Game`.

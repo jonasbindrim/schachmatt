@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    CLASSIC_RULESET, FEN, GameResult, PlayerColor, Position, PositionError, Turn,
+    CLASSIC_RULESET, FEN, GameResult,
+    Metadata::{METADATA_KEY_FEN, METADATA_KEY_RESULT},
+    PlayerColor, Position, PositionError, Turn,
     ruleset::Ruleset,
-    util::metadata::{METADATA_KEY_FEN, METADATA_KEY_RESULT},
 };
 
 /// Represents a game of chess.

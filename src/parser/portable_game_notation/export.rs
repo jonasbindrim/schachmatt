@@ -1,12 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{
-    CLASSIC_RULESET, Game, GameResult, PlayerColor, SAN,
-    util::metadata::{
-        METADATA_KEY_BLACK, METADATA_KEY_DATE, METADATA_KEY_EVENT, METADATA_KEY_RESULT,
-        METADATA_KEY_ROUND, METADATA_KEY_SITE, METADATA_KEY_WHITE,
-    },
-};
+use crate::{CLASSIC_RULESET, Game, GameResult, Metadata::*, PlayerColor, SAN};
 
 static REQUIRED_TAGS: [&str; 6] = [
     METADATA_KEY_BLACK,
