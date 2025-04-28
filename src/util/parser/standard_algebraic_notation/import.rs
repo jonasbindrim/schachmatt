@@ -9,7 +9,7 @@ use pest::{Parser, iterators::Pair};
 use super::SanParserError;
 
 #[derive(Parser)]
-#[grammar = "util/pest_definitions/standard_algebraic_notation.pest"]
+#[grammar = "util/parser/standard_algebraic_notation/standard_algebraic_notation.pest"]
 struct SanStruct;
 
 /// Converts a string in SAN representation to a `Turn` object.
