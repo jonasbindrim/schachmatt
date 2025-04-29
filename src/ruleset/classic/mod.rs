@@ -5,6 +5,8 @@ mod internal;
 mod tests;
 mod util;
 
+/// The classic ruleset for chess
+/// This ruleset is used by default and implements the standard rules of chess.
 pub const CLASSIC_RULESET: Ruleset = Ruleset::new(
     generate_initial_position,
     get_possible_turns,

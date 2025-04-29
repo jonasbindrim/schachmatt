@@ -1,3 +1,4 @@
+/// Different types of pieces in chess.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PieceType {
     Pawn,

@@ -7,7 +7,9 @@ use crate::{
     ruleset::Ruleset,
 };
 
-/// Represents a game of chess.
+/// Represents a game of chess. Manages the game state and history.
+/// The games behaviour is altered by the ruleset.
+/// Additionally, contains some amount of metadata.
 #[derive(Clone)]
 pub struct Game {
     pub(super) game_metadata: HashMap<String, String>,
