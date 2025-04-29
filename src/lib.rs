@@ -28,7 +28,9 @@ pub use crate::ruleset::Ruleset;
 pub use crate::ruleset::classic::CLASSIC_RULESET;
 
 mod parser;
-pub use crate::parser::forsyth_edwards_notation as FEN;
+pub use crate::parser::forsyth_edwards_notation::DEFAULT_BOARD_SETUP;
+pub use crate::parser::forsyth_edwards_notation::Fen;
+pub use crate::parser::forsyth_edwards_notation::FenParserError;
 pub use crate::parser::long_algebraic_notation as LAN;
 pub use crate::parser::portable_game_notation as PGN;
 pub use crate::parser::standard_algebraic_notation as SAN;

@@ -3,7 +3,7 @@ mod tests {
     use crate::{
         CLASSIC_RULESET,
         Columns::{self, COLUMN_AMOUNT},
-        FEN, Field,
+        Fen, Field,
         Fields::*,
         PieceType,
         Rows::{self, ROW_AMOUNT},
@@ -13,7 +13,7 @@ mod tests {
     /// Tests the possible moves of the king
     #[test]
     fn king_test() {
-        let position = FEN::import("8/8/8/8/8/8/3K4/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/8/3K4/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         let turns = [
             Turn::new(FIELD_D2, FIELD_E1, None),
@@ -34,7 +34,7 @@ mod tests {
     /// Tests the possible moves of the queen
     #[test]
     fn queen_test() {
-        let position = FEN::import("8/8/8/8/8/8/3Q4/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/8/3Q4/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 23);
         // Test horizontally
@@ -92,7 +92,7 @@ mod tests {
     /// Tests the possible moves of the rook
     #[test]
     fn rook_test() {
-        let position = FEN::import("8/8/8/8/8/8/3R4/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/8/3R4/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 14);
         // Test horizontally
@@ -117,7 +117,7 @@ mod tests {
     /// Tests the possible moves of the knight
     #[test]
     fn knight_test() {
-        let position: crate::Position = FEN::import("8/8/8/8/8/2N5/8/8 w - - 0 1").unwrap();
+        let position: crate::Position = Fen::import("8/8/8/8/8/2N5/8/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         let turns = [
             Turn::new(FIELD_C3, FIELD_A2, None),
@@ -138,7 +138,7 @@ mod tests {
     /// Tests the possible moves of the white pawns
     #[test]
     fn pawn_white_test() {
-        let position = FEN::import("8/8/8/8/8/3P4/8/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/3P4/8/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 1);
         let test_turn = Turn::new(FIELD_D3, FIELD_D4, None);
@@ -148,7 +148,7 @@ mod tests {
     /// Tests the possible moves of the white pawns
     #[test]
     fn pawn_white_double_advancement_test() {
-        let position = FEN::import("8/8/8/8/8/8/3P4/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/8/3P4/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         let test_turn = [
             Turn::new(FIELD_D2, FIELD_D3, None),
@@ -162,7 +162,7 @@ mod tests {
     /// Tests the possible moves of the bishop
     #[test]
     fn bishop_test() {
-        let position = FEN::import("8/8/8/8/8/8/3B4/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/8/3B4/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 9);
 
@@ -204,7 +204,7 @@ mod tests {
     /// Tests the possible moves of the black pawn
     #[test]
     fn pawn_black_test() {
-        let position = FEN::import("8/8/8/8/8/3p4/8/8 b - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/3p4/8/8 b - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 1);
         let test_turn = Turn::new(FIELD_D3, FIELD_D2, None);
@@ -214,7 +214,7 @@ mod tests {
     /// Tests the possible moves of the black pawn
     #[test]
     fn pawn_black_double_advancement_test() {
-        let position = FEN::import("8/3p4/8/8/8/8/8/8 b - - 0 1").unwrap();
+        let position = Fen::import("8/3p4/8/8/8/8/8/8 b - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         let test_turn = [
             Turn::new(FIELD_D7, FIELD_D6, None),
@@ -228,7 +228,7 @@ mod tests {
     /// Tests the possible moves of the white pawns
     #[test]
     fn pawn_white_takes_test() {
-        let position = FEN::import("8/8/8/8/8/2pp4/3P4/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/2pp4/3P4/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 1);
         let test_turn = Turn::new(FIELD_D2, FIELD_C3, None);
@@ -238,7 +238,7 @@ mod tests {
     /// Tests the possible moves of the black pawn
     #[test]
     fn pawn_black_takes_test() {
-        let position = FEN::import("8/8/8/8/8/2p5/2PP4/8 b - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/2p5/2PP4/8 b - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 1);
         let test_turn = Turn::new(FIELD_C3, FIELD_D2, None);
@@ -248,7 +248,7 @@ mod tests {
     /// Tests if temporary illegal moves are detected correctly
     #[test]
     fn temporary_illegal_test() {
-        let position = FEN::import("8/8/8/8/8/3rrr2/R7/3PKP2 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/3rrr2/R7/3PKP2 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 1);
         let test_turn = Turn::new(FIELD_A2, FIELD_E2, None);
@@ -259,7 +259,7 @@ mod tests {
     /// Tests if fully illegal moves are detected correctly
     #[test]
     fn fully_illegal_test() {
-        let position = FEN::import("8/8/8/3P4/3P4/8/8/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/3P4/3P4/8/8/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 1);
         let test_turn = Turn::new(FIELD_D5, FIELD_D6, None);
@@ -270,7 +270,7 @@ mod tests {
     /// Tests if en-passant is possible
     #[test]
     fn pawn_enpassant_test() {
-        let position = FEN::import("8/8/8/Pp6/8/8/8/8 w - b5 0 1").unwrap();
+        let position = Fen::import("8/8/8/Pp6/8/8/8/8 w - b5 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         let test_turn = [
             Turn::new(FIELD_A5, FIELD_A6, None),
@@ -283,7 +283,7 @@ mod tests {
 
     #[test]
     fn promotion_test_1() {
-        let position = FEN::import("8/P7/8/8/8/8/8/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/P7/8/8/8/8/8/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         let test_turn = [
             Turn::new(FIELD_A7, FIELD_A8, Some(PieceType::Queen)),
@@ -299,7 +299,7 @@ mod tests {
 
     #[test]
     fn promotion_test_2() {
-        let position = FEN::import("8/8/8/8/8/8/p7/8 b - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/8/p7/8 b - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         let test_turn = [
             Turn::new(FIELD_A2, FIELD_A1, Some(PieceType::Queen)),
@@ -315,42 +315,42 @@ mod tests {
 
     #[test]
     fn castling_test_1() {
-        let position = FEN::import("8/8/8/8/8/8/8/4K2R w K - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/8/8/4K2R w K - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 15);
     }
 
     #[test]
     fn castling_test_2() {
-        let position = FEN::import("8/8/8/8/8/8/8/R3K3 w Q - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/8/8/R3K3 w Q - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 16);
     }
 
     #[test]
     fn castling_test_3() {
-        let position = FEN::import("4k2r/8/8/8/8/8/8/8 b k - 0 1").unwrap();
+        let position = Fen::import("4k2r/8/8/8/8/8/8/8 b k - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 15);
     }
 
     #[test]
     fn castling_test_4() {
-        let position = FEN::import("r3k3/8/8/8/8/8/8/8 b q - 0 1").unwrap();
+        let position = Fen::import("r3k3/8/8/8/8/8/8/8 b q - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 16);
     }
 
     #[test]
     fn castling_test_5() {
-        let position = FEN::import("r3k3/8/8/8/8/8/8/2R5 b q - 0 1").unwrap();
+        let position = Fen::import("r3k3/8/8/8/8/8/8/2R5 b q - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 15);
     }
 
     #[test]
     fn castling_test_6() {
-        let position = FEN::import("2r5/8/8/8/8/8/8/R3K3 w Q - 0 1").unwrap();
+        let position = Fen::import("2r5/8/8/8/8/8/8/R3K3 w Q - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 15);
     }

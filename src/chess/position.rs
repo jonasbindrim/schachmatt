@@ -1,8 +1,8 @@
 use thiserror::Error;
 
 use crate::{
-    CastlingRights, Columns::COLUMN_AMOUNT, FEN, Field, GameResult, LAN, Piece, PlayerColor,
-    Rows::ROW_AMOUNT, Ruleset, Turn,
+    CastlingRights, Columns::COLUMN_AMOUNT, DEFAULT_BOARD_SETUP, Fen, Field, GameResult, LAN,
+    Piece, PlayerColor, Rows::ROW_AMOUNT, Ruleset, Turn,
 };
 
 pub type BoardSetup = [[Option<Piece>; COLUMN_AMOUNT]; ROW_AMOUNT];
@@ -13,22 +13,22 @@ pub enum PositionError {
     IllegalTurnError(String),
 }
 
-/// A `Position` is defined as a state in a chess game.
+/// A `Position` is defined as a state in a chess game and contains all information
+/// to unambiguously identify a position.
 #[derive(Clone, PartialEq, Debug)]
 pub struct Position {
-    // For the board position: The first array dimension is the row, the second one is the column
-    pub(super) board_position: BoardSetup,
-    pub(super) active_color: PlayerColor,
-    pub(super) castling_white: CastlingRights,
-    pub(super) castling_black: CastlingRights,
-    pub(super) en_passant: Option<Field>,
-    pub(super) halfmove_clock: u16,
-    pub(super) fullmove_counter: u16,
+    board_position: BoardSetup,
+    active_color: PlayerColor,
+    castling_white: CastlingRights,
+    castling_black: CastlingRights,
+    en_passant: Option<Field>,
+    halfmove_clock: u16,
+    fullmove_counter: u16,
+    possible_turns_cache: Option<Vec<Turn>>,
 }
 
 impl Position {
-    /// Creates a new position
-    /// - `returns` - A new position with the default board setup
+    /// Creates a new position with the given parameters.
     #[must_use]
     pub fn new(
         board_position: BoardSetup,
@@ -47,6 +47,7 @@ impl Position {
             en_passant,
             halfmove_clock,
             fullmove_counter,
+            possible_turns_cache: None,
         }
     }
 
@@ -64,12 +65,12 @@ impl Position {
     /// Returns the piece at the specified `Field`.
     #[must_use]
     pub fn get_field_occupation(&self, field: &Field) -> Option<Piece> {
-        self.board_position[field.row as usize][field.column as usize]
+        self.board_position[field.get_row() as usize][field.get_column() as usize]
     }
 
     /// Sets the piece at the specified `Field`.
     pub fn set_field_occupation(&mut self, field: &Field, piece: Option<Piece>) {
-        self.board_position[field.row as usize][field.column as usize] = piece;
+        self.board_position[field.get_row() as usize][field.get_column() as usize] = piece;
     }
 
     /// Returns the currently active color.
@@ -141,6 +142,9 @@ impl Position {
 
     /// Returns a list of all possible legal turns from the current position
     pub fn get_possible_turns(&self, ruleset: &Ruleset) -> Vec<Turn> {
+        if let Some(cached_turns) = &self.possible_turns_cache {
+            return cached_turns.clone();
+        }
         ruleset.get_possible_turns(self)
     }
 
@@ -164,7 +168,8 @@ impl Position {
 }
 
 impl Default for Position {
+    /// Creates a `Position` with the classical board setup.
     fn default() -> Self {
-        FEN::import(FEN::DEFAULT_BOARD_SETUP).unwrap()
+        Fen::import(DEFAULT_BOARD_SETUP).unwrap()
     }
 }
