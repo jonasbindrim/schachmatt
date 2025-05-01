@@ -1,11 +1,11 @@
 use rand::rng;
 use rand::seq::IndexedRandom;
-use schachmatt::{Game, PGN};
+use schachmatt::{Game, Pgn};
 
 /// Runs a randomised game of chess and export the game in pgn afterwards
 fn main() {
     let mut game = random_game();
-    let pgn = PGN::export(&mut game);
+    let pgn = Pgn::export(&mut game);
     println!("{}", pgn);
 }
 

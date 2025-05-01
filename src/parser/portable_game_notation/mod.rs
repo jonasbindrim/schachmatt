@@ -1,10 +1,9 @@
-//! Portable Game Notation.
-//! Methods to convert `Game` into and load `Game` from PGN representations.
-
 mod error;
 mod export;
 mod import;
 
+/// Portable Game Notation.
+/// Standardized notation for chess games
+pub struct Pgn;
+
 pub use error::PgnParserError;
-pub use export::game_to_pgn as export;
-pub use import::game_from_pgn as import;
