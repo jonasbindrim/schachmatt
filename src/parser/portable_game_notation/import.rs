@@ -3,7 +3,7 @@ use pest::{
     iterators::{Pair, Pairs},
 };
 
-use crate::{Game, Position, SAN, ruleset::classic::CLASSIC_RULESET};
+use crate::{Game, Position, San, ruleset::classic::CLASSIC_RULESET};
 
 use super::{error::PgnParserError, Pgn};
 
@@ -61,7 +61,7 @@ impl Pgn {
                     .find(|pair| pair.as_rule() == Rule::san_move)
                     .unwrap();
     
-                let Ok(turn) = SAN::import(turn_rule.as_str(), game.get_current_state()) else {
+                let Ok(turn) = San::import(turn_rule.as_str(), game.get_current_state()) else {
                     return Err(PgnParserError::IllegalTurn(turn_rule.as_str().to_string()));
                 };
                 if game.execute_turn(turn).is_err() {

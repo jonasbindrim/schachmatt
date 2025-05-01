@@ -34,4 +34,5 @@ pub use crate::parser::forsyth_edwards_notation::FenParserError;
 pub use crate::parser::portable_game_notation::Pgn;
 pub use crate::parser::portable_game_notation::PgnParserError;
 pub use crate::parser::long_algebraic_notation::Lan;
-pub use crate::parser::standard_algebraic_notation as SAN;
+pub use crate::parser::standard_algebraic_notation::San;
+pub use crate::parser::standard_algebraic_notation::SanParserError;

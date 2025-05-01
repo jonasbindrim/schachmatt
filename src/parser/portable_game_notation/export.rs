@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{CLASSIC_RULESET, Game, GameResult, Metadata::*, PlayerColor, SAN};
+use crate::{CLASSIC_RULESET, Game, GameResult, Metadata::*, PlayerColor, San};
 
 use super::Pgn;
 
@@ -66,7 +66,7 @@ impl Pgn {
     
             // Add turn san data
             let turn = turn_history.get(position_index).unwrap();
-            result.push_str(&SAN::export(turn, position));
+            result.push_str(&San::export(turn, position));
             result.push(' ');
         }
     
