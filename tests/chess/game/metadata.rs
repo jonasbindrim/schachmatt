@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod game_metadata_tests {
-    use schachmatt::{CLASSIC_RULESET, FEN, Game};
+    use schachmatt::{CLASSIC_RULESET, Fen, Game};
 
     #[test]
     fn metadata_is_empty_initially() {
@@ -10,7 +10,7 @@ mod game_metadata_tests {
 
     #[test]
     fn metadata_for_costum_position_contains_fen() {
-        let custom_position = FEN::import("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1").unwrap();
+        let custom_position = Fen::import("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1").unwrap();
         let game = Game::new_from_position(&CLASSIC_RULESET, custom_position);
         let metadata_keys = game.get_metadata_keys();
         assert_eq!(metadata_keys.len(), 1);
@@ -34,7 +34,7 @@ mod game_metadata_tests {
 
     #[test]
     fn metadata_is_overridden_correctly() {
-        let custom_position = FEN::import("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1").unwrap();
+        let custom_position = Fen::import("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1").unwrap();
         let mut game = Game::new_from_position(&CLASSIC_RULESET, custom_position);
         assert_eq!(
             game.get_metadata("Fen").unwrap(),

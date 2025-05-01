@@ -6,7 +6,6 @@ pub struct CastlingRights {
 }
 
 impl CastlingRights {
-
     /// Creates a new instance of CastlingRights with the specified queenside and kingside rights.
     pub fn new(queenside: bool, kingside: bool) -> Self {
         CastlingRights {

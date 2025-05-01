@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    CLASSIC_RULESET, FEN, GameResult,
+    CLASSIC_RULESET, DEFAULT_BOARD_SETUP, Fen, GameResult,
     Metadata::{METADATA_KEY_FEN, METADATA_KEY_RESULT},
     PlayerColor, Position, PositionError, Turn,
     ruleset::Ruleset,
@@ -12,10 +12,10 @@ use crate::{
 /// Additionally, contains some amount of metadata.
 #[derive(Clone)]
 pub struct Game {
-    pub(super) game_metadata: HashMap<String, String>,
-    pub(super) position_history: Vec<Position>,
-    pub(super) turn_history: Vec<Turn>,
-    pub(super) ruleset: Ruleset,
+    game_metadata: HashMap<String, String>,
+    position_history: Vec<Position>,
+    turn_history: Vec<Turn>,
+    ruleset: Ruleset,
 }
 
 impl Game {
@@ -40,8 +40,8 @@ impl Game {
             ruleset: ruleset.clone(),
         };
 
-        let position_fen = FEN::export(&starting_position);
-        if position_fen != FEN::DEFAULT_BOARD_SETUP {
+        let position_fen = Fen::export(&starting_position);
+        if position_fen != DEFAULT_BOARD_SETUP {
             game.set_metadata(METADATA_KEY_FEN, &position_fen);
         }
         game.position_history.push(starting_position);

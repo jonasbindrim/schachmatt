@@ -1,5 +1,5 @@
 use super::Ruleset;
-use crate::{FEN, GameResult, PlayerColor, Position, Turn};
+use crate::{DEFAULT_BOARD_SETUP, Fen, GameResult, PlayerColor, Position, Turn};
 
 mod internal;
 mod tests;
@@ -16,7 +16,7 @@ pub const CLASSIC_RULESET: Ruleset = Ruleset::new(
 );
 
 fn generate_initial_position() -> Position {
-    FEN::import(FEN::DEFAULT_BOARD_SETUP).unwrap()
+    Fen::import(DEFAULT_BOARD_SETUP).unwrap()
 }
 
 fn get_possible_turns(position: &Position) -> Vec<Turn> {

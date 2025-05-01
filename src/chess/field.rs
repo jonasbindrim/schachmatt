@@ -5,8 +5,8 @@ use crate::{Columns::COLUMN_H, Rows::ROW_8};
 /// Represents a board location in a chess game.
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Field {
-    pub(super) column: u8, // Column (a-h) is represented as values (0-7)
-    pub(super) row: u8,    // Row (1-8) is represented as values (0-7)
+    column: u8, // Column (a-h) is represented as values (0-7)
+    row: u8,    // Row (1-8) is represented as values (0-7)
 }
 
 impl Field {
@@ -61,22 +61,30 @@ impl Field {
         Option::None
     }
 
+    /// Sets the column of the field.
+    /// The given value must be between 0-7 (inclusive).
+    /// Otherwise the value will be ignored.
     pub fn set_column(&mut self, column: u8) {
         if column <= COLUMN_H {
             self.column = column;
         }
     }
 
+    /// Sets the row of the field.
+    /// The given value must be between 0-7 (inclusive).
+    /// Otherwise the value will be ignored.
     pub fn set_row(&mut self, row: u8) {
         if row <= ROW_8 {
             self.row = row;
         }
     }
 
+    /// Returns the column of the field.
     pub fn get_column(&self) -> u8 {
         self.column
     }
 
+    /// Returns the row of the field.
     pub fn get_row(&self) -> u8 {
         self.row
     }

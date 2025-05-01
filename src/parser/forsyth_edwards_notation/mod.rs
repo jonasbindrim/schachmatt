@@ -1,11 +1,12 @@
-//! Forsyth-Edwards-Notation.  
-//! Methods to convert `Position` into FEN notation and import `Position` from FEN representations.
-
 mod error;
 mod export;
 mod import;
 
 pub use error::FenParserError;
-pub use export::export_to_fen as export;
-pub(crate) use import::DEFAULT_BOARD_SETUP;
-pub use import::import_from_fen as import;
+
+/// Forsyth-Edwards-Notation
+/// Standardized notation to represent chess positions.
+pub struct Fen;
+
+/// The default board setup in Forsyth-Edwards-Notation.
+pub const DEFAULT_BOARD_SETUP: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";

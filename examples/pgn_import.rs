@@ -1,4 +1,4 @@
-use schachmatt::PGN;
+use schachmatt::Pgn;
 
 static PGN_CONTENT: &str = "[Event \"New Orleans\"]
 [Site \"New Orleans\"]
@@ -19,9 +19,9 @@ static PGN_CONTENT: &str = "[Event \"New Orleans\"]
 
 /// Imports a pgn file into a game
 fn main() {
-    let Ok(game) = PGN::import(PGN_CONTENT) else {
+    let Ok(game) = Pgn::import(PGN_CONTENT) else {
         panic!("Unable to import pgn content");
     };
 
-    println!("{}", PGN::export(&game));
+    println!("{}", Pgn::export(&game));
 }
