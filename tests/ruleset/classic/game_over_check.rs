@@ -15,7 +15,7 @@ mod test_game_over_check {
         let result = CLASSIC_RULESET.game_over_check(&position);
         assert!(matches!(
             result.unwrap(),
-            GameResult::Over(PlayerColor::Black)
+            GameResult::Decisive(PlayerColor::Black)
         ));
     }
 

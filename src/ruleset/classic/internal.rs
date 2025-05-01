@@ -46,7 +46,7 @@ pub(super) fn game_over_check(position: &Position) -> Option<GameResult> {
         }
         return None;
     } else if is_in_check(position, position.get_active_color()) {
-        return Some(GameResult::Over(position.get_active_color().reverse()));
+        return Some(GameResult::Decisive(position.get_active_color().reverse()));
     }
     Some(GameResult::Draw)
 }

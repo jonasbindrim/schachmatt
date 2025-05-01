@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod portable_game_notation_import_tests {
-    use schachmatt::Pgn;
+    use schachmatt::{GameResult, Pgn, PlayerColor};
 
     #[test]
     fn import_test000_pgn_test() {
@@ -18,6 +18,16 @@ mod portable_game_notation_import_tests {
     fn import_test002_pgn_test() {
         let content = include_str!("./pgn_files/test002.pgn");
         Pgn::import(content).unwrap();
+    }
+
+    #[test]
+    fn import_test003_pgn_test() {
+        let content = include_str!("./pgn_files/test003.pgn");
+        let game = Pgn::import(content).unwrap();
+        assert_eq!(
+            game.get_game_result(),
+            Some(GameResult::Decisive(PlayerColor::White))
+        );
     }
 
     #[test]

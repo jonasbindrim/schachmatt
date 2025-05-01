@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_get_game_result {
-    use schachmatt::{CLASSIC_RULESET, Game};
+    use schachmatt::{CLASSIC_RULESET, Game, GameResult, PlayerColor};
 
     #[test]
     fn test_metadata_result_is_used_if_available() {
@@ -12,7 +12,7 @@ mod test_get_game_result {
         game.set_metadata("Result", "1-0");
         assert_eq!(
             game.get_game_result(),
-            Some(schachmatt::GameResult::Over(schachmatt::PlayerColor::White))
+            Some(GameResult::Decisive(PlayerColor::White))
         );
     }
 
