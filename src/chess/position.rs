@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 use crate::{
-    CastlingRights, Columns::COLUMN_AMOUNT, DEFAULT_BOARD_SETUP, Fen, Field, GameResult, LAN,
+    CastlingRights, Columns::COLUMN_AMOUNT, DEFAULT_BOARD_SETUP, Fen, Field, GameResult, Lan,
     Piece, PlayerColor, Rows::ROW_AMOUNT, Ruleset, Turn,
 };
 
@@ -153,7 +153,7 @@ impl Position {
     pub fn turn(&self, ruleset: &Ruleset, turn: &Turn) -> Result<Position, PositionError> {
         let possible_moves = self.get_possible_turns(ruleset);
         if !possible_moves.contains(turn) {
-            return Err(PositionError::IllegalTurnError(LAN::export(turn)));
+            return Err(PositionError::IllegalTurnError(Lan::export(turn)));
         }
 
         Ok(ruleset.execute_turn(self, turn))
