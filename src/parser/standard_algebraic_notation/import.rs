@@ -19,17 +19,17 @@ impl San {
     /// - `returns` - The `Turn` as an object
     pub fn import(raw: &str, current_position: &Position) -> Result<Turn, SanParserError> {
         // Cut potential "+" from raw string data as it doesnt convey any needed information
-    
+
         let mut san_data = raw;
         if let Some(index) = san_data.find('+') {
             san_data = &san_data[0..index];
         }
-    
+
         // Parse SAN data
         let Ok(mut parsed_data) = SanStruct::parse(Rule::turn, san_data) else {
             return Err(SanParserError::InvalidData(san_data.to_string()));
         };
-    
+
         if let Some(turn_type) = parsed_data.next().unwrap().into_inner().next() {
             return match turn_type.as_rule() {
                 Rule::pawn_move => Self::import_pawn_movement(turn_type, current_position),
@@ -40,7 +40,7 @@ impl San {
         }
         unreachable!()
     }
-    
+
     /// Converts the full piece move into a turn
     /// - `san_data` - The pest parsed san data
     /// - `position` - The current game position
@@ -51,18 +51,18 @@ impl San {
     ) -> Result<Turn, SanParserError> {
         let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
         let raw_turn = san_data.as_str().to_string();
-    
+
         let mut piece_type: Option<Piece> = None;
         let mut target_field: Option<Field> = None;
         let mut from_column: Option<u8> = None;
         let mut from_row: Option<u8> = None;
-    
+
         for parts in san_data.into_inner() {
             match parts.as_rule() {
                 Rule::piece_symbol => {
                     let letter = parts.as_str().as_bytes()[0] as char;
                     let piece = PieceType::import_piecetype(letter.to_ascii_lowercase());
-    
+
                     if let Some(piece) = piece {
                         piece_type = Some(Piece::new(piece, position.get_active_color()));
                     } else {
@@ -78,7 +78,7 @@ impl San {
                 _ => return Err(SanParserError::InvalidData(raw_turn)),
             }
         }
-    
+
         for turn in possible_moves {
             if target_field.unwrap() == turn.target
                 && position.get_field_occupation(&turn.current) == piece_type
@@ -101,14 +101,14 @@ impl San {
         }
         Err(SanParserError::InvalidMove(raw_turn))
     }
-    
+
     /// Converts a simple piece move
     /// - `san_data` - The pest parsed san data
     /// - `returns` - The target field
     fn import_piece_move(san_data: Pair<Rule>) -> (Field, Option<u8>, Option<u8>) {
         let mut from_column: Option<u8> = None;
         let mut from_row: Option<u8> = None;
-    
+
         for part in san_data.into_inner() {
             match part.as_rule() {
                 Rule::to_field => {
@@ -134,7 +134,7 @@ impl San {
         }
         unreachable!();
     }
-    
+
     /// Converts the san castling moves into turns
     /// - `san_data` - The pest parsed turn data
     /// - `position` - The position in which the turn was played
@@ -142,17 +142,17 @@ impl San {
     fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Turn {
         let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
         let player_color = position.get_active_color();
-    
+
         // Initiate with row for white
         let mut target_field = FIELD_A1;
         let mut starting_field = FIELD_E1;
-    
+
         // Change row if color is black
         if player_color == PlayerColor::Black {
             starting_field.set_row(Rows::ROW_8);
             target_field.set_row(Rows::ROW_8);
         }
-    
+
         // Check if castle is king or queenside
         match san_data.as_str() {
             "O-O" | "0-0" => {
@@ -163,23 +163,26 @@ impl San {
             }
             _ => unreachable!(),
         };
-    
+
         possible_moves
             .into_iter()
             .find(|&turn| turn.target == target_field && turn.current == starting_field)
             .unwrap()
     }
-    
+
     /// Convert the san pawn moves into turns
-    fn import_pawn_movement(san_data: Pair<Rule>, position: &Position) -> Result<Turn, SanParserError> {
+    fn import_pawn_movement(
+        san_data: Pair<Rule>,
+        position: &Position,
+    ) -> Result<Turn, SanParserError> {
         let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
         let raw_turn = san_data.as_str().to_string();
-    
+
         let mut target_field: Option<Field> = None;
         let mut promotion_piece: Option<PieceType> = None;
         let mut from_column: Option<u8> = None;
         let mut from_row: Option<u8> = None;
-    
+
         // Create target field and promotion target
         for pawn_push in san_data.into_inner() {
             match pawn_push.as_rule() {
@@ -199,7 +202,7 @@ impl San {
                 _ => unreachable!(),
             }
         }
-    
+
         for turn in possible_moves {
             let from_occupation = position.get_field_occupation(&turn.current);
             let Some(moving_piece) = from_occupation else {
@@ -214,7 +217,8 @@ impl San {
                         // Is a capture move
                         match from_row {
                             Some(row) => {
-                                if column == turn.current.get_column() && row == turn.current.get_row()
+                                if column == turn.current.get_column()
+                                    && row == turn.current.get_row()
                                 {
                                     return Ok(turn);
                                 }

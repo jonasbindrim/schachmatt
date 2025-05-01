@@ -24,7 +24,6 @@ pub struct Position {
     en_passant: Option<Field>,
     halfmove_clock: u16,
     fullmove_counter: u16,
-    possible_turns_cache: Option<Vec<Turn>>,
 }
 
 impl Position {
@@ -47,7 +46,6 @@ impl Position {
             en_passant,
             halfmove_clock,
             fullmove_counter,
-            possible_turns_cache: None,
         }
     }
 
@@ -142,9 +140,6 @@ impl Position {
 
     /// Returns a list of all possible legal turns from the current position
     pub fn get_possible_turns(&self, ruleset: &Ruleset) -> Vec<Turn> {
-        if let Some(cached_turns) = &self.possible_turns_cache {
-            return cached_turns.clone();
-        }
         ruleset.get_possible_turns(self)
     }
 

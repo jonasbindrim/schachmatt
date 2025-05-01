@@ -5,7 +5,7 @@ use pest::{
 
 use crate::{Game, Position, San, ruleset::classic::CLASSIC_RULESET};
 
-use super::{error::PgnParserError, Pgn};
+use super::{Pgn, error::PgnParserError};
 
 #[derive(Parser)]
 #[grammar = "parser/portable_game_notation/portable_game_notation.pest"]
@@ -19,26 +19,26 @@ impl Pgn {
     pub fn import(pgn_string: &str) -> Result<Game, PgnParserError> {
         let pgn_lines: Vec<&str> = pgn_string.lines().collect();
         let mut game = Game::new_from_position(&CLASSIC_RULESET, Position::default());
-    
+
         // Find the index of the line which seperates metadata and gamedata
         let part_seperator = match Self::find_empty_line(&pgn_lines) {
             Some(index) => index,
             None => pgn_lines.len(),
         };
-    
+
         Self::parse_metadata_lines(&pgn_lines[0..part_seperator], &mut game)?;
-    
+
         // Handle turn data
         let mut turn_data = String::new();
         for line in &pgn_lines[part_seperator + 1..] {
             turn_data.push_str(line);
             turn_data.push(' ');
         }
-    
+
         let Ok(pairs) = PgnStruct::parse(Rule::turn_data, &turn_data) else {
             return Err(PgnParserError::InvalidTurnData(turn_data));
         };
-    
+
         let turn_data_pair = pairs.collect::<Vec<Pair<Rule>>>()[0].clone();
         for pair in turn_data_pair.into_inner() {
             if matches!(
@@ -48,10 +48,10 @@ impl Pgn {
                 Self::handle_move_entry(pair.into_inner(), &mut game)?
             }
         }
-    
+
         Ok(game)
     }
-    
+
     /// Handles the parsing of a single move entry
     fn handle_move_entry(pairs: Pairs<Rule>, game: &mut Game) -> Result<(), PgnParserError> {
         for pair in pairs {
@@ -60,7 +60,7 @@ impl Pgn {
                     .into_inner()
                     .find(|pair| pair.as_rule() == Rule::san_move)
                     .unwrap();
-    
+
                 let Ok(turn) = San::import(turn_rule.as_str(), game.get_current_state()) else {
                     return Err(PgnParserError::IllegalTurn(turn_rule.as_str().to_string()));
                 };
@@ -69,10 +69,10 @@ impl Pgn {
                 }
             }
         }
-    
+
         Ok(())
     }
-    
+
     /// Finds and returns the index of the first empty line.
     /// The first empty line in a pgn is the seperator between the metadata and the turn data
     /// - `lines` - The pgn data lines
@@ -85,7 +85,7 @@ impl Pgn {
         }
         None
     }
-    
+
     /// Converts each given line into a key-value pair and adds it as metadata to the game
     /// - `lines` - The metadata lines of a pgn string
     /// - `game` - The game to which the metadata is appended
@@ -99,7 +99,11 @@ impl Pgn {
                         match rules.as_rule() {
                             Rule::metadata_key => key = rules.as_str().to_string(),
                             Rule::metadata_value => game.set_metadata(&key, rules.as_str()),
-                            _ => return Err(PgnParserError::InvalidMetadataContent(line.to_string())),
+                            _ => {
+                                return Err(PgnParserError::InvalidMetadataContent(
+                                    line.to_string(),
+                                ));
+                            }
                         }
                     }
                 }

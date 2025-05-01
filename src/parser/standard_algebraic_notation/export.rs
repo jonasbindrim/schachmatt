@@ -10,16 +10,16 @@ impl San {
     #[must_use]
     pub fn export(turn: &Turn, current_position: &Position) -> String {
         let mut san_turn = String::new();
-    
+
         let mut is_capture = current_position
             .get_field_occupation(&turn.target)
             .is_some();
         let from_field = current_position.get_field_occupation(&turn.current);
-    
+
         let Some(moving_piece) = from_field else {
             todo!() // TODO: Handle illegal move
         };
-    
+
         if moving_piece.get_type() == PieceType::Pawn {
             let check_field: i8 = {
                 match current_position.get_active_color() {
@@ -27,7 +27,7 @@ impl San {
                     PlayerColor::White => (turn.target.get_row() as i8) - 1,
                 }
             };
-    
+
             if let Some(field) = current_position.get_en_passant() {
                 if turn.target.get_column() == field.get_column()
                     && check_field == field.get_row() as i8
@@ -35,7 +35,7 @@ impl San {
                     is_capture = true;
                 }
             }
-    
+
             if is_capture {
                 san_turn.push((turn.current.get_column() + b'a') as char);
             }
@@ -46,7 +46,7 @@ impl San {
                 if turn.current.get_column() + 2 == turn.target.get_column() {
                     return String::from("O-O");
                 }
-    
+
                 if turn.current.get_column() == Columns::COLUMN_E
                     && turn.current.get_column() - 2 == turn.target.get_column()
                 {
@@ -59,10 +59,10 @@ impl San {
             Self::add_field_descriptor(&mut san_turn, turn, current_position);
             Self::to_move(&mut san_turn, turn, current_position, is_capture);
         }
-    
+
         san_turn
     }
-    
+
     /// Checks and adds the needed amount of descriptors for a turn
     /// - `base` - The base string which gets data appended to
     /// - `turn` - The turn which was played
@@ -70,12 +70,18 @@ impl San {
     fn add_field_descriptor(base: &mut String, turn: &Turn, current_position: &Position) {
         let column = turn.current.get_column();
         let row = turn.current.get_row();
-    
+
         let occupation = current_position.get_field_occupation(&turn.current);
         if !Self::is_unique_descriptor(turn, current_position, occupation, None, None) {
             if Self::is_unique_descriptor(turn, current_position, occupation, Some(column), None) {
                 base.push((column + b'a') as char);
-            } else if Self::is_unique_descriptor(turn, current_position, occupation, None, Some(row)) {
+            } else if Self::is_unique_descriptor(
+                turn,
+                current_position,
+                occupation,
+                None,
+                Some(row),
+            ) {
                 base.push((row + b'1') as char);
             } else {
                 base.push((column + b'a') as char);
@@ -83,7 +89,7 @@ impl San {
             }
         }
     }
-    
+
     /// Adds capture `target_field`, promotion and checks to a san string
     /// - `base` - The base string of the output
     /// - `turn` - The turn which was played
@@ -94,10 +100,10 @@ impl San {
         if is_capture {
             base.push('x');
         }
-    
+
         // Add target_field
         base.push_str(&turn.target.to_string());
-    
+
         // Check if promotion
         if let Some(piece) = turn.promotion {
             base.push_str(&format!(
@@ -105,7 +111,7 @@ impl San {
                 PieceType::export_piecetype_uppercase(piece)
             ));
         }
-    
+
         // Check if is in check
         let copy_position = CLASSIC_RULESET.execute_turn(&current_position.clone(), turn);
         if CLASSIC_RULESET.is_in_check(&copy_position, copy_position.get_active_color()) {
@@ -119,7 +125,7 @@ impl San {
             }
         }
     }
-    
+
     /// Checks whether the move description is already unique
     /// - `checked_turn` - The turn which gets tested for uniqueness
     /// - `current_position` - The current position of the game
@@ -135,7 +141,7 @@ impl San {
         row: Option<u8>,
     ) -> bool {
         let possible_moves = CLASSIC_RULESET.get_possible_turns(current_position);
-    
+
         let mut counter = 0;
         for turn in possible_moves {
             if turn.target == checked_turn.target
