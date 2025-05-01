@@ -17,7 +17,7 @@ fn main() {
 
     let game_result = match game.get_game_result().unwrap() {
         GameResult::Draw => "Draw",
-        GameResult::Over(player_color) => match player_color {
+        GameResult::Decisive(player_color) => match player_color {
             PlayerColor::Black => "Black won",
             PlayerColor::White => "White won",
         },

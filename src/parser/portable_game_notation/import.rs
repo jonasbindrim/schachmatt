@@ -3,7 +3,7 @@ use pest::{
     iterators::{Pair, Pairs},
 };
 
-use crate::{Game, Position, San, ruleset::classic::CLASSIC_RULESET};
+use crate::{Game, GameResult, Position, San, ruleset::classic::CLASSIC_RULESET};
 
 use super::{Pgn, error::PgnParserError};
 
@@ -46,6 +46,9 @@ impl Pgn {
                 Rule::single_move_entry | Rule::two_move_entry
             ) {
                 Self::handle_move_entry(pair.into_inner(), &mut game)?
+            } else if pair.as_rule() == Rule::game_result {
+                let result = pair.as_str();
+                game.set_game_result(GameResult::from_string(result));
             }
         }
 

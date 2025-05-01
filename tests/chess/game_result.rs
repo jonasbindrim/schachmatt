@@ -11,13 +11,13 @@ mod game_result {
 
         #[test]
         fn test_to_string_black() {
-            let black = GameResult::Over(PlayerColor::Black);
+            let black = GameResult::Decisive(PlayerColor::Black);
             assert_eq!(GameResult::to_string(Some(&black)), "0-1");
         }
 
         #[test]
         fn test_to_string_white() {
-            let white = GameResult::Over(PlayerColor::White);
+            let white = GameResult::Decisive(PlayerColor::White);
             assert_eq!(GameResult::to_string(Some(&white)), "1-0");
         }
 
@@ -39,13 +39,13 @@ mod game_result {
         #[test]
         fn test_from_string_black() {
             let black = GameResult::from_string("0-1");
-            assert_eq!(black, Some(GameResult::Over(PlayerColor::Black)));
+            assert_eq!(black, Some(GameResult::Decisive(PlayerColor::Black)));
         }
 
         #[test]
         fn test_from_string_white() {
             let white = GameResult::from_string("1-0");
-            assert_eq!(white, Some(GameResult::Over(PlayerColor::White)));
+            assert_eq!(white, Some(GameResult::Decisive(PlayerColor::White)));
         }
 
         #[test]
