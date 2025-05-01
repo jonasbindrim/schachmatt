@@ -1,2 +1,2 @@
+mod chess;
 mod parser;
-mod position;

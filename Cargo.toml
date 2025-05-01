@@ -1,6 +1,6 @@
 [package]
 name = "schachmatt"
-version = "0.2.0"
+version = "0.3.0"
 description = "A chess library"
 license = "MIT"
 edition = "2024"
@@ -12,6 +12,7 @@ readme = "README.md"
 [dependencies]
 pest = "2.8"
 pest_derive = "2.8"
+thiserror = "2.0"
 
 [dev-dependencies]
 rand = "0.9"
