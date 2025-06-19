@@ -8,6 +8,8 @@ Schachmatt is a chess library written in rust. This library can be used to run c
 
 This crate is not written with speed in mind. The goal is not to provide the fastes chess library in rust. Therefore I would strongly advise to not write a chess engine using this library.
 
+If you find any issues or have suggestions for new features feel free to open an issue or open a pull request.
+
 ## Examples
 
 The following example starts a game of chess and plays random moves until the game is over

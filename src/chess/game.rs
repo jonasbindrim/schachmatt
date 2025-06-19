@@ -171,7 +171,6 @@ impl Game {
 impl Default for Game {
     /// Creates a new `Game` with the default chess board setup.
     /// - `returns` - A new `Game` with the default board setup
-    #[must_use]
     fn default() -> Self {
         Game::new(&CLASSIC_RULESET)
     }
