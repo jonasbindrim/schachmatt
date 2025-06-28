@@ -1,7 +1,5 @@
 use crate::{
-    CLASSIC_RULESET, Columns, Field,
-    Fields::{FIELD_A1, FIELD_E1},
-    Piece, PieceType, PlayerColor, Position, Rows, Turn,
+    Columns, Field, Fields::{FIELD_A1, FIELD_E1}, Piece, PieceType, PlayerColor, Position, Rows, Ruleset, Turn, CLASSIC_RULESET
 };
 
 use pest::{Parser, iterators::Pair};
@@ -10,35 +8,39 @@ use super::{San, SanParserError};
 
 #[derive(Parser)]
 #[grammar = "parser/standard_algebraic_notation/standard_algebraic_notation.pest"]
-struct SanStruct;
+struct SanPestParser;
 
 impl San {
+
     /// Converts a string in SAN representation to a `Turn` object.
-    /// - `raw` - The raw san string
-    /// - `current_position` - The position the turn was played in
-    /// - `returns` - The `Turn` as an object
+    /// This function assumes the classical chess ruleset is used.
+    /// - `raw` - The turn in san notation
+    /// - `current_position` - The position the given turn was played in
+    /// - `returns` - The resulting turn or an error
     pub fn import(raw: &str, current_position: &Position) -> Result<Turn, SanParserError> {
-        // Cut potential "+" from raw string data as it doesnt convey any needed information
+        Self::import_by_ruleset(raw, current_position, &CLASSIC_RULESET)
+    }
 
-        let mut san_data = raw;
-        if let Some(index) = san_data.find('+') {
-            san_data = &san_data[0..index];
-        }
-
-        // Parse SAN data
-        let Ok(mut parsed_data) = SanStruct::parse(Rule::turn, san_data) else {
-            return Err(SanParserError::InvalidData(san_data.to_string()));
+    /// Converts a string in san notation into a `Turn` if the `Turn` is valid in the given ruleset.
+    /// - `raw` - The turn in san notation
+    /// - `current_position` - The position the given turn was played in
+    /// - `ruleset` - The ruleset used in the game
+    /// - `returns` - The resulting turn or an error
+    pub fn import_by_ruleset(raw: &str, current_position: &Position, ruleset: &Ruleset) -> Result<Turn, SanParserError> {
+        let Ok(mut parsed_data) = SanPestParser::parse(Rule::turn, raw) else {
+            return Err(SanParserError::InvalidData(raw.to_string()));
         };
 
-        if let Some(turn_type) = parsed_data.next().unwrap().into_inner().next() {
-            return match turn_type.as_rule() {
-                Rule::pawn_move => Self::import_pawn_movement(turn_type, current_position),
-                Rule::castling => Ok(Self::import_handle_castling(&turn_type, current_position)),
-                Rule::piece_move_full => Self::import_piece_move_full(turn_type, current_position),
-                _ => unreachable!(),
-            };
+        let Some(turn_type) = parsed_data.next().unwrap().into_inner().next() else {
+            return Err(SanParserError::InvalidData(raw.to_string()));
+        };
+
+        match turn_type.as_rule() {
+            Rule::pawn_move => Self::import_pawn_movement(turn_type, current_position, ruleset),
+            Rule::castling => Ok(Self::import_handle_castling(&turn_type, current_position, ruleset)),
+            Rule::piece_move_full => Self::import_piece_move_full(turn_type, current_position, ruleset),
+            _ => Err(SanParserError::InvalidData(raw.to_string()))
         }
-        unreachable!()
     }
 
     /// Converts the full piece move into a turn
@@ -48,8 +50,9 @@ impl San {
     fn import_piece_move_full(
         san_data: Pair<Rule>,
         position: &Position,
+        ruleset: &Ruleset
     ) -> Result<Turn, SanParserError> {
-        let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
+        let possible_moves = ruleset.get_possible_turns(position);
         let raw_turn = san_data.as_str().to_string();
 
         let mut piece_type: Option<Piece> = None;
@@ -139,8 +142,8 @@ impl San {
     /// - `san_data` - The pest parsed turn data
     /// - `position` - The position in which the turn was played
     /// - `returns` - The resulting `Turn`
-    fn import_handle_castling(san_data: &Pair<Rule>, position: &Position) -> Turn {
-        let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
+    fn import_handle_castling(san_data: &Pair<Rule>, position: &Position, ruleset: &Ruleset) -> Turn {
+        let possible_moves = ruleset.get_possible_turns(position);
         let player_color = position.get_active_color();
 
         // Initiate with row for white
@@ -174,8 +177,9 @@ impl San {
     fn import_pawn_movement(
         san_data: Pair<Rule>,
         position: &Position,
+        ruleset: &Ruleset
     ) -> Result<Turn, SanParserError> {
-        let possible_moves = CLASSIC_RULESET.get_possible_turns(position);
+        let possible_moves = ruleset.get_possible_turns(position);
         let raw_turn = san_data.as_str().to_string();
 
         let mut target_field: Option<Field> = None;
