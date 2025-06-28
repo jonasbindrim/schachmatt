@@ -28,12 +28,11 @@ impl San {
                 }
             };
 
-            if let Some(field) = current_position.get_en_passant() {
-                if turn.target.get_column() == field.get_column()
-                    && check_field == field.get_row() as i8
-                {
-                    is_capture = true;
-                }
+            if let Some(field) = current_position.get_en_passant()
+                && turn.target.get_column() == field.get_column()
+                && check_field == field.get_row() as i8
+            {
+                is_capture = true;
             }
 
             if is_capture {

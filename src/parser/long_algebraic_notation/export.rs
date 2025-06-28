@@ -8,7 +8,7 @@ impl Lan {
     /// - `returns` - The LAN representation of the `Turn`-parameter
     #[must_use]
     pub fn export(turn: &Turn) -> String {
-        let turn_content: String = if let Some(promotion) = turn.promotion {
+        if let Some(promotion) = turn.promotion {
             format!(
                 "{}{}{}",
                 turn.current,
@@ -17,8 +17,6 @@ impl Lan {
             )
         } else {
             format!("{}{}", turn.current, turn.target)
-        };
-
-        turn_content
+        }
     }
 }

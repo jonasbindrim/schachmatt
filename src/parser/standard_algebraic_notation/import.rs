@@ -83,20 +83,17 @@ impl San {
             if target_field.unwrap() == turn.target
                 && position.get_field_occupation(&turn.current) == piece_type
             {
-                let mut ok: bool = true;
-                if let Some(column_value) = from_column {
-                    if turn.current.get_column() != column_value {
-                        ok = false;
-                    }
+                if let Some(column_value) = from_column
+                    && turn.current.get_column() != column_value
+                {
+                    continue;
                 }
-                if let Some(row_value) = from_row {
-                    if turn.current.get_row() != row_value {
-                        ok = false;
-                    }
+                if let Some(row_value) = from_row
+                    && turn.current.get_row() != row_value
+                {
+                    continue;
                 }
-                if ok {
-                    return Ok(turn);
-                }
+                return Ok(turn);
             }
         }
         Err(SanParserError::InvalidMove(raw_turn))
