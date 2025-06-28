@@ -35,13 +35,7 @@ impl Fen {
         let fullmove_counter = &position.get_fullmove_counter().to_string();
 
         format!(
-            "{} {} {} {} {} {}",
-            piece_placement_data,
-            active_color,
-            castling_availability,
-            en_passant,
-            halfmove_clock,
-            fullmove_counter
+            "{piece_placement_data} {active_color} {castling_availability} {en_passant} {halfmove_clock} {fullmove_counter}",
         )
     }
 

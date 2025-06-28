@@ -204,13 +204,12 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
     }
 
     // Remove piece taken with en passant
-    if let Some(field) = position.get_en_passant() {
-        if turn.target.get_column() == field.get_column()
-            && turn.current.get_row() == field.get_row()
-        {
-            position.set_field_occupation(&field, None);
-            position.set_halfmove_clock(0);
-        }
+    if let Some(field) = position.get_en_passant()
+        && turn.target.get_column() == field.get_column()
+        && turn.current.get_row() == field.get_row()
+    {
+        position.set_field_occupation(&field, None);
+        position.set_halfmove_clock(0);
     }
 
     // Update en passant field
@@ -433,38 +432,35 @@ fn castling_fields_blocked(position: &Position, fields: &[Field]) -> bool {
 pub(super) fn is_in_check(position: &Position, player_color: PlayerColor) -> bool {
     for field in BOARD_FIELDS {
         let occupation = position.get_field_occupation(&field);
-        if let Some(piece) = occupation {
-            if piece.get_color() != player_color {
-                let mut piece_iterator =
-                    PieceMoveIterator::new(get_movement_modifiers(&piece), field);
+        if let Some(piece) = occupation
+            && piece.get_color() != player_color
+        {
+            let mut piece_iterator = PieceMoveIterator::new(get_movement_modifiers(&piece), field);
 
-                loop {
-                    while let Some(turn) = piece_iterator.current() {
-                        // Handling of the next loops
-                        match is_legal_move(position, turn, false) {
-                            MoveLegality::Legal => {
-                                if position.get_field_occupation(&turn.target).is_none() {
-                                    continue;
-                                }
-                                break;
+            loop {
+                while let Some(turn) = piece_iterator.current() {
+                    // Handling of the next loops
+                    match is_legal_move(position, turn, false) {
+                        MoveLegality::Legal => {
+                            if position.get_field_occupation(&turn.target).is_none() {
+                                continue;
                             }
-                            MoveLegality::LastLegal => {
-                                if let Some(target_piece) =
-                                    position.get_field_occupation(&turn.target)
-                                {
-                                    if PieceType::King == target_piece.get_type() {
-                                        return true;
-                                    }
-                                }
-                                break;
-                            }
-                            MoveLegality::TemporarelyIllegal => continue,
-                            MoveLegality::FullyIllegal => break,
+                            break;
                         }
+                        MoveLegality::LastLegal => {
+                            if let Some(target_piece) = position.get_field_occupation(&turn.target)
+                                && PieceType::King == target_piece.get_type()
+                            {
+                                return true;
+                            }
+                            break;
+                        }
+                        MoveLegality::TemporarelyIllegal => continue,
+                        MoveLegality::FullyIllegal => break,
                     }
-                    if !piece_iterator.step() {
-                        break;
-                    }
+                }
+                if !piece_iterator.step() {
+                    break;
                 }
             }
         }
@@ -480,41 +476,40 @@ fn fields_under_attack(position: &Position, player_color: PlayerColor, fields: [
     for field in BOARD_FIELDS {
         let occupation = position.get_field_occupation(&field);
 
-        if let Some(piece) = occupation {
-            if piece.get_color() != player_color {
-                let mut piece_iterator =
-                    PieceMoveIterator::new(get_movement_modifiers(&piece), field);
+        if let Some(piece) = occupation
+            && piece.get_color() != player_color
+        {
+            let mut piece_iterator = PieceMoveIterator::new(get_movement_modifiers(&piece), field);
 
-                loop {
-                    while let Some(turn) = piece_iterator.current() {
-                        // Dont check castling options
-                        if PieceType::King == piece.get_type()
-                            && turn.current.get_column().abs_diff(turn.target.get_column()) == 2
-                        {
+            loop {
+                while let Some(turn) = piece_iterator.current() {
+                    // Dont check castling options
+                    if PieceType::King == piece.get_type()
+                        && turn.current.get_column().abs_diff(turn.target.get_column()) == 2
+                    {
+                        continue;
+                    }
+
+                    // Handling of the next loops
+                    match is_legal_move(position, turn, false) {
+                        MoveLegality::Legal => {
+                            if fields.contains(&field) {
+                                return true;
+                            }
                             continue;
                         }
-
-                        // Handling of the next loops
-                        match is_legal_move(position, turn, false) {
-                            MoveLegality::Legal => {
-                                if fields.contains(&field) {
-                                    return true;
-                                }
-                                continue;
+                        MoveLegality::LastLegal => {
+                            if fields.contains(&field) {
+                                return true;
                             }
-                            MoveLegality::LastLegal => {
-                                if fields.contains(&field) {
-                                    return true;
-                                }
-                                break;
-                            }
-                            MoveLegality::TemporarelyIllegal => continue,
-                            MoveLegality::FullyIllegal => break,
+                            break;
                         }
+                        MoveLegality::TemporarelyIllegal => continue,
+                        MoveLegality::FullyIllegal => break,
                     }
-                    if !piece_iterator.step() {
-                        break;
-                    }
+                }
+                if !piece_iterator.step() {
+                    break;
                 }
             }
         }

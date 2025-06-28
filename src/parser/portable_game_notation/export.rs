@@ -26,7 +26,7 @@ impl Pgn {
 
         let metadata = Self::format_metadata(&metadata);
         let turndata = Self::format_turndata(game);
-        format!("{}\n{}", metadata, turndata)
+        format!("{metadata}\n{turndata}")
     }
 
     /// Formats the turn data of the given game into pgn format
@@ -79,7 +79,7 @@ impl Pgn {
     fn format_metadata(metadata: &HashMap<String, String>) -> String {
         metadata
             .iter()
-            .map(|(key, value)| format!("[{} \"{}\"]\n", key, value))
+            .map(|(key, value)| format!("[{key} \"{value}\"]\n"))
             .collect::<Vec<String>>()
             .join("")
     }
