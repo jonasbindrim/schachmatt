@@ -1,5 +1,7 @@
 use crate::{
-    Columns, Field, Fields::{FIELD_A1, FIELD_E1}, Piece, PieceType, PlayerColor, Position, Rows, Ruleset, Turn, CLASSIC_RULESET
+    CLASSIC_RULESET, Columns, Field,
+    Fields::{FIELD_A1, FIELD_E1},
+    Piece, PieceType, PlayerColor, Position, Rows, Ruleset, Turn,
 };
 
 use pest::{Parser, iterators::Pair};
@@ -11,7 +13,6 @@ use super::{San, SanParserError};
 struct SanPestParser;
 
 impl San {
-
     /// Converts a string in SAN representation to a `Turn` object.
     /// This function assumes the classical chess ruleset is used.
     /// - `raw` - The turn in san notation
@@ -26,7 +27,11 @@ impl San {
     /// - `current_position` - The position the given turn was played in
     /// - `ruleset` - The ruleset used in the game
     /// - `returns` - The resulting turn or an error
-    pub fn import_by_ruleset(raw: &str, current_position: &Position, ruleset: &Ruleset) -> Result<Turn, SanParserError> {
+    pub fn import_by_ruleset(
+        raw: &str,
+        current_position: &Position,
+        ruleset: &Ruleset,
+    ) -> Result<Turn, SanParserError> {
         let Ok(mut parsed_data) = SanPestParser::parse(Rule::turn, raw) else {
             return Err(SanParserError::InvalidData(raw.to_string()));
         };
@@ -37,9 +42,15 @@ impl San {
 
         match turn_type.as_rule() {
             Rule::pawn_move => Self::import_pawn_movement(turn_type, current_position, ruleset),
-            Rule::castling => Ok(Self::import_handle_castling(&turn_type, current_position, ruleset)),
-            Rule::piece_move_full => Self::import_piece_move_full(turn_type, current_position, ruleset),
-            _ => Err(SanParserError::InvalidData(raw.to_string()))
+            Rule::castling => Ok(Self::import_handle_castling(
+                &turn_type,
+                current_position,
+                ruleset,
+            )),
+            Rule::piece_move_full => {
+                Self::import_piece_move_full(turn_type, current_position, ruleset)
+            }
+            _ => Err(SanParserError::InvalidData(raw.to_string())),
         }
     }
 
@@ -50,7 +61,7 @@ impl San {
     fn import_piece_move_full(
         san_data: Pair<Rule>,
         position: &Position,
-        ruleset: &Ruleset
+        ruleset: &Ruleset,
     ) -> Result<Turn, SanParserError> {
         let possible_moves = ruleset.get_possible_turns(position);
         let raw_turn = san_data.as_str().to_string();
@@ -63,13 +74,11 @@ impl San {
         for parts in san_data.into_inner() {
             match parts.as_rule() {
                 Rule::piece_symbol => {
-                    let letter = parts.as_str().as_bytes()[0] as char;
-                    let piece = PieceType::import_piecetype(letter.to_ascii_lowercase());
+                    let piecetype_letter =
+                        (parts.as_str().as_bytes()[0] as char).to_ascii_lowercase();
 
-                    if let Some(piece) = piece {
+                    if let Some(piece) = PieceType::import_piecetype(piecetype_letter) {
                         piece_type = Some(Piece::new(piece, position.get_active_color()));
-                    } else {
-                        piece_type = None;
                     }
                 }
                 Rule::piece_move => {
@@ -82,15 +91,22 @@ impl San {
             }
         }
 
+        let piece_type = piece_type.unwrap();
+        let target_field = target_field.unwrap();
+
         for turn in possible_moves {
-            if target_field.unwrap() == turn.target
-                && position.get_field_occupation(&turn.current) == piece_type
+            if target_field == turn.target
+                && let Some(occupation) = position.get_field_occupation(&turn.current)
+                && occupation == piece_type
             {
+                // If a column is set in san notation, check whether column is correct
                 if let Some(column_value) = from_column
                     && turn.current.get_column() != column_value
                 {
                     continue;
                 }
+
+                // If a row is set in san notation, check whether row is correct
                 if let Some(row_value) = from_row
                     && turn.current.get_row() != row_value
                 {
@@ -139,7 +155,11 @@ impl San {
     /// - `san_data` - The pest parsed turn data
     /// - `position` - The position in which the turn was played
     /// - `returns` - The resulting `Turn`
-    fn import_handle_castling(san_data: &Pair<Rule>, position: &Position, ruleset: &Ruleset) -> Turn {
+    fn import_handle_castling(
+        san_data: &Pair<Rule>,
+        position: &Position,
+        ruleset: &Ruleset,
+    ) -> Turn {
         let possible_moves = ruleset.get_possible_turns(position);
         let player_color = position.get_active_color();
 
@@ -174,7 +194,7 @@ impl San {
     fn import_pawn_movement(
         san_data: Pair<Rule>,
         position: &Position,
-        ruleset: &Ruleset
+        ruleset: &Ruleset,
     ) -> Result<Turn, SanParserError> {
         let possible_moves = ruleset.get_possible_turns(position);
         let raw_turn = san_data.as_str().to_string();
@@ -204,34 +224,30 @@ impl San {
             }
         }
 
+        let target_field = target_field.unwrap();
+
         for turn in possible_moves {
             let from_occupation = position.get_field_occupation(&turn.current);
             let Some(moving_piece) = from_occupation else {
                 return Err(SanParserError::InvalidMove(raw_turn));
             };
-            if target_field.unwrap() == turn.target
+            if target_field == turn.target
                 && promotion_piece == turn.promotion
                 && moving_piece.get_type() == PieceType::Pawn
             {
-                match from_column {
-                    Some(column) => {
-                        // Is a capture move
-                        match from_row {
-                            Some(row) => {
-                                if column == turn.current.get_column()
-                                    && row == turn.current.get_row()
-                                {
-                                    return Ok(turn);
-                                }
-                            }
-                            None => {
-                                if column == turn.current.get_column() {
-                                    return Ok(turn);
-                                }
-                            }
-                        }
+                let Some(column) = from_column else {
+                    return Ok(turn);
+                };
+
+                if let Some(row) = from_row {
+                    if column == turn.current.get_column() && row == turn.current.get_row() {
+                        return Ok(turn);
                     }
-                    None => return Ok(turn),
+                    continue;
+                }
+
+                if column == turn.current.get_column() {
+                    return Ok(turn);
                 }
             }
         }
