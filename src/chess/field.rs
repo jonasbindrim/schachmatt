@@ -96,7 +96,7 @@ impl fmt::Display for Field {
             f,
             "{}{}",
             (self.column + b'a') as char,
-            &(self.row + 1).to_string()
+            (self.row + 1).to_string()
         )
     }
 }
