@@ -11,7 +11,7 @@ mod standard_algebraic_notation_export_tests {
     }
 
     #[test]
-    pub fn import_san_push_ambigious() {
+    pub fn import_san_push_ambiguous() {
         let fen_definition = "rnbqkb1r/pp3ppp/3ppn2/2p5/4PP2/1P6/PBPP2PP/RN1QKBNR w KQkq - 0 1";
         let mut test_position = Fen::import(fen_definition).unwrap();
         let turn = San::import("e5", &mut test_position).unwrap();
@@ -75,23 +75,30 @@ mod standard_algebraic_notation_export_tests {
     }
 
     #[test]
-    pub fn import_san_piece_move_capture_ambigious_white() {
+    pub fn import_san_piece_move_capture_ambiguous_white() {
         let mut test_position = Fen::import("4k3/8/8/4p3/8/3N1N2/8/R3K3 w - - 0 1").unwrap();
         let turn = San::import("Nfxe5", &mut test_position).unwrap();
         assert_eq!(turn, Turn::new(FIELD_F3, FIELD_E5, None));
     }
 
     #[test]
-    pub fn import_san_piece_move_capture_ambigious_black() {
+    pub fn import_san_piece_move_capture_ambiguous_black() {
         let mut test_position = Fen::import("4k3/8/3n1n2/8/4P3/8/8/R3K3 b - - 0 1").unwrap();
         let turn = San::import("Ndxe4", &mut test_position).unwrap();
         assert_eq!(turn, Turn::new(FIELD_D6, FIELD_E4, None));
     }
 
     #[test]
-    pub fn import_san_piece_move_capture_double_ambigious_black() {
+    pub fn import_san_piece_move_capture_double_ambiguous_black() {
         let mut test_position = Fen::import("4k3/8/3n1n2/8/4P3/8/3n4/R5K b - - 0 1").unwrap();
         let turn = San::import("Nd6xe4", &mut test_position).unwrap();
         assert_eq!(turn, Turn::new(FIELD_D6, FIELD_E4, None));
+    }
+
+    #[test]
+    pub fn import_san_piece_move_ambiguous_same_column() {
+        let mut test_position = Fen::import("4k3/8/rr6/8/8/R7/8/R6K w - - 0 1").unwrap();
+        let turn = San::import("R1a2", &mut test_position).unwrap();
+        assert_eq!(turn, Turn::new(FIELD_A1, FIELD_A2, None));
     }
 }
