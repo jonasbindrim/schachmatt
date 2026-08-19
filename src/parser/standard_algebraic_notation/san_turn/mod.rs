@@ -40,9 +40,7 @@ impl SanTurn {
         };
 
         match turn_type.as_rule() {
-            Rule::pawn_move => Ok(Self::PawnMove(SanPawnMove::from_pawn_move_rule(
-                turn_type,
-            ))),
+            Rule::pawn_move => Ok(Self::PawnMove(SanPawnMove::from_pawn_move_rule(turn_type))),
             Rule::castling => Ok(Self::Castling(SanCastleDirection::from_castling_rule(
                 &turn_type,
             ))),

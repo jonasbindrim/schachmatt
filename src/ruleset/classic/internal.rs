@@ -110,7 +110,7 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
 /// - `turn` - The turn which should be played
 pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Position {
     let mut position = original_position.clone();
-    let from_field = position.get_field_occupation(&turn.current);
+    let from_field = position.get_field_occupation(&turn.origin);
     let moving_piece = from_field.unwrap();
     let to_field = position.get_field_occupation(&turn.target);
     let active_color = position.get_active_color();
@@ -124,12 +124,12 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
 
     // Move the piece
     position.set_field_occupation(&turn.target, Some(moving_piece));
-    position.set_field_occupation(&turn.current, None);
+    position.set_field_occupation(&turn.origin, None);
 
     if PieceType::King == moving_piece.get_type() {
         match moving_piece.get_color() {
             PlayerColor::Black => {
-                if turn.current == FIELD_E8 {
+                if turn.origin == FIELD_E8 {
                     if turn.target == FIELD_C8 {
                         position.set_field_occupation(
                             &FIELD_D8,
@@ -147,7 +147,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
                 position.set_castling_rights(PlayerColor::Black, CastlingRights::new(false, false));
             }
             PlayerColor::White => {
-                if turn.current == FIELD_E1 {
+                if turn.origin == FIELD_E1 {
                     if turn.target == FIELD_C1 {
                         position.set_field_occupation(
                             &FIELD_D1,
@@ -172,20 +172,20 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
         match moving_piece.get_color() {
             PlayerColor::Black => {
                 let mut castling_rights = position.get_castling_rights(PlayerColor::Black);
-                if turn.current == FIELD_A8 {
+                if turn.origin == FIELD_A8 {
                     castling_rights.set_queenside(false);
                     position.set_castling_rights(PlayerColor::Black, castling_rights);
-                } else if turn.current == FIELD_H8 {
+                } else if turn.origin == FIELD_H8 {
                     castling_rights.set_kingside(false);
                     position.set_castling_rights(PlayerColor::Black, castling_rights);
                 }
             }
             PlayerColor::White => {
                 let mut castling_rights = position.get_castling_rights(PlayerColor::White);
-                if turn.current == FIELD_A1 {
+                if turn.origin == FIELD_A1 {
                     castling_rights.set_queenside(false);
                     position.set_castling_rights(PlayerColor::White, castling_rights);
-                } else if turn.current == FIELD_H1 {
+                } else if turn.origin == FIELD_H1 {
                     castling_rights.set_kingside(false);
                     position.set_castling_rights(PlayerColor::White, castling_rights);
                 }
@@ -206,7 +206,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
     // Remove piece taken with en passant
     if let Some(field) = position.get_en_passant()
         && turn.target.get_column() == field.get_column()
-        && turn.current.get_row() == field.get_row()
+        && turn.origin.get_row() == field.get_row()
     {
         position.set_field_occupation(&field, None);
         position.set_halfmove_clock(0);
@@ -214,7 +214,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
 
     // Update en passant field
     if PieceType::Pawn == moving_piece.get_type()
-        && turn.current.get_row().abs_diff(turn.target.get_row()) == 2
+        && turn.origin.get_row().abs_diff(turn.target.get_row()) == 2
     {
         position.set_en_passant(Some(turn.target));
     } else {
@@ -236,7 +236,7 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
 /// - `player_color` - The player that performs the turn
 /// - `returns` - Returns whether the turn is legal
 fn is_legal_move(position: &Position, turn: Turn, check_for_check: bool) -> MoveLegality {
-    let Some(moving_piece) = position.get_field_occupation(&turn.current) else {
+    let Some(moving_piece) = position.get_field_occupation(&turn.origin) else {
         return MoveLegality::FullyIllegal;
     };
 
@@ -286,9 +286,9 @@ fn is_legal_move(position: &Position, turn: Turn, check_for_check: bool) -> Move
 /// - `active_color` - The currently active color
 /// - `returns` - Whether or not the move is legal
 fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor) -> MoveLegality {
-    let step = turn.target.get_column() as i8 - turn.current.get_column() as i8;
+    let step = turn.target.get_column() as i8 - turn.origin.get_column() as i8;
     if step == 2 {
-        if turn.current.get_row() == Rows::ROW_8
+        if turn.origin.get_row() == Rows::ROW_8
             && active_color == PlayerColor::Black
             && position
                 .get_castling_rights(PlayerColor::Black)
@@ -302,7 +302,7 @@ fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor
             ) {
                 return MoveLegality::FullyIllegal;
             }
-        } else if turn.current.get_row() == Rows::ROW_1
+        } else if turn.origin.get_row() == Rows::ROW_1
             && active_color == PlayerColor::White
             && position
                 .get_castling_rights(PlayerColor::White)
@@ -320,7 +320,7 @@ fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor
             return MoveLegality::FullyIllegal;
         }
     } else if step == -2 {
-        if turn.current.get_row() == Rows::ROW_8
+        if turn.origin.get_row() == Rows::ROW_8
             && active_color == PlayerColor::Black
             && position
                 .get_castling_rights(PlayerColor::Black)
@@ -334,7 +334,7 @@ fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor
             ) {
                 return MoveLegality::FullyIllegal;
             }
-        } else if turn.current.get_row() == Rows::ROW_1
+        } else if turn.origin.get_row() == Rows::ROW_1
             && active_color == PlayerColor::White
             && position
                 .get_castling_rights(PlayerColor::White)
@@ -367,15 +367,15 @@ fn is_pawn_move_legal(
     is_capture: bool,
 ) -> MoveLegality {
     // Forward moves
-    if turn.current.get_column() == turn.target.get_column() {
+    if turn.origin.get_column() == turn.target.get_column() {
         if is_capture {
             return MoveLegality::FullyIllegal;
         }
 
-        if turn.current.get_row().abs_diff(turn.target.get_row()) == 2
+        if turn.origin.get_row().abs_diff(turn.target.get_row()) == 2
             && match active_color {
-                PlayerColor::Black => turn.current.get_row() != Rows::ROW_7,
-                PlayerColor::White => turn.current.get_row() != Rows::ROW_2,
+                PlayerColor::Black => turn.origin.get_row() != Rows::ROW_7,
+                PlayerColor::White => turn.origin.get_row() != Rows::ROW_2,
             }
         {
             return MoveLegality::FullyIllegal;
@@ -383,7 +383,7 @@ fn is_pawn_move_legal(
     }
 
     // Check if a pawn can capture diagonally
-    if turn.current.get_column() != turn.target.get_column()
+    if turn.origin.get_column() != turn.target.get_column()
         && position.get_field_occupation(&turn.target).is_none()
     {
         let Some(field) = position.get_en_passant() else {
@@ -391,7 +391,7 @@ fn is_pawn_move_legal(
         };
 
         if turn.target.get_column() != field.get_column()
-            || turn.current.get_row() != field.get_row()
+            || turn.origin.get_row() != field.get_row()
         {
             return MoveLegality::FullyIllegal;
         }
@@ -485,7 +485,7 @@ fn fields_under_attack(position: &Position, player_color: PlayerColor, fields: [
                 while let Some(turn) = piece_iterator.current() {
                     // Dont check castling options
                     if PieceType::King == piece.get_type()
-                        && turn.current.get_column().abs_diff(turn.target.get_column()) == 2
+                        && turn.origin.get_column().abs_diff(turn.target.get_column()) == 2
                     {
                         continue;
                     }

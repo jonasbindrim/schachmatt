@@ -6,7 +6,7 @@ use crate::{Field, parser::standard_algebraic_notation::san_turn::Rule};
 pub enum SanOriginField {
     Field(Field),
     Column(u8),
-    Row(u8)
+    Row(u8),
 }
 
 impl SanOriginField {

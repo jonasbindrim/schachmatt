@@ -14,7 +14,7 @@ impl San {
         let mut is_capture = current_position
             .get_field_occupation(&turn.target)
             .is_some();
-        let from_field = current_position.get_field_occupation(&turn.current);
+        let from_field = current_position.get_field_occupation(&turn.origin);
 
         let Some(moving_piece) = from_field else {
             todo!() // TODO: Handle illegal move
@@ -36,18 +36,18 @@ impl San {
             }
 
             if is_capture {
-                san_turn.push((turn.current.get_column() + b'a') as char);
+                san_turn.push((turn.origin.get_column() + b'a') as char);
             }
             Self::to_move(&mut san_turn, turn, current_position, is_capture);
         } else {
             if PieceType::King == moving_piece.get_type() {
                 // Is kingside castle
-                if turn.current.get_column() + 2 == turn.target.get_column() {
+                if turn.origin.get_column() + 2 == turn.target.get_column() {
                     return String::from("O-O");
                 }
 
-                if turn.current.get_column() == Columns::COLUMN_E
-                    && turn.current.get_column() - 2 == turn.target.get_column()
+                if turn.origin.get_column() == Columns::COLUMN_E
+                    && turn.origin.get_column() - 2 == turn.target.get_column()
                 {
                     return String::from("O-O-O");
                 }
@@ -67,10 +67,10 @@ impl San {
     /// - `turn` - The turn which was played
     /// - `current_position` - The position the turn was played in
     fn add_field_descriptor(base: &mut String, turn: &Turn, current_position: &Position) {
-        let column = turn.current.get_column();
-        let row = turn.current.get_row();
+        let column = turn.origin.get_column();
+        let row = turn.origin.get_row();
 
-        let occupation = current_position.get_field_occupation(&turn.current);
+        let occupation = current_position.get_field_occupation(&turn.origin);
         if !Self::is_unique_descriptor(turn, current_position, occupation, None, None) {
             if Self::is_unique_descriptor(turn, current_position, occupation, Some(column), None) {
                 base.push((column + b'a') as char);
@@ -144,14 +144,14 @@ impl San {
         let mut counter = 0;
         for turn in possible_moves {
             if turn.target == checked_turn.target
-                && occupation == current_position.get_field_occupation(&turn.current)
+                && occupation == current_position.get_field_occupation(&turn.origin)
             {
                 match column {
                     Some(column_value) => {
-                        if turn.current.get_column() == column_value {
+                        if turn.origin.get_column() == column_value {
                             match row {
                                 Some(row_value) => {
-                                    if turn.current.get_row() == row_value {
+                                    if turn.origin.get_row() == row_value {
                                         counter += 1;
                                     }
                                 }
@@ -161,7 +161,7 @@ impl San {
                     }
                     None => match row {
                         Some(row_value) => {
-                            if turn.current.get_row() == row_value {
+                            if turn.origin.get_row() == row_value {
                                 counter += 1;
                             }
                         }

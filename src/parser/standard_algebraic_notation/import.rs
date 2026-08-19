@@ -65,7 +65,7 @@ impl San {
             }
 
             if position
-                .get_field_occupation(&turn.current)
+                .get_field_occupation(&turn.origin)
                 .unwrap()
                 .get_type()
                 != piece_move.piece_type
@@ -78,9 +78,9 @@ impl San {
             };
 
             match origin {
-                SanOriginField::Field(origin) => turn.current == *origin,
-                SanOriginField::Column(column) => turn.current.get_column() == *column,
-                SanOriginField::Row(row) => turn.current.get_row() == *row,
+                SanOriginField::Field(origin) => turn.origin == *origin,
+                SanOriginField::Column(column) => turn.origin.get_column() == *column,
+                SanOriginField::Row(row) => turn.origin.get_row() == *row,
             }
         })
     }
@@ -114,7 +114,7 @@ impl San {
 
         possible_moves
             .into_iter()
-            .find(|&turn| turn.target == target_field && turn.current == starting_field)
+            .find(|&turn| turn.target == target_field && turn.origin == starting_field)
     }
 
     /// Tries to convert a `SanPawnMove` into an actual `Turn` object that is playable in the given `position`.
@@ -132,7 +132,7 @@ impl San {
             pawn_move.target_field == turn.target
                 && pawn_move.promotion_piece == turn.promotion
                 && position
-                    .get_field_occupation(&turn.current)
+                    .get_field_occupation(&turn.origin)
                     .unwrap()
                     .get_type()
                     == PieceType::Pawn
@@ -145,9 +145,9 @@ impl San {
         possible_moves
             .into_iter()
             .find(|&turn| match san_origin_field {
-                SanOriginField::Field(field) => *field == turn.current,
-                SanOriginField::Column(column) => turn.current.get_column() == *column,
-                SanOriginField::Row(row) => turn.current.get_row() == *row,
+                SanOriginField::Field(field) => *field == turn.origin,
+                SanOriginField::Column(column) => turn.origin.get_column() == *column,
+                SanOriginField::Row(row) => turn.origin.get_row() == *row,
             })
     }
 }

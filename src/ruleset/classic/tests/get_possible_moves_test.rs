@@ -41,7 +41,7 @@ mod tests {
         let mut column = Columns::COLUMN_A;
         while column < COLUMN_AMOUNT as u8 {
             let test_turn = Turn::new(FIELD_D2, Field::new(column, Rows::ROW_2).unwrap(), None);
-            if test_turn.current != test_turn.target {
+            if test_turn.origin != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             column += 1;
@@ -49,7 +49,7 @@ mod tests {
         let mut row = Rows::ROW_1;
         while row < ROW_AMOUNT as u8 {
             let test_turn = Turn::new(FIELD_D2, Field::new(Columns::COLUMN_D, row).unwrap(), None);
-            if test_turn.current != test_turn.target {
+            if test_turn.origin != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             row += 1;
@@ -65,7 +65,7 @@ mod tests {
                 .unwrap(),
                 None,
             );
-            if test_turn.current != test_turn.target {
+            if test_turn.origin != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             lower_right_counter += 1;
@@ -82,7 +82,7 @@ mod tests {
                 .unwrap(),
                 None,
             );
-            if test_turn.current != test_turn.target {
+            if test_turn.origin != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             lower_left_counter += 1;
@@ -99,7 +99,7 @@ mod tests {
         let mut column = Columns::COLUMN_A;
         while column < COLUMN_AMOUNT as u8 {
             let test_turn = Turn::new(FIELD_D2, Field::new(column, Rows::ROW_2).unwrap(), None);
-            if test_turn.current != test_turn.target {
+            if test_turn.origin != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             column += 1;
@@ -107,7 +107,7 @@ mod tests {
         let mut row = Rows::ROW_1;
         while row < ROW_AMOUNT as u8 {
             let test_turn = Turn::new(FIELD_D2, Field::new(Columns::COLUMN_D, row).unwrap(), None);
-            if test_turn.current != test_turn.target {
+            if test_turn.origin != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             row += 1;
@@ -177,7 +177,7 @@ mod tests {
                 .unwrap(),
                 None,
             );
-            if test_turn.current != test_turn.target {
+            if test_turn.origin != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             lowleft_to_topright_counter += 1;
@@ -194,7 +194,7 @@ mod tests {
                 .unwrap(),
                 None,
             );
-            if test_turn.current != test_turn.target {
+            if test_turn.origin != test_turn.target {
                 assert!(possible_moves.contains(&test_turn));
             }
             lowright_to_topleft_counter += 1;

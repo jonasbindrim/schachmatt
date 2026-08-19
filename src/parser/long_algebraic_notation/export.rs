@@ -11,12 +11,12 @@ impl Lan {
         if let Some(promotion) = turn.promotion {
             format!(
                 "{}{}{}",
-                turn.current,
+                turn.origin,
                 turn.target,
                 promotion.export_piecetype_lowercase()
             )
         } else {
-            format!("{}{}", turn.current, turn.target)
+            format!("{}{}", turn.origin, turn.target)
         }
     }
 }

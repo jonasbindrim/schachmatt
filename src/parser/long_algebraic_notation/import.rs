@@ -24,7 +24,7 @@ impl Lan {
                 Rule::from_to_turn => {
                     let (from, to) = Self::handle_from_to_turn_rule(turn_type);
                     return Some(Turn {
-                        current: from,
+                        origin: from,
                         target: to,
                         promotion: None,
                     });
@@ -32,7 +32,7 @@ impl Lan {
                 Rule::piece_descriptor_turn => {
                     let (from, to) = Self::handle_piece_descriptor_turn_rule(turn_type);
                     return Some(Turn {
-                        current: from,
+                        origin: from,
                         target: to,
                         promotion: None,
                     });
@@ -73,7 +73,7 @@ impl Lan {
                         PieceType::import_piecetype(piece_representation as char).unwrap();
 
                     return Turn {
-                        current: from_field.unwrap(),
+                        origin: from_field.unwrap(),
                         target: to_field.unwrap(),
                         promotion: Some(piece_type),
                     };
