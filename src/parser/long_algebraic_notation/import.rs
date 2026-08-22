@@ -1,4 +1,4 @@
-use crate::{Field, PieceType, Turn};
+use crate::{Field, PieceType, Turn, chess::turn::NormalTurn};
 
 use pest::{Parser, iterators::Pair};
 
@@ -23,19 +23,19 @@ impl Lan {
             match turn_type.as_rule() {
                 Rule::from_to_turn => {
                     let (from, to) = Self::handle_from_to_turn_rule(turn_type);
-                    return Some(Turn {
-                        current: from,
+                    return Some(Turn::Normal(NormalTurn {
+                        origin: from,
                         target: to,
                         promotion: None,
-                    });
+                    }));
                 }
                 Rule::piece_descriptor_turn => {
                     let (from, to) = Self::handle_piece_descriptor_turn_rule(turn_type);
-                    return Some(Turn {
-                        current: from,
+                    return Some(Turn::Normal(NormalTurn {
+                        origin: from,
                         target: to,
                         promotion: None,
-                    });
+                    }));
                 }
                 Rule::promotion_turn => {
                     return Some(Self::handle_promotion_turn_rule(turn_type));
@@ -72,11 +72,11 @@ impl Lan {
                     let piece_type =
                         PieceType::import_piecetype(piece_representation as char).unwrap();
 
-                    return Turn {
-                        current: from_field.unwrap(),
+                    return Turn::Normal(NormalTurn {
+                        origin: from_field.unwrap(),
                         target: to_field.unwrap(),
                         promotion: Some(piece_type),
-                    };
+                    });
                 }
                 _ => unreachable!(),
             }

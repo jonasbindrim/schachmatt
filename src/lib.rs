@@ -12,7 +12,6 @@ pub use crate::constants::metadata as Metadata;
 pub use crate::constants::rows as Rows;
 
 mod chess;
-pub use crate::chess::castling_rights::CastlingRights;
 pub use crate::chess::field::Field;
 pub use crate::chess::game::Game;
 pub use crate::chess::game_result::GameResult;
@@ -21,6 +20,8 @@ pub use crate::chess::piece_type::PieceType;
 pub use crate::chess::player_color::PlayerColor;
 pub use crate::chess::position::Position;
 pub use crate::chess::position::PositionError;
+pub use crate::chess::turn::CastleDirection;
+pub use crate::chess::turn::NormalTurn;
 pub use crate::chess::turn::Turn;
 
 mod ruleset;

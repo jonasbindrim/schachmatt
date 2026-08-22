@@ -92,11 +92,6 @@ impl Field {
 
 impl fmt::Display for Field {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}{}",
-            (self.column + b'a') as char,
-            (self.row + 1).to_string()
-        )
+        write!(f, "{}{}", (self.column + b'a') as char, self.row + 1)
     }
 }

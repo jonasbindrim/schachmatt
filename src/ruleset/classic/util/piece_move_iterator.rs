@@ -1,4 +1,4 @@
-use crate::{Field, Turn};
+use crate::{Field, chess::turn::NormalTurn};
 
 use super::move_iterators::MoveIterator;
 
@@ -29,7 +29,7 @@ impl<'a> PieceMoveIterator<'a> {
 
     /// Returns the current turn stored in this iterator if its valid
     /// - `returns` - Turn stored in this iterator
-    pub(crate) fn current(&mut self) -> Option<Turn> {
+    pub(crate) fn current(&mut self) -> Option<NormalTurn> {
         let iterator = &self.move_iterator[self.index];
 
         // Calculate the row increment for the next move
@@ -64,8 +64,8 @@ impl<'a> PieceMoveIterator<'a> {
         let target_row = (self.base_field.get_row() as i8 + row_increment) as u8;
         let target_column = (self.base_field.get_column() as i8 + column_increment) as u8;
 
-        let turn = Turn {
-            current: self.base_field,
+        let turn = NormalTurn {
+            origin: self.base_field,
             target: Field::new(target_column, target_row)?,
             promotion: None,
         };

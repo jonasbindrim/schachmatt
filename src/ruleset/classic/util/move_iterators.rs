@@ -186,11 +186,11 @@ pub(super) const QUEEN_ITERATORS: [MoveIterator; 8] = [
 
 pub(super) const KING_ITERATORS: [MoveIterator; 8] = [
     MoveIterator {
-        column: BasicIterator::new(1, 2, Some(COLUMN_RIGHT)),
+        column: BasicIterator::new(1, 1, Some(COLUMN_RIGHT)),
         row: BasicIterator::new(0, 0, None),
     },
     MoveIterator {
-        column: BasicIterator::new(-1, -2, Some(COLUMN_LEFT)),
+        column: BasicIterator::new(-1, -1, Some(COLUMN_LEFT)),
         row: BasicIterator::new(0, 0, None),
     },
     MoveIterator {
