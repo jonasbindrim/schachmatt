@@ -1,3 +1,4 @@
+#[derive(PartialEq, Eq)]
 pub(crate) enum MoveLegality {
     Legal,
     TemporarelyIllegal,

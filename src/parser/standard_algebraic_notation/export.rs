@@ -1,4 +1,7 @@
-use crate::{CLASSIC_RULESET, Columns, Piece, PieceType, PlayerColor, Position, Turn};
+use crate::{
+    CLASSIC_RULESET, Piece, PieceType, PlayerColor, Position, Turn,
+    chess::turn::{CastleDirection, NormalTurn},
+};
 
 use super::San;
 
@@ -10,6 +13,16 @@ impl San {
     #[must_use]
     pub fn export(turn: &Turn, current_position: &Position) -> String {
         let mut san_turn = String::new();
+
+        let turn = match turn {
+            Turn::Normal(normal_turn) => normal_turn,
+            Turn::Castle(castle_direction) => {
+                return match castle_direction {
+                    CastleDirection::Kingside => String::from("O-O"),
+                    CastleDirection::Queenside => String::from("O-O-O"),
+                };
+            }
+        };
 
         let mut is_capture = current_position
             .get_field_occupation(&turn.target)
@@ -40,18 +53,6 @@ impl San {
             }
             Self::to_move(&mut san_turn, turn, current_position, is_capture);
         } else {
-            if PieceType::King == moving_piece.get_type() {
-                // Is kingside castle
-                if turn.origin.get_column() + 2 == turn.target.get_column() {
-                    return String::from("O-O");
-                }
-
-                if turn.origin.get_column() == Columns::COLUMN_E
-                    && turn.origin.get_column() - 2 == turn.target.get_column()
-                {
-                    return String::from("O-O-O");
-                }
-            }
             san_turn.push(PieceType::export_piecetype_uppercase(
                 moving_piece.get_type(),
             ));
@@ -66,7 +67,7 @@ impl San {
     /// - `base` - The base string which gets data appended to
     /// - `turn` - The turn which was played
     /// - `current_position` - The position the turn was played in
-    fn add_field_descriptor(base: &mut String, turn: &Turn, current_position: &Position) {
+    fn add_field_descriptor(base: &mut String, turn: &NormalTurn, current_position: &Position) {
         let column = turn.origin.get_column();
         let row = turn.origin.get_row();
 
@@ -94,7 +95,12 @@ impl San {
     /// - `turn` - The turn which was played
     /// - `current_position` - The position the turn was played at
     /// - `is_capture` - Indicates whether the current turn is a capturing turn
-    fn to_move(base: &mut String, turn: &Turn, current_position: &Position, is_capture: bool) {
+    fn to_move(
+        base: &mut String,
+        turn: &NormalTurn,
+        current_position: &Position,
+        is_capture: bool,
+    ) {
         // Add capture
         if is_capture {
             base.push('x');
@@ -112,7 +118,8 @@ impl San {
         }
 
         // Check if is in check
-        let copy_position = CLASSIC_RULESET.execute_turn(&current_position.clone(), turn);
+        let copy_position =
+            CLASSIC_RULESET.execute_turn(&current_position.clone(), &Turn::Normal(*turn));
         if CLASSIC_RULESET.is_in_check(&copy_position, copy_position.get_active_color()) {
             if CLASSIC_RULESET
                 .get_possible_turns(&copy_position)
@@ -133,13 +140,20 @@ impl San {
     /// - `row` - The row the piece is located at
     /// - `returns` - Whether the move indicator is unique
     fn is_unique_descriptor(
-        checked_turn: &Turn,
+        checked_turn: &NormalTurn,
         current_position: &Position,
         occupation: Option<Piece>,
         column: Option<u8>,
         row: Option<u8>,
     ) -> bool {
         let possible_moves = CLASSIC_RULESET.get_possible_turns(current_position);
+        let possible_moves: Vec<&NormalTurn> = possible_moves
+            .iter()
+            .filter_map(|turn| match turn {
+                Turn::Normal(normal_turn) => Some(normal_turn),
+                Turn::Castle(_) => None,
+            })
+            .collect();
 
         let mut counter = 0;
         for turn in possible_moves {

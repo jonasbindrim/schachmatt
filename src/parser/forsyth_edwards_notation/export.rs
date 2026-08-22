@@ -1,5 +1,8 @@
 use super::Fen;
-use crate::{CastlingRights, Columns, PlayerColor, Position, Rows, chess::position::BoardSetup};
+use crate::{
+    Columns, PlayerColor, Position, Rows,
+    chess::{castling_rights::CastlingRights, position::BoardSetup, turn::CastleDirection},
+};
 
 impl Fen {
     /// Converts a `Position` into a string in FEN notation.
@@ -79,19 +82,19 @@ impl Fen {
     ) -> String {
         let mut castling_data: String = String::new();
 
-        if white_castling.get_kingside() {
+        if white_castling.get(CastleDirection::Kingside) {
             castling_data.push('K');
         }
 
-        if white_castling.get_queenside() {
+        if white_castling.get(CastleDirection::Queenside) {
             castling_data.push('Q');
         }
 
-        if black_castling.get_kingside() {
+        if black_castling.get(CastleDirection::Kingside) {
             castling_data.push('k');
         }
 
-        if black_castling.get_queenside() {
+        if black_castling.get(CastleDirection::Queenside) {
             castling_data.push('q');
         }
 

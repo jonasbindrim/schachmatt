@@ -1,8 +1,8 @@
 use thiserror::Error;
 
 use crate::{
-    CastlingRights, Columns::COLUMN_AMOUNT, DEFAULT_BOARD_SETUP, Fen, Field, GameResult, Lan,
-    Piece, PlayerColor, Rows::ROW_AMOUNT, Ruleset, Turn,
+    Columns::COLUMN_AMOUNT, DEFAULT_BOARD_SETUP, Fen, Field, GameResult, Lan, Piece, PlayerColor,
+    Rows::ROW_AMOUNT, Ruleset, Turn, chess::castling_rights::CastlingRights,
 };
 
 pub type BoardSetup = [[Option<Piece>; COLUMN_AMOUNT]; ROW_AMOUNT];

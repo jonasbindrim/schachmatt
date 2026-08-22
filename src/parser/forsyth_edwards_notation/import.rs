@@ -1,9 +1,8 @@
 use crate::{
-    CastlingRights,
     Columns::{self, COLUMN_AMOUNT},
     Field, Piece, PlayerColor, Position,
     Rows::{self, ROW_AMOUNT},
-    chess::position::BoardSetup,
+    chess::{castling_rights::CastlingRights, position::BoardSetup, turn::CastleDirection},
 };
 
 use super::{Fen, error::FenParserError};
@@ -206,10 +205,10 @@ impl Fen {
 
         for position in letters {
             match *position as char {
-                'K' => castling_white.set_kingside(true),
-                'Q' => castling_white.set_queenside(true),
-                'k' => castling_black.set_kingside(true),
-                'q' => castling_black.set_queenside(true),
+                'K' => castling_white.set(CastleDirection::Kingside, true),
+                'Q' => castling_white.set(CastleDirection::Queenside, true),
+                'k' => castling_black.set(CastleDirection::Kingside, true),
+                'q' => castling_black.set(CastleDirection::Queenside, true),
                 '-' => break,
                 _ => {
                     return Err(FenParserError::UnrecognisedContent {

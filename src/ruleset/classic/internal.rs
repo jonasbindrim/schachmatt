@@ -1,6 +1,11 @@
 use crate::{
-    CastlingRights, Field, Fields::*, GameResult, Piece, PieceType, PlayerColor, Position, Rows,
-    Turn,
+    Field,
+    Fields::*,
+    GameResult, Piece, PieceType, PlayerColor, Position, Rows, Turn,
+    chess::{
+        castling_rights::CastlingRights,
+        turn::{CastleDirection, NormalTurn},
+    },
 };
 
 use super::util::{
@@ -11,21 +16,21 @@ use super::util::{
 /// Takes a turn which is a promotion turn and returns a vector of each possible resulting promotion turn.
 /// - `turn` - The promotion turn
 /// - `turns` - the vector of turns to wich turn should be pushed
-fn push_turn(turn: Turn) -> Vec<Turn> {
+fn create_promotion_turns(turn: NormalTurn) -> Vec<Turn> {
     let mut promotion_turns = Vec::<Turn>::with_capacity(4);
     let mut base_turn = turn;
 
     base_turn.promotion = Option::Some(PieceType::Rook);
-    promotion_turns.push(base_turn);
+    promotion_turns.push(Turn::Normal(base_turn));
 
     base_turn.promotion = Option::Some(PieceType::Queen);
-    promotion_turns.push(base_turn);
+    promotion_turns.push(Turn::Normal(base_turn));
 
     base_turn.promotion = Option::Some(PieceType::Bishop);
-    promotion_turns.push(base_turn);
+    promotion_turns.push(Turn::Normal(base_turn));
 
     base_turn.promotion = Option::Some(PieceType::Knight);
-    promotion_turns.push(base_turn);
+    promotion_turns.push(Turn::Normal(base_turn));
 
     promotion_turns
 }
@@ -76,21 +81,22 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
                     turn.promotion = Some(PieceType::Queen);
                 }
 
-                match is_legal_move(position, turn, true) {
+                let full_turn = Turn::Normal(turn);
+                match is_legal_move(position, full_turn, true) {
                     MoveLegality::TemporarelyIllegal => continue,
                     MoveLegality::FullyIllegal => break,
                     MoveLegality::Legal => {
                         if is_pawn && matches!(turn.target.get_row(), Rows::ROW_8 | Rows::ROW_1) {
-                            turns.append(&mut push_turn(turn));
+                            turns.append(&mut create_promotion_turns(turn));
                         } else {
-                            turns.push(turn);
+                            turns.push(full_turn);
                         }
                     }
                     MoveLegality::LastLegal => {
                         if is_pawn && matches!(turn.target.get_row(), Rows::ROW_8 | Rows::ROW_1) {
-                            turns.append(&mut push_turn(turn));
+                            turns.append(&mut create_promotion_turns(turn));
                         } else {
-                            turns.push(turn);
+                            turns.push(full_turn);
                         }
                         break;
                     }
@@ -103,6 +109,19 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
         continue;
     }
 
+    // Check for castling moves
+    let kingside_castle = Turn::Castle(CastleDirection::Kingside);
+    let kingside_castle_legality = is_legal_move(position, kingside_castle, true);
+    if matches!(kingside_castle_legality, MoveLegality::Legal) {
+        turns.push(kingside_castle);
+    }
+
+    let queenside_castle = Turn::Castle(CastleDirection::Queenside);
+    let queenside_castle_legality = is_legal_move(position, queenside_castle, true);
+    if matches!(queenside_castle_legality, MoveLegality::Legal) {
+        turns.push(queenside_castle);
+    }
+
     turns
 }
 
@@ -110,116 +129,108 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
 /// - `turn` - The turn which should be played
 pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Position {
     let mut position = original_position.clone();
-    let from_field = position.get_field_occupation(&turn.origin);
-    let moving_piece = from_field.unwrap();
-    let to_field = position.get_field_occupation(&turn.target);
     let active_color = position.get_active_color();
 
-    // Increase move counter if no piece has been taken and no pawn has been moved
-    if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
-        position.set_halfmove_clock(0);
-    } else {
-        position.set_halfmove_clock(position.get_halfmove_clock() + 1);
-    }
+    match turn {
+        Turn::Castle(castle_direction) => {
+            let (king_ori, king_dest, rook_ori, rook_dest) = match castle_direction {
+                CastleDirection::Kingside => match active_color {
+                    PlayerColor::Black => (FIELD_E8, FIELD_G8, FIELD_H8, FIELD_F8),
+                    PlayerColor::White => (FIELD_E1, FIELD_G1, FIELD_H1, FIELD_F1),
+                },
+                CastleDirection::Queenside => match active_color {
+                    PlayerColor::Black => (FIELD_E8, FIELD_C8, FIELD_A8, FIELD_D8),
+                    PlayerColor::White => (FIELD_E1, FIELD_C1, FIELD_A1, FIELD_D1),
+                },
+            };
 
-    // Move the piece
-    position.set_field_occupation(&turn.target, Some(moving_piece));
-    position.set_field_occupation(&turn.origin, None);
+            let king = position.get_field_occupation(&king_ori);
+            position.set_field_occupation(&king_dest, king);
+            position.set_field_occupation(&king_ori, None);
+            let rook = position.get_field_occupation(&rook_ori);
+            position.set_field_occupation(&rook_dest, rook);
+            position.set_field_occupation(&rook_ori, None);
 
-    if PieceType::King == moving_piece.get_type() {
-        match moving_piece.get_color() {
-            PlayerColor::Black => {
-                if turn.origin == FIELD_E8 {
-                    if turn.target == FIELD_C8 {
-                        position.set_field_occupation(
-                            &FIELD_D8,
-                            position.get_field_occupation(&FIELD_A8),
-                        );
-                        position.set_field_occupation(&FIELD_A8, None);
-                    } else if turn.target == FIELD_G8 {
-                        position.set_field_occupation(
-                            &FIELD_F8,
-                            position.get_field_occupation(&FIELD_H8),
-                        );
-                        position.set_field_occupation(&FIELD_H8, None);
+            position.set_castling_rights(active_color, CastlingRights::new(false, false));
+
+            position.set_halfmove_clock(position.get_halfmove_clock() + 1);
+            position.set_en_passant(None);
+        }
+        Turn::Normal(normal_turn) => {
+            let from_field = position.get_field_occupation(&normal_turn.origin);
+            let moving_piece = from_field.unwrap();
+            let to_field = position.get_field_occupation(&normal_turn.target);
+
+            // Increase move counter if no piece has been taken and no pawn has been moved
+            if moving_piece.get_type() == PieceType::Pawn || to_field.is_some() {
+                position.set_halfmove_clock(0);
+            } else {
+                position.set_halfmove_clock(position.get_halfmove_clock() + 1);
+            }
+
+            // Move the piece
+            position.set_field_occupation(&normal_turn.target, Some(moving_piece));
+            position.set_field_occupation(&normal_turn.origin, None);
+
+            if PieceType::King == moving_piece.get_type() {
+                position.set_castling_rights(active_color, CastlingRights::new(false, false));
+            } else if PieceType::Rook == moving_piece.get_type() {
+                // Remove castling rights if the rook moves
+                match moving_piece.get_color() {
+                    PlayerColor::Black => {
+                        let mut castling_rights = position.get_castling_rights(active_color);
+                        if normal_turn.origin == FIELD_A8 {
+                            castling_rights.set(CastleDirection::Queenside, false);
+                            position.set_castling_rights(active_color, castling_rights);
+                        } else if normal_turn.origin == FIELD_H8 {
+                            castling_rights.set(CastleDirection::Kingside, false);
+                            position.set_castling_rights(active_color, castling_rights);
+                        }
+                    }
+                    PlayerColor::White => {
+                        let mut castling_rights = position.get_castling_rights(active_color);
+                        if normal_turn.origin == FIELD_A1 {
+                            castling_rights.set(CastleDirection::Queenside, false);
+                            position.set_castling_rights(active_color, castling_rights);
+                        } else if normal_turn.origin == FIELD_H1 {
+                            castling_rights.set(CastleDirection::Kingside, false);
+                            position.set_castling_rights(active_color, castling_rights);
+                        }
                     }
                 }
-                position.set_castling_rights(PlayerColor::Black, CastlingRights::new(false, false));
+            } else if PieceType::Pawn == moving_piece.get_type()
+                && matches!(normal_turn.target.get_row(), Rows::ROW_1 | Rows::ROW_8)
+            {
+                // Promote if possible
+                position.set_field_occupation(
+                    &normal_turn.target,
+                    Some(Piece::new(normal_turn.promotion.unwrap(), active_color)),
+                );
             }
-            PlayerColor::White => {
-                if turn.origin == FIELD_E1 {
-                    if turn.target == FIELD_C1 {
-                        position.set_field_occupation(
-                            &FIELD_D1,
-                            position.get_field_occupation(&FIELD_A1),
-                        );
-                        position.set_field_occupation(&FIELD_A1, None);
-                    } else if turn.target == FIELD_G1 {
-                        position.set_field_occupation(
-                            &FIELD_F1,
-                            position.get_field_occupation(&FIELD_H1),
-                        );
-                        position.set_field_occupation(&FIELD_H1, None);
-                    }
-                }
-                position.set_castling_rights(PlayerColor::White, CastlingRights::new(false, false));
-            }
-        }
-    }
 
-    // Remove castling rights if the rook moves
-    if PieceType::Rook == moving_piece.get_type() {
-        match moving_piece.get_color() {
-            PlayerColor::Black => {
-                let mut castling_rights = position.get_castling_rights(PlayerColor::Black);
-                if turn.origin == FIELD_A8 {
-                    castling_rights.set_queenside(false);
-                    position.set_castling_rights(PlayerColor::Black, castling_rights);
-                } else if turn.origin == FIELD_H8 {
-                    castling_rights.set_kingside(false);
-                    position.set_castling_rights(PlayerColor::Black, castling_rights);
-                }
+            // Remove piece taken with en passant
+            if let Some(field) = position.get_en_passant()
+                && normal_turn.target.get_column() == field.get_column()
+                && normal_turn.origin.get_row() == field.get_row()
+            {
+                position.set_field_occupation(&field, None);
+                position.set_halfmove_clock(0);
             }
-            PlayerColor::White => {
-                let mut castling_rights = position.get_castling_rights(PlayerColor::White);
-                if turn.origin == FIELD_A1 {
-                    castling_rights.set_queenside(false);
-                    position.set_castling_rights(PlayerColor::White, castling_rights);
-                } else if turn.origin == FIELD_H1 {
-                    castling_rights.set_kingside(false);
-                    position.set_castling_rights(PlayerColor::White, castling_rights);
-                }
+
+            // Update en passant field
+            if PieceType::Pawn == moving_piece.get_type()
+                && normal_turn
+                    .origin
+                    .get_row()
+                    .abs_diff(normal_turn.target.get_row())
+                    == 2
+            {
+                position.set_en_passant(Some(normal_turn.target));
+            } else {
+                position.set_en_passant(None);
             }
         }
-    }
-
-    // Promote if possible
-    if PieceType::Pawn == moving_piece.get_type()
-        && matches!(turn.target.get_row(), Rows::ROW_1 | Rows::ROW_8)
-    {
-        position.set_field_occupation(
-            &turn.target,
-            Some(Piece::new(turn.promotion.unwrap(), active_color)),
-        );
-    }
-
-    // Remove piece taken with en passant
-    if let Some(field) = position.get_en_passant()
-        && turn.target.get_column() == field.get_column()
-        && turn.origin.get_row() == field.get_row()
-    {
-        position.set_field_occupation(&field, None);
-        position.set_halfmove_clock(0);
-    }
-
-    // Update en passant field
-    if PieceType::Pawn == moving_piece.get_type()
-        && turn.origin.get_row().abs_diff(turn.target.get_row()) == 2
-    {
-        position.set_en_passant(Some(turn.target));
-    } else {
-        position.set_en_passant(None);
-    }
+    };
 
     // Raise fullmove counter
     if active_color == PlayerColor::Black {
@@ -236,29 +247,41 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
 /// - `player_color` - The player that performs the turn
 /// - `returns` - Returns whether the turn is legal
 fn is_legal_move(position: &Position, turn: Turn, check_for_check: bool) -> MoveLegality {
-    let Some(moving_piece) = position.get_field_occupation(&turn.origin) else {
+    let origin_field = match turn {
+        Turn::Normal(normal_turn) => normal_turn.origin,
+        Turn::Castle(_) => match active_color {
+            PlayerColor::Black => FIELD_E8,
+            PlayerColor::White => FIELD_E1,
+        },
+    };
+
+    let Some(moving_piece) = position.get_field_occupation(&origin_field) else {
         return MoveLegality::FullyIllegal;
     };
 
     let active_color = moving_piece.get_color();
 
-    // Check if move is capture and whether it captures an enemy piece
-    let is_capture = match position.get_field_occupation(&turn.target) {
-        Some(piece) => {
-            if piece.get_color() == active_color {
-                return MoveLegality::FullyIllegal;
-            }
+    // Check whether the move is a capture
+    let mut is_capture = false;
+    let mut legality_state = MoveLegality::Legal;
 
-            true
+    match turn {
+        Turn::Castle(direction) => {
+            legality_state = is_castle_legal(position, direction, active_color)
         }
-        None => false,
-    };
-
-    let legality_state = match moving_piece.get_type() {
-        PieceType::Pawn => is_pawn_move_legal(position, turn, active_color, is_capture),
-        PieceType::King => is_king_move_legal(position, turn, active_color),
-        _ => MoveLegality::Legal,
-    };
+        Turn::Normal(normal_turn) => {
+            let poss_target_occupation = position.get_field_occupation(&normal_turn.target);
+            if let Some(target_occupation) = poss_target_occupation {
+                if target_occupation.get_color() == active_color {
+                    return MoveLegality::FullyIllegal;
+                }
+                is_capture = true;
+            }
+            if matches!(moving_piece.get_type(), PieceType::Pawn) {
+                legality_state = is_pawn_move_legal(position, normal_turn, active_color, is_capture)
+            }
+        }
+    }
 
     if matches!(
         legality_state,
@@ -281,77 +304,36 @@ fn is_legal_move(position: &Position, turn: Turn, check_for_check: bool) -> Move
     MoveLegality::Legal
 }
 
-/// Checks whether a given king move is legal.
-/// - `turn` - The turn played by the king
+/// Checks whether the fields used for castling fullfill the necessary conditions for a legal castle move.
+/// - `position` - The current position
+/// - `direction` - The direction in which to castle
 /// - `active_color` - The currently active color
 /// - `returns` - Whether or not the move is legal
-fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor) -> MoveLegality {
-    let step = turn.target.get_column() as i8 - turn.origin.get_column() as i8;
-    if step == 2 {
-        if turn.origin.get_row() == Rows::ROW_8
-            && active_color == PlayerColor::Black
-            && position
-                .get_castling_rights(PlayerColor::Black)
-                .get_kingside()
-        {
-            if is_castle_illegal(
-                position,
-                &CASTLE_BK_BLOCKED,
-                CASTLE_BK_CHECKED,
-                active_color,
-            ) {
-                return MoveLegality::FullyIllegal;
-            }
-        } else if turn.origin.get_row() == Rows::ROW_1
-            && active_color == PlayerColor::White
-            && position
-                .get_castling_rights(PlayerColor::White)
-                .get_kingside()
-        {
-            if is_castle_illegal(
-                position,
-                &CASTLE_WK_BLOCKED,
-                CASTLE_WK_CHECKED,
-                active_color,
-            ) {
-                return MoveLegality::FullyIllegal;
-            }
-        } else {
-            return MoveLegality::FullyIllegal;
-        }
-    } else if step == -2 {
-        if turn.origin.get_row() == Rows::ROW_8
-            && active_color == PlayerColor::Black
-            && position
-                .get_castling_rights(PlayerColor::Black)
-                .get_queenside()
-        {
-            if is_castle_illegal(
-                position,
-                &CASTLE_BQ_BLOCKED,
-                CASTLE_BQ_CHECKED,
-                active_color,
-            ) {
-                return MoveLegality::FullyIllegal;
-            }
-        } else if turn.origin.get_row() == Rows::ROW_1
-            && active_color == PlayerColor::White
-            && position
-                .get_castling_rights(PlayerColor::White)
-                .get_queenside()
-        {
-            if is_castle_illegal(
-                position,
-                &CASTLE_WQ_BLOCKED,
-                CASTLE_WQ_CHECKED,
-                active_color,
-            ) {
-                return MoveLegality::FullyIllegal;
-            }
-        } else {
-            return MoveLegality::FullyIllegal;
-        }
+fn is_castle_legal(
+    position: &Position,
+    direction: CastleDirection,
+    active_color: PlayerColor,
+) -> MoveLegality {
+    let relevant_fields: (&[Field], [Field; 3]) = match active_color {
+        PlayerColor::Black => match direction {
+            CastleDirection::Kingside => (&CASTLE_BK_BLOCKED, CASTLE_BK_CHECKED),
+            CastleDirection::Queenside => (&CASTLE_BQ_BLOCKED, CASTLE_BQ_CHECKED),
+        },
+        PlayerColor::White => match direction {
+            CastleDirection::Kingside => (&CASTLE_WK_BLOCKED, CASTLE_WK_CHECKED),
+            CastleDirection::Queenside => (&CASTLE_WQ_BLOCKED, CASTLE_WQ_CHECKED),
+        },
+    };
+
+    if !position.get_castling_rights(active_color).get(direction) {
+        return MoveLegality::FullyIllegal;
     }
+
+    let (blocked_fields, checked_fields) = relevant_fields;
+    if is_castle_illegal(position, blocked_fields, checked_fields, active_color) {
+        return MoveLegality::FullyIllegal;
+    }
+
     MoveLegality::Legal
 }
 
@@ -362,7 +344,7 @@ fn is_king_move_legal(position: &Position, turn: Turn, active_color: PlayerColor
 /// - `returns` - Whether the move is deemed to be legal or not
 fn is_pawn_move_legal(
     position: &Position,
-    turn: Turn,
+    turn: NormalTurn,
     active_color: PlayerColor,
     is_capture: bool,
 ) -> MoveLegality {
@@ -440,7 +422,7 @@ pub(super) fn is_in_check(position: &Position, player_color: PlayerColor) -> boo
             loop {
                 while let Some(turn) = piece_iterator.current() {
                     // Handling of the next loops
-                    match is_legal_move(position, turn, false) {
+                    match is_legal_move(position, Turn::Normal(turn), false) {
                         MoveLegality::Legal => {
                             if position.get_field_occupation(&turn.target).is_none() {
                                 continue;
@@ -449,7 +431,7 @@ pub(super) fn is_in_check(position: &Position, player_color: PlayerColor) -> boo
                         }
                         MoveLegality::LastLegal => {
                             if let Some(target_piece) = position.get_field_occupation(&turn.target)
-                                && PieceType::King == target_piece.get_type()
+                                && PieceType::King == target_piece.get_type() && target_piece.get_color() == player_color
                             {
                                 return true;
                             }
@@ -468,7 +450,7 @@ pub(super) fn is_in_check(position: &Position, player_color: PlayerColor) -> boo
     false
 }
 
-/// Checks whether the given fields are under attack by the enemie color
+/// Checks whether the given fields are under attack by the enemy color
 /// - `player_color` - The color at turn
 /// - `fields` - The fields to check for being attacked
 /// - `returns` - Whether one of the fields is being attacked
@@ -491,15 +473,15 @@ fn fields_under_attack(position: &Position, player_color: PlayerColor, fields: [
                     }
 
                     // Handling of the next loops
-                    match is_legal_move(position, turn, false) {
+                    match is_legal_move(position, Turn::Normal(turn), false) {
                         MoveLegality::Legal => {
-                            if fields.contains(&field) {
+                            if fields.contains(&turn.target) {
                                 return true;
                             }
                             continue;
                         }
                         MoveLegality::LastLegal => {
-                            if fields.contains(&field) {
+                            if fields.contains(&turn.target) {
                                 return true;
                             }
                             break;

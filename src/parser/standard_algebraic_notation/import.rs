@@ -1,7 +1,6 @@
 use crate::{
-    CLASSIC_RULESET, Columns,
-    Fields::{FIELD_A1, FIELD_E1},
-    PieceType, PlayerColor, Position, Rows, Ruleset, Turn,
+    CLASSIC_RULESET, PieceType, Position, Ruleset, Turn,
+    chess::turn::{CastleDirection, NormalTurn},
     parser::standard_algebraic_notation::san_turn::{
         SanTurn, san_castle_direction::SanCastleDirection, san_origin_field::SanOriginField,
         san_pawn_move::SanPawnMove, san_piece_move::SanPieceMove,
@@ -58,31 +57,41 @@ impl San {
         ruleset: &Ruleset,
     ) -> Option<Turn> {
         let possible_moves = ruleset.get_possible_turns(position);
+        let possible_moves: Vec<NormalTurn> = possible_moves
+            .into_iter()
+            .filter_map(|turn| match turn {
+                Turn::Normal(normal_turn) => Some(normal_turn),
+                Turn::Castle(_) => None,
+            })
+            .collect();
 
-        possible_moves.into_iter().find(|&turn| {
-            if piece_move.target_field != turn.target {
-                return false;
-            }
+        possible_moves
+            .into_iter()
+            .find(|&turn| {
+                if piece_move.target_field != turn.target {
+                    return false;
+                }
 
-            if position
-                .get_field_occupation(&turn.origin)
-                .unwrap()
-                .get_type()
-                != piece_move.piece_type
-            {
-                return false;
-            }
+                if position
+                    .get_field_occupation(&turn.origin)
+                    .unwrap()
+                    .get_type()
+                    != piece_move.piece_type
+                {
+                    return false;
+                }
 
-            let Some(origin) = piece_move.origin_field.as_ref() else {
-                return true;
-            };
+                let Some(origin) = piece_move.origin_field.as_ref() else {
+                    return true;
+                };
 
-            match origin {
-                SanOriginField::Field(origin) => turn.origin == *origin,
-                SanOriginField::Column(column) => turn.origin.get_column() == *column,
-                SanOriginField::Row(row) => turn.origin.get_row() == *row,
-            }
-        })
+                match origin {
+                    SanOriginField::Field(origin) => turn.origin == *origin,
+                    SanOriginField::Column(column) => turn.origin.get_column() == *column,
+                    SanOriginField::Row(row) => turn.origin.get_row() == *row,
+                }
+            })
+            .map(Turn::Normal)
     }
 
     /// Tries to convert a `SanCastleDirection` into an actual `Turn` object that is playable in the given `position`.
@@ -90,31 +99,20 @@ impl San {
     /// - `position` The chess position the chess move was played in.
     /// - `ruleset` The chess ruleset used in the game the move was played in.
     fn handle_castling(
-        castle_direction: &SanCastleDirection,
+        san_castle_direction: &SanCastleDirection,
         position: &Position,
         ruleset: &Ruleset,
     ) -> Option<Turn> {
         let possible_moves = ruleset.get_possible_turns(position);
-        let player_color = position.get_active_color();
 
-        // Initiate with row for white
-        let mut target_field = FIELD_A1;
-        let mut starting_field = FIELD_E1;
-
-        // Change row if color is black
-        if player_color == PlayerColor::Black {
-            starting_field.set_row(Rows::ROW_8);
-            target_field.set_row(Rows::ROW_8);
-        }
-
-        match castle_direction {
-            SanCastleDirection::Kingside => target_field.set_column(Columns::COLUMN_G),
-            SanCastleDirection::Queenside => target_field.set_column(Columns::COLUMN_C),
-        }
+        let castle_direction = match san_castle_direction {
+            SanCastleDirection::Kingside => CastleDirection::Kingside,
+            SanCastleDirection::Queenside => CastleDirection::Queenside,
+        };
 
         possible_moves
             .into_iter()
-            .find(|&turn| turn.target == target_field && turn.origin == starting_field)
+            .find(|&turn| turn == Turn::Castle(castle_direction))
     }
 
     /// Tries to convert a `SanPawnMove` into an actual `Turn` object that is playable in the given `position`.
@@ -126,7 +124,14 @@ impl San {
         position: &Position,
         ruleset: &Ruleset,
     ) -> Option<Turn> {
-        let mut possible_moves = ruleset.get_possible_turns(position);
+        let possible_moves = ruleset.get_possible_turns(position);
+        let mut possible_moves: Vec<NormalTurn> = possible_moves
+            .into_iter()
+            .filter_map(|turn| match turn {
+                Turn::Normal(normal_turn) => Some(normal_turn),
+                Turn::Castle(_) => None,
+            })
+            .collect();
 
         possible_moves.retain(|turn| {
             pawn_move.target_field == turn.target
@@ -139,7 +144,7 @@ impl San {
         });
 
         let Some(san_origin_field) = pawn_move.origin_field.as_ref() else {
-            return Some(*possible_moves.first()?);
+            return Some(Turn::Normal(*possible_moves.first()?));
         };
 
         possible_moves
@@ -149,5 +154,6 @@ impl San {
                 SanOriginField::Column(column) => turn.origin.get_column() == *column,
                 SanOriginField::Row(row) => turn.origin.get_row() == *row,
             })
+            .map(Turn::Normal)
     }
 }

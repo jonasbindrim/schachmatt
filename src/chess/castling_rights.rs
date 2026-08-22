@@ -1,3 +1,5 @@
+use crate::chess::turn::CastleDirection;
+
 /// Stores information on whether a player is allowed to castle kingside or queenside.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct CastlingRights {
@@ -14,23 +16,19 @@ impl CastlingRights {
         }
     }
 
-    /// Sets the queenside castling right.
-    pub fn set_queenside(&mut self, can_castle: bool) {
-        self.queenside = can_castle;
+    /// Sets the castling rights for the given direction.
+    pub fn set(&mut self, direction: CastleDirection, can_castle: bool) {
+        match direction {
+            CastleDirection::Kingside => self.kingside = can_castle,
+            CastleDirection::Queenside => self.queenside = can_castle,
+        };
     }
 
-    /// Sets the kingside castling right.
-    pub fn set_kingside(&mut self, can_castle: bool) {
-        self.kingside = can_castle;
-    }
-
-    /// Get the queenside castling right.
-    pub fn get_queenside(&self) -> bool {
-        self.queenside
-    }
-
-    /// Get the kingside castling right.
-    pub fn get_kingside(&self) -> bool {
-        self.kingside
+    /// Get the castling rights for the given direction.
+    pub fn get(&self, direction: CastleDirection) -> bool {
+        match direction {
+            CastleDirection::Kingside => self.kingside,
+            CastleDirection::Queenside => self.queenside,
+        }
     }
 }
