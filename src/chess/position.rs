@@ -148,7 +148,7 @@ impl Position {
     pub fn turn(&self, ruleset: &Ruleset, turn: &Turn) -> Result<Position, PositionError> {
         let possible_moves = self.get_possible_turns(ruleset);
         if !possible_moves.contains(turn) {
-            return Err(PositionError::IllegalTurnError(Lan::export(turn)));
+            return Err(PositionError::IllegalTurnError(Lan::export(turn, self)));
         }
 
         Ok(ruleset.execute_turn(self, turn))
