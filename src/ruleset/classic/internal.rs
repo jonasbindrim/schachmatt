@@ -82,7 +82,7 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
                 }
 
                 let full_turn = Turn::Normal(turn);
-                match is_legal_move(position, full_turn, true) {
+                match is_legal_move(position, full_turn, position.get_active_color(), true) {
                     MoveLegality::TemporarelyIllegal => continue,
                     MoveLegality::FullyIllegal => break,
                     MoveLegality::Legal => {
@@ -111,13 +111,19 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
 
     // Check for castling moves
     let kingside_castle = Turn::Castle(CastleDirection::Kingside);
-    let kingside_castle_legality = is_legal_move(position, kingside_castle, true);
+    let kingside_castle_legality =
+        is_legal_move(position, kingside_castle, position.get_active_color(), true);
     if matches!(kingside_castle_legality, MoveLegality::Legal) {
         turns.push(kingside_castle);
     }
 
     let queenside_castle = Turn::Castle(CastleDirection::Queenside);
-    let queenside_castle_legality = is_legal_move(position, queenside_castle, true);
+    let queenside_castle_legality = is_legal_move(
+        position,
+        queenside_castle,
+        position.get_active_color(),
+        true,
+    );
     if matches!(queenside_castle_legality, MoveLegality::Legal) {
         turns.push(queenside_castle);
     }
@@ -246,7 +252,12 @@ pub(super) fn internal_turn(original_position: &Position, turn: &Turn) -> Positi
 /// - `turn` - The turn which is checked
 /// - `player_color` - The player that performs the turn
 /// - `returns` - Returns whether the turn is legal
-fn is_legal_move(position: &Position, turn: Turn, check_for_check: bool) -> MoveLegality {
+fn is_legal_move(
+    position: &Position,
+    turn: Turn,
+    active_color: PlayerColor,
+    check_for_check: bool,
+) -> MoveLegality {
     let origin_field = match turn {
         Turn::Normal(normal_turn) => normal_turn.origin,
         Turn::Castle(_) => match active_color {
@@ -422,7 +433,8 @@ pub(super) fn is_in_check(position: &Position, player_color: PlayerColor) -> boo
             loop {
                 while let Some(turn) = piece_iterator.current() {
                     // Handling of the next loops
-                    match is_legal_move(position, Turn::Normal(turn), false) {
+                    match is_legal_move(position, Turn::Normal(turn), player_color.reverse(), false)
+                    {
                         MoveLegality::Legal => {
                             if position.get_field_occupation(&turn.target).is_none() {
                                 continue;
@@ -431,7 +443,8 @@ pub(super) fn is_in_check(position: &Position, player_color: PlayerColor) -> boo
                         }
                         MoveLegality::LastLegal => {
                             if let Some(target_piece) = position.get_field_occupation(&turn.target)
-                                && PieceType::King == target_piece.get_type() && target_piece.get_color() == player_color
+                                && PieceType::King == target_piece.get_type()
+                                && target_piece.get_color() == player_color
                             {
                                 return true;
                             }
@@ -465,15 +478,9 @@ fn fields_under_attack(position: &Position, player_color: PlayerColor, fields: [
 
             loop {
                 while let Some(turn) = piece_iterator.current() {
-                    // Dont check castling options
-                    if PieceType::King == piece.get_type()
-                        && turn.origin.get_column().abs_diff(turn.target.get_column()) == 2
-                    {
-                        continue;
-                    }
-
                     // Handling of the next loops
-                    match is_legal_move(position, Turn::Normal(turn), false) {
+                    match is_legal_move(position, Turn::Normal(turn), player_color.reverse(), false)
+                    {
                         MoveLegality::Legal => {
                             if fields.contains(&turn.target) {
                                 return true;

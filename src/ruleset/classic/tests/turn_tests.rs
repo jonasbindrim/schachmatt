@@ -1,7 +1,12 @@
 #[cfg(test)]
 mod tests {
 
-    use crate::{CLASSIC_RULESET, Fen, Fields::*, PieceType, Turn, chess::turn::{CastleDirection, NormalTurn}};
+    use crate::{
+        CLASSIC_RULESET, Fen,
+        Fields::*,
+        PieceType, Turn,
+        chess::turn::{CastleDirection, NormalTurn},
+    };
 
     #[test]
     fn en_passant_test1() {
@@ -46,10 +51,8 @@ mod tests {
     #[test]
     fn castling_test_1() {
         let original_position = Fen::import("8/8/8/8/8/8/8/4K2R w K - 0 1").unwrap();
-        let position = CLASSIC_RULESET.execute_turn(
-            &original_position,
-            &Turn::Castle(CastleDirection::Kingside),
-        );
+        let position = CLASSIC_RULESET
+            .execute_turn(&original_position, &Turn::Castle(CastleDirection::Kingside));
         assert!(Fen::export(&position) == "8/8/8/8/8/8/8/5RK1 b - - 1 1");
     }
 
@@ -66,10 +69,8 @@ mod tests {
     #[test]
     fn castling_test_3() {
         let original_position = Fen::import("4k2r/8/8/8/8/8/8/8 b k - 0 1").unwrap();
-        let position = CLASSIC_RULESET.execute_turn(
-            &original_position,
-            &Turn::Castle(CastleDirection::Kingside),
-        );
+        let position = CLASSIC_RULESET
+            .execute_turn(&original_position, &Turn::Castle(CastleDirection::Kingside));
         assert!(Fen::export(&position) == "5rk1/8/8/8/8/8/8/8 w - - 1 2");
     }
 

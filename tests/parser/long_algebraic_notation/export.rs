@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod long_algebraic_notation_export_tests {
-    use schachmatt::{Fields::*, Lan, NormalTurn, PieceType, Turn};
+    use schachmatt::{CastleDirection, Fields::*, Lan, NormalTurn, PieceType, Turn};
 
     #[test]
     pub fn export_lan_pawn_push() {
@@ -34,13 +34,13 @@ mod long_algebraic_notation_export_tests {
 
     #[test]
     pub fn export_lan_castle_white_king() {
-        let test_turn = Turn::Normal(NormalTurn::new(FIELD_E1, FIELD_G1, None));
+        let test_turn = Turn::Castle(CastleDirection::Kingside);
         assert_eq!(Lan::export(&test_turn), "O-O");
     }
 
     #[test]
     pub fn export_lan_castle_black_queen() {
-        let test_turn = Turn::Normal(NormalTurn::new(FIELD_E8, FIELD_C8, None));
+        let test_turn = Turn::Castle(CastleDirection::Queenside);
         assert_eq!(Lan::export(&test_turn), "O-O-O");
     }
 

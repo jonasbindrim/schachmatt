@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod standard_algebraic_notation_export_tests {
-    use schachmatt::{Fen, Fields::*, NormalTurn, PieceType, San, Turn};
+    use schachmatt::{CastleDirection, Fen, Fields::*, NormalTurn, PieceType, San, Turn};
 
     #[test]
     pub fn export_san_pawn_push() {
@@ -40,14 +40,14 @@ mod standard_algebraic_notation_export_tests {
 
     #[test]
     pub fn export_san_castle_white_king() {
-        let test_turn = Turn::Normal(NormalTurn::new(FIELD_E1, FIELD_G1, None));
+        let test_turn = Turn::Castle(CastleDirection::Kingside);
         let test_position = Fen::import("4k3/p7/8/8/8/8/7P/4K2R w K - 0 1").unwrap();
         assert_eq!(San::export(&test_turn, &test_position), "O-O");
     }
 
     #[test]
     pub fn export_san_castle_black_queen() {
-        let test_turn = Turn::Normal(NormalTurn::new(FIELD_E8, FIELD_C8, None));
+        let test_turn = Turn::Castle(CastleDirection::Queenside);
         let test_position = Fen::import("r3k3/8/8/8/8/8/8/R3K3 b q - 0 1").unwrap();
         assert_eq!(San::export(&test_turn, &test_position), "O-O-O");
     }

@@ -20,6 +20,7 @@ pub use crate::chess::piece_type::PieceType;
 pub use crate::chess::player_color::PlayerColor;
 pub use crate::chess::position::Position;
 pub use crate::chess::position::PositionError;
+pub use crate::chess::turn::CastleDirection;
 pub use crate::chess::turn::NormalTurn;
 pub use crate::chess::turn::Turn;
 
