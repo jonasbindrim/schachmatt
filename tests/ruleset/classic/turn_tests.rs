@@ -1,11 +1,7 @@
 #[cfg(test)]
 mod tests {
-
-    use crate::{
-        CLASSIC_RULESET, Fen,
-        Fields::*,
-        PieceType, Turn,
-        chess::turn::{CastleDirection, NormalTurn},
+    use schachmatt::{
+        CLASSIC_RULESET, CastleDirection, Fen, Fields::*, NormalTurn, PieceType, Turn,
     };
 
     #[test]

@@ -1,14 +1,13 @@
 #[cfg(test)]
 mod tests {
-    use crate::{
+    use schachmatt::{
         CLASSIC_RULESET,
         Columns::{self, COLUMN_AMOUNT},
         Fen, Field,
         Fields::*,
-        PieceType,
+        NormalTurn, PieceType,
         Rows::{self, ROW_AMOUNT},
         Turn,
-        chess::turn::NormalTurn,
     };
 
     /// Tests the possible moves of the king
@@ -32,9 +31,9 @@ mod tests {
         }
     }
 
-    /// Tests the possible moves of the queen
+    /// Tests the possible horizontal moves of the queen
     #[test]
-    fn queen_test() {
+    fn queen_horizontal_test() {
         let position = Fen::import("8/8/8/8/8/8/3Q4/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 23);
@@ -43,86 +42,185 @@ mod tests {
         while column < COLUMN_AMOUNT as u8 {
             let test_turn =
                 NormalTurn::new(FIELD_D2, Field::new(column, Rows::ROW_2).unwrap(), None);
-            if test_turn.origin != test_turn.target {
-                assert!(possible_moves.contains(&Turn::Normal(test_turn)));
-            }
+            let should_contain = column != Columns::COLUMN_D;
+            assert_eq!(
+                possible_moves.contains(&Turn::Normal(test_turn)),
+                should_contain
+            );
             column += 1;
         }
+    }
+
+    /// Tests the possible vertical moves of the queen
+    #[test]
+    fn queen_vertical_test() {
+        let position = Fen::import("8/8/8/8/8/8/3Q4/8 w - - 0 1").unwrap();
+        let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
+        assert!(possible_moves.len() == 23);
+
         let mut row = Rows::ROW_1;
         while row < ROW_AMOUNT as u8 {
             let test_turn =
                 NormalTurn::new(FIELD_D2, Field::new(Columns::COLUMN_D, row).unwrap(), None);
-            if test_turn.origin != test_turn.target {
-                assert!(possible_moves.contains(&Turn::Normal(test_turn)));
-            }
+            let should_contain = row != Rows::ROW_2;
+            assert_eq!(
+                possible_moves.contains(&Turn::Normal(test_turn)),
+                should_contain
+            );
             row += 1;
         }
-        let mut lower_right_counter = -1;
+    }
+
+    /// Tests the possible diagonal moves of the queen
+    #[test]
+    fn queen_diagonal_bottom_left_to_top_right_test() {
+        let position = Fen::import("8/8/8/8/8/8/3Q4/8 w - - 0 1").unwrap();
+        let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
+        assert!(possible_moves.len() == 23);
+
+        let mut lower_right_counter: i8 = -1;
         while lower_right_counter < 5 {
+            let (target_column, target_row) = (
+                (3 + lower_right_counter) as u8,
+                (1 + lower_right_counter) as u8,
+            );
             let test_turn = NormalTurn::new(
                 FIELD_D2,
-                Field::new_from_usize(
-                    (3 + lower_right_counter) as usize,
-                    (1 + lower_right_counter) as usize,
-                )
-                .unwrap(),
+                Field::new(target_column, target_row).unwrap(),
                 None,
             );
-            if test_turn.origin != test_turn.target {
-                assert!(possible_moves.contains(&Turn::Normal(test_turn)));
-            }
+            let should_contain = target_row != Rows::ROW_2 || target_column != Columns::COLUMN_D;
+            assert_eq!(
+                possible_moves.contains(&Turn::Normal(test_turn)),
+                should_contain
+            );
             lower_right_counter += 1;
         }
+    }
 
-        let mut lower_left_counter = -3;
+    /// Tests the possible diagonal moves of the queen
+    #[test]
+    fn queen_diagonal_top_left_to_bottom_right_test() {
+        let position = Fen::import("8/8/8/8/8/8/3Q4/8 w - - 0 1").unwrap();
+        let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
+        assert!(possible_moves.len() == 23);
+
+        let mut lower_left_counter: i8 = -3;
         while lower_left_counter < 2 {
+            let (target_column, target_row) = (
+                (3 + lower_left_counter) as u8,
+                (1 - lower_left_counter) as u8,
+            );
             let test_turn = NormalTurn::new(
                 FIELD_D2,
-                Field::new_from_usize(
-                    (3 + lower_left_counter) as usize,
-                    (1 - lower_left_counter) as usize,
-                )
-                .unwrap(),
+                Field::new(target_column, target_row).unwrap(),
                 None,
             );
-            if test_turn.origin != test_turn.target {
-                assert!(possible_moves.contains(&Turn::Normal(test_turn)));
-            }
+            let should_contain = target_row != Rows::ROW_2 || target_column != Columns::COLUMN_D;
+            assert_eq!(
+                possible_moves.contains(&Turn::Normal(test_turn)),
+                should_contain
+            );
             lower_left_counter += 1;
         }
     }
 
-    /// Tests the possible moves of the rook
+    /// Test the possible vertical moves of the rook
     #[test]
-    fn rook_test() {
+    fn rook_vertical_test() {
         let position = Fen::import("8/8/8/8/8/8/3R4/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         assert!(possible_moves.len() == 14);
-        // Test horizontally
         let mut column = Columns::COLUMN_A;
         while column < COLUMN_AMOUNT as u8 {
             let test_turn =
                 NormalTurn::new(FIELD_D2, Field::new(column, Rows::ROW_2).unwrap(), None);
-            if test_turn.origin != test_turn.target {
-                assert!(possible_moves.contains(&Turn::Normal(test_turn)));
-            }
+            let should_contain = column != Columns::COLUMN_D;
+            assert_eq!(
+                possible_moves.contains(&Turn::Normal(test_turn)),
+                should_contain
+            );
             column += 1;
         }
+    }
+
+    /// Tests the possible horizontal moves of the rook
+    #[test]
+    fn rook_horizontal_test() {
+        let position = Fen::import("8/8/8/8/8/8/3R4/8 w - - 0 1").unwrap();
+        let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
+        assert!(possible_moves.len() == 14);
         let mut row = Rows::ROW_1;
         while row < ROW_AMOUNT as u8 {
             let test_turn =
                 NormalTurn::new(FIELD_D2, Field::new(Columns::COLUMN_D, row).unwrap(), None);
-            if test_turn.origin != test_turn.target {
-                assert!(possible_moves.contains(&Turn::Normal(test_turn)));
-            }
+            let should_contain = row != Rows::ROW_2;
+            assert_eq!(
+                possible_moves.contains(&Turn::Normal(test_turn)),
+                should_contain
+            );
             row += 1;
+        }
+    }
+
+    /// Tests the possible moves of the bishop
+    #[test]
+    fn bishop_bottom_left_to_top_right_test() {
+        let position = Fen::import("8/8/8/8/8/8/3B4/8 w - - 0 1").unwrap();
+        let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
+        assert!(possible_moves.len() == 9);
+
+        let mut lowleft_to_topright_counter: i8 = -1;
+        while lowleft_to_topright_counter < 5 {
+            let (target_column, target_row) = (
+                (3 + lowleft_to_topright_counter) as u8,
+                (1 + lowleft_to_topright_counter) as u8,
+            );
+            let test_turn = NormalTurn::new(
+                FIELD_D2,
+                Field::new(target_column, target_row).unwrap(),
+                None,
+            );
+            let should_contain = target_row != Rows::ROW_2 || target_column != Columns::COLUMN_D;
+            assert_eq!(
+                possible_moves.contains(&Turn::Normal(test_turn)),
+                should_contain
+            );
+            lowleft_to_topright_counter += 1;
+        }
+    }
+
+    /// Tests the possible moves of the bishop
+    #[test]
+    fn bishop_top_right_to_bottom_left_test() {
+        let position = Fen::import("8/8/8/8/8/8/3B4/8 w - - 0 1").unwrap();
+        let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
+        assert!(possible_moves.len() == 9);
+
+        let mut lowright_to_topleft_counter: i8 = -3;
+        while lowright_to_topleft_counter < 2 {
+            let (target_column, target_row) = (
+                (3 + lowright_to_topleft_counter) as u8,
+                (1 - lowright_to_topleft_counter) as u8,
+            );
+            let test_turn = NormalTurn::new(
+                FIELD_D2,
+                Field::new(target_column, target_row).unwrap(),
+                None,
+            );
+            let should_contain = target_row != Rows::ROW_2 || target_column != Columns::COLUMN_D;
+            assert_eq!(
+                possible_moves.contains(&Turn::Normal(test_turn)),
+                should_contain
+            );
+            lowright_to_topleft_counter += 1;
         }
     }
 
     /// Tests the possible moves of the knight
     #[test]
     fn knight_test() {
-        let position: crate::Position = Fen::import("8/8/8/8/8/2N5/8/8 w - - 0 1").unwrap();
+        let position = Fen::import("8/8/8/8/8/2N5/8/8 w - - 0 1").unwrap();
         let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
         let turns = [
             Turn::Normal(NormalTurn::new(FIELD_C3, FIELD_A2, None)),
@@ -162,48 +260,6 @@ mod tests {
         assert!(possible_moves.len() == test_turn.len());
         assert!(possible_moves.contains(&test_turn[0]));
         assert!(possible_moves.contains(&test_turn[1]));
-    }
-
-    /// Tests the possible moves of the bishop
-    #[test]
-    fn bishop_test() {
-        let position = Fen::import("8/8/8/8/8/8/3B4/8 w - - 0 1").unwrap();
-        let possible_moves = CLASSIC_RULESET.get_possible_turns(&position);
-        assert!(possible_moves.len() == 9);
-
-        let mut lowleft_to_topright_counter = -1;
-        while lowleft_to_topright_counter < 5 {
-            let test_turn = NormalTurn::new(
-                FIELD_D2,
-                Field::new_from_usize(
-                    (3 + lowleft_to_topright_counter) as usize,
-                    (1 + lowleft_to_topright_counter) as usize,
-                )
-                .unwrap(),
-                None,
-            );
-            if test_turn.origin != test_turn.target {
-                assert!(possible_moves.contains(&Turn::Normal(test_turn)));
-            }
-            lowleft_to_topright_counter += 1;
-        }
-
-        let mut lowright_to_topleft_counter = -3;
-        while lowright_to_topleft_counter < 2 {
-            let test_turn = NormalTurn::new(
-                FIELD_D2,
-                Field::new_from_usize(
-                    (3 + lowright_to_topleft_counter) as usize,
-                    (1 - lowright_to_topleft_counter) as usize,
-                )
-                .unwrap(),
-                None,
-            );
-            if test_turn.origin != test_turn.target {
-                assert!(possible_moves.contains(&Turn::Normal(test_turn)));
-            }
-            lowright_to_topleft_counter += 1;
-        }
     }
 
     /// Tests the possible moves of the black pawn

@@ -2,7 +2,6 @@ use super::Ruleset;
 use crate::{DEFAULT_BOARD_SETUP, Fen, GameResult, PlayerColor, Position, Turn};
 
 mod internal;
-mod tests;
 mod util;
 
 /// The classic ruleset for chess

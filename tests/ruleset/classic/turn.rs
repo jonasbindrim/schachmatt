@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod position_turn {
-    use schachmatt::{Field, Game, Turn};
+    use schachmatt::{
+        Fields::{FIELD_A1, FIELD_B1},
+        Game, NormalTurn, Turn,
+    };
 
     #[test]
     fn execute_legal_move_test() {
@@ -15,11 +18,7 @@ mod position_turn {
     #[test]
     fn execute_illegal_move_test() {
         let mut default_game = Game::default();
-        let illegal_move = Turn::new(
-            Field::new_from_string("a1").unwrap(),
-            Field::new_from_string("b1").unwrap(),
-            None,
-        );
+        let illegal_move = Turn::Normal(NormalTurn::new(FIELD_A1, FIELD_B1, None));
 
         default_game
             .execute_turn(illegal_move)

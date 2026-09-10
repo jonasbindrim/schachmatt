@@ -1,6 +1,7 @@
 use crate::{GameResult, PlayerColor, Position, Turn};
 
 pub(crate) mod classic;
+pub(crate) mod util;
 
 /// Contains functions which describe the rules of a chess game
 /// Can be used to alter the rules of the game
