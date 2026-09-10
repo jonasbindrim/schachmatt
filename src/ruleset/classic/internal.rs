@@ -1,8 +1,12 @@
 use crate::{
-    Field, Fields::*, GameResult, Piece, PieceType, PlayerColor, Position, Rows, Turn, chess::{
+    Field,
+    Fields::*,
+    GameResult, Piece, PieceType, PlayerColor, Position, Rows, Turn,
+    chess::{
         castling_rights::CastlingRights,
         turn::{CastleDirection, NormalTurn},
-    }, ruleset::util::{check_predicate_for_each_piece, for_each_piece},
+    },
+    ruleset::util::{check_predicate_for_each_piece, for_each_piece},
 };
 
 use super::util::{
@@ -111,7 +115,6 @@ pub(super) fn get_possible_turns(position: &Position) -> Vec<Turn> {
                 break;
             }
         }
-        return;
     });
 
     // Check for castling moves

@@ -80,7 +80,10 @@ mod tests {
 
         let mut lower_right_counter: i8 = -1;
         while lower_right_counter < 5 {
-            let (target_column, target_row) = ((3 + lower_right_counter) as u8, (1 + lower_right_counter) as u8);
+            let (target_column, target_row) = (
+                (3 + lower_right_counter) as u8,
+                (1 + lower_right_counter) as u8,
+            );
             let test_turn = NormalTurn::new(
                 FIELD_D2,
                 Field::new(target_column, target_row).unwrap(),
@@ -104,7 +107,10 @@ mod tests {
 
         let mut lower_left_counter: i8 = -3;
         while lower_left_counter < 2 {
-            let (target_column, target_row) = ((3 + lower_left_counter) as u8, (1 - lower_left_counter) as u8);
+            let (target_column, target_row) = (
+                (3 + lower_left_counter) as u8,
+                (1 - lower_left_counter) as u8,
+            );
             let test_turn = NormalTurn::new(
                 FIELD_D2,
                 Field::new(target_column, target_row).unwrap(),
@@ -166,7 +172,10 @@ mod tests {
 
         let mut lowleft_to_topright_counter: i8 = -1;
         while lowleft_to_topright_counter < 5 {
-            let (target_column, target_row) = ((3 + lowleft_to_topright_counter) as u8, (1 + lowleft_to_topright_counter) as u8);
+            let (target_column, target_row) = (
+                (3 + lowleft_to_topright_counter) as u8,
+                (1 + lowleft_to_topright_counter) as u8,
+            );
             let test_turn = NormalTurn::new(
                 FIELD_D2,
                 Field::new(target_column, target_row).unwrap(),
@@ -190,7 +199,10 @@ mod tests {
 
         let mut lowright_to_topleft_counter: i8 = -3;
         while lowright_to_topleft_counter < 2 {
-            let (target_column, target_row) = ((3 + lowright_to_topleft_counter) as u8, (1 - lowright_to_topleft_counter) as u8);
+            let (target_column, target_row) = (
+                (3 + lowright_to_topleft_counter) as u8,
+                (1 - lowright_to_topleft_counter) as u8,
+            );
             let test_turn = NormalTurn::new(
                 FIELD_D2,
                 Field::new(target_column, target_row).unwrap(),

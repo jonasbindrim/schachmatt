@@ -6,7 +6,10 @@ use crate::{Field, Fields::BOARD_FIELDS, Piece, Position};
 /// - `position` - The current position of the game
 /// - `func` - The function which is called for every field of the board
 /// - `returns` - The value returned by the given func
-pub(super) fn check_predicate_for_each_piece<ClosureType>(position: &Position, mut func: ClosureType) -> bool
+pub(super) fn check_predicate_for_each_piece<ClosureType>(
+    position: &Position,
+    mut func: ClosureType,
+) -> bool
 where
     ClosureType: FnMut(Piece, Field) -> Option<bool>,
 {
