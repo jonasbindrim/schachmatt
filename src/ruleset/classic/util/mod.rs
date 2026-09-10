@@ -1,4 +1,4 @@
-pub(crate) mod castle_data;
-pub(crate) mod move_iterators;
-pub(crate) mod move_legality;
-pub(crate) mod piece_move_iterator;
+pub(super) mod castle_data;
+pub(super) mod move_iterators;
+pub(super) mod move_legality;
+pub(super) mod piece_move_iterator;
